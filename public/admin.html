@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LogiLink | Panel de Control</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { brand: { 500: '#22c55e', 600: '#16a34a' } } } }
+        }
+    </script>
+
+    <!-- Leaflet CSS y JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Animaciones suaves para las pantallas */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Modal deslizable (Bottom Sheet para Móviles) */
+        .bottom-sheet { transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .bottom-sheet.open { transform: translateY(0); }
+        
+        /* Ajuste para que Safari/iOS no corte el contenido por la barra inferior del SO */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-800 h-screen overflow-hidden flex flex-col md:flex-row selection:bg-brand-500 selection:text-white">
+
+    <script>
+        // --- PROTECCIÓN DE RUTA TEMPRANA ---
+        const tokenAdmin = localStorage.getItem('admin_token');
+        if (!tokenAdmin) window.location.href = '/login.html';
+        
+        function cerrarSesion() {
+            localStorage.removeItem('admin_token');
+            window.location.href = '/login.html';
+        }
+    </script>
+
+    <!-- SIDEBAR (Solo visible en PC/Tablets grandes) -->
+    <aside class="hidden md:flex flex-col w-64 bg-slate-900 text-white h-full shadow-2xl z-20">
+        <div class="p-6 border-b border-slate-800">
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">Logi<span class="text-brand-500">Link</span></h1>
+            <p class="text-slate-400 text-xs mt-1 tracking-wider uppercase font-bold">Panel Admin</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 mt-4">
+            <button onclick="cambiarVista('resumen')" id="btnNavDesktop-resumen" class="w-full flex items-center gap-3 px-4 py-3 bg-brand-600 text-white rounded-xl font-medium transition-colors shadow-md shadow-brand-600/20">
+                <i data-feather="grid" class="w-5 h-5"></i> Resumen
+            </button>
+            <button onclick="cambiarVista('negocios')" id="btnNavDesktop-negocios" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition-colors">
+                <i data-feather="shopping-bag" class="w-5 h-5"></i> Mis Negocios
+            </button>
+            <button onclick="cambiarVista('radar')" id="btnNavDesktop-radar" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition-colors">
+                <i data-feather="map" class="w-5 h-5"></i> Radar / Pedidos
+            </button>
+            <button onclick="cambiarVista('clientes')" id="btnNavDesktop-clientes" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition-colors">
+                <i data-feather="users" class="w-5 h-5"></i> Clientes
+            </button>
+        </nav>
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="cerrarSesion()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-400 bg-red-400/10 hover:bg-red-400 hover:text-white rounded-xl font-bold transition-all">
+                <i data-feather="log-out" class="w-4 h-4"></i> Salir
+            </button>
+        </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
+    <main class="flex-1 h-full overflow-y-auto pb-20 md:pb-0 relative bg-slate-50">
+        
+        <!-- HEADER SUPERIOR (Solo Mobile) -->
+        <header class="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
+                    <i data-feather="package" class="w-4 h-4 text-white"></i>
+                </div>
+                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">LogiLink</h1>
+            </div>
+            <button onclick="cerrarSesion()" class="text-slate-400 hover:text-red-500 bg-slate-100 p-2 rounded-full transition-colors">
+                <i data-feather="log-out" class="w-4 h-4"></i>
+            </button>
+        </header>
+
+        <!-- CONTENEDOR DE LAS VISTAS -->
+        <div class="p-5 md:p-8 max-w-5xl mx-auto w-full">
+            
+            <!-- VISTA: RESUMEN -->
+            <div id="vista-resumen" class="fade-in">
+                <h2 class="text-2xl font-bold mb-6 text-slate-900">Hola, Admin 👋</h2>
+                
+                <!-- Tarjetas de Estadísticas (Optimizadas para hacer grid en móvil) -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                    <!-- Tarjeta -->
+                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-5">
+                        <div class="w-10 h-10 md:w-14 md:h-14 bg-blue-50 text-blue-600 rounded-full md:rounded-2xl flex items-center justify-center"><i data-feather="shopping-bag" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                        <div>
+                            <p class="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Negocios</p>
+                            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900" id="statNegocios">0</h3>
+                        </div>
+                    </div>
+                    <!-- Tarjeta -->
+                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-5">
+                        <div class="w-10 h-10 md:w-14 md:h-14 bg-brand-50 text-brand-600 rounded-full md:rounded-2xl flex items-center justify-center"><i data-feather="users" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                        <div>
+                            <p class="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Repartidores</p>
+                            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900">4</h3>
+                        </div>
+                    </div>
+                    <!-- Tarjeta (Ocupa las 2 columnas en móvil) -->
+                    <div class="col-span-2 md:col-span-1 bg-slate-900 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-lg border border-slate-800 flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">En curso hoy</p>
+                            <h3 class="text-4xl font-extrabold text-white">12</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-white/10 text-brand-400 rounded-full flex items-center justify-center animate-pulse"><i data-feather="activity"></i></div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 text-center flex flex-col items-center justify-center h-48 border-dashed">
+                    <i data-feather="bar-chart-2" class="w-12 h-12 text-slate-200 mb-3"></i>
+                    <h4 class="text-lg font-bold text-slate-700">Métricas en construcción</h4>
+                    <p class="text-slate-500 text-sm max-w-sm">Aquí conectaremos tus ganancias y los pedidos entregados a lo largo del mes.</p>
+                </div>
+            </div>
+
+            <!-- VISTA: NEGOCIOS -->
+            <div id="vista-negocios" class="hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">Comercios</h2>
+                        <p class="text-sm text-slate-500">Gestión de tus clientes aliados.</p>
+                    </div>
+                    <!-- Botón Flotante disimulado en Escritorio, pero botón normal en móvil -->
+                    <button onclick="abrirModalNegocio()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-brand-500/30 transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+                        <i data-feather="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Nuevo Negocio</span>
+                    </button>
+                </div>
+                
+                <!-- NUEVO: MAPA GLOBAL DE NEGOCIOS -->
+                <div class="w-full h-[250px] bg-slate-200 rounded-3xl mb-6 overflow-hidden border border-slate-200 shadow-sm relative">
+                    <div id="mapaGlobalNegocios" class="w-full h-full z-0"></div>
+                </div>
+                
+                <!-- Lista de negocios estilo moderno -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                    <ul id="listaNegocios" class="divide-y divide-slate-50">
+                        <li class="p-12 text-center text-slate-500">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
+                            <p class="font-medium">Cargando base de datos...</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Botón FAB real para móviles (Flota en la esquina) -->
+                <button onclick="abrirModalNegocio()" class="md:hidden fixed bottom-24 right-5 w-14 h-14 bg-brand-600 text-white rounded-full shadow-xl flex items-center justify-center active:scale-90 transition-transform z-10">
+                    <i data-feather="plus" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- VISTA: RADAR (Próximamente) -->
+            <div id="vista-radar" class="hidden fade-in h-[60vh] flex flex-col items-center justify-center text-center">
+                <div class="relative w-24 h-24 flex items-center justify-center mb-6">
+                    <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
+                    <div class="relative w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg">
+                        <i data-feather="navigation" class="w-8 h-8"></i>
+                    </div>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-3">El Radar</h2>
+                <p class="text-slate-500 max-w-sm mb-6">Estamos desarrollando la vista de mapa en vivo donde rastrearás a tus repartidores y pedidos.</p>
+                <div class="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-bold rounded-full border border-slate-200">
+                    Módulo en Desarrollo 🚧
+                </div>
+            </div>
+
+            <!-- VISTA: CLIENTES -->
+            <div id="vista-clientes" class="hidden fade-in h-[60vh] flex flex-col items-center justify-center text-center">
+                <div class="relative w-24 h-24 flex items-center justify-center mb-6">
+                    <div class="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-75"></div>
+                    <div class="relative w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg">
+                        <i data-feather="users" class="w-8 h-8"></i>
+                    </div>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-3">Tus Clientes</h2>
+                <p class="text-slate-500 max-w-sm mb-6">Aquí verás el historial de todos los usuarios que han hecho pedidos en la plataforma.</p>
+                <div class="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-bold rounded-full border border-slate-200">
+                    Módulo en Desarrollo 🚧
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- NAVEGACIÓN INFERIOR (Solo Mobile) -->
+    <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 flex justify-around items-center pb-safe pt-2 z-30 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+        <button onclick="cambiarVista('resumen')" id="btnNavMobile-resumen" class="flex flex-col items-center p-2 w-20 text-brand-600 transition-colors">
+            <i data-feather="grid" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">Inicio</span>
+        </button>
+        <button onclick="cambiarVista('negocios')" id="btnNavMobile-negocios" class="flex flex-col items-center p-2 w-20 text-slate-400 hover:text-slate-900 transition-colors">
+            <i data-feather="shopping-bag" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">Comercios</span>
+        </button>
+        <button onclick="cambiarVista('radar')" id="btnNavMobile-radar" class="flex flex-col items-center p-2 w-20 text-slate-400 hover:text-slate-900 transition-colors relative">
+            <i data-feather="map" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">Radar</span>
+            <!-- Puntito de notificación falso -->
+            <span class="absolute top-1 right-5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+        </button>
+        <button onclick="cambiarVista('clientes')" id="btnNavMobile-clientes" class="flex flex-col items-center p-2 w-20 text-slate-400 hover:text-slate-900 transition-colors">
+            <i data-feather="users" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">Clientes</span>
+        </button>
+    </nav>
+
+    <!-- MODAL "BOTTOM SHEET" / VENTANA FLOTANTE: NUEVO NEGOCIO -->
+    <!-- Opacidad 0 inicial, pointer-events-none para que no bloquee clics cuando está oculto -->
+    <div id="modalNuevoNegocioOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] opacity-0 pointer-events-none transition-opacity duration-300 flex items-end md:items-center justify-center">
+        
+        <!-- El contenido se desliza hacia arriba -->
+        <div id="modalNuevoNegocioContent" class="bg-white w-full md:max-w-md md:rounded-3xl rounded-t-3xl bottom-sheet flex flex-col md:max-h-[85vh] h-[85vh] md:h-auto shadow-2xl relative">
+            
+            <!-- Agarradera visual para el bottom sheet en móvil -->
+            <div class="md:hidden w-full flex justify-center pt-3 pb-1">
+                <div class="w-12 h-1.5 bg-slate-200 rounded-full"></div>
+            </div>
+
+            <!-- Cabecera del Modal -->
+            <div class="px-6 py-4 flex justify-between items-center border-b border-slate-100">
+                <h3 class="font-extrabold text-xl text-slate-900">Alta de Negocio</h3>
+                <button onclick="cerrarModalNegocio()" class="p-2 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Formulario Scrollable -->
+            <div class="p-6 overflow-y-auto flex-1 pb-safe pb-8">
+                <form id="formNegocio" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Nombre Comercial</label>
+                        <input type="text" id="nombre" placeholder="Ej. Tacos El Gordo" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1.5">WhatsApp para Pedidos</label>
+                        <input type="tel" id="whatsapp" placeholder="10 dígitos" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900">
+                    </div>
+                    
+                    <div class="pt-2">
+                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Ubicación GPS</label>
+                        <p class="text-xs text-slate-500 mb-2">Toca el mapa en el lugar exacto del local.</p>
+                        <div class="relative w-full h-[200px] md:h-[250px] rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-100">
+                            <div id="mapaAdmin" class="absolute inset-0 w-full h-full z-0"></div>
+                        </div>
+                        <!-- Coordenadas escondidas -->
+                        <div class="hidden">
+                            <input type="text" id="lat" readonly required>
+                            <input type="text" id="lng" readonly required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-6 bg-slate-900 hover:bg-black text-white font-bold py-4 px-4 rounded-xl shadow-xl shadow-slate-900/20 active:scale-95 transition-all flex justify-center items-center gap-2">
+                        <span>Generar Link Mágico</span> <i data-feather="zap" class="w-4 h-4 text-yellow-400"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar iconos Feather
+        feather.replace();
+
+        // --- SISTEMA DE NAVEGACIÓN (SPA) ---
+        function cambiarVista(vistaId) {
+            // 1. Ocultar todos los contenedores de vistas
+            ['resumen', 'negocios', 'radar', 'clientes'].forEach(id => {
+                document.getElementById('vista-' + id).classList.add('hidden');
+                
+                // Limpiar estilos de Mobile Nav
+                const btnM = document.getElementById('btnNavMobile-' + id);
+                btnM.classList.remove('text-brand-600');
+                btnM.classList.add('text-slate-400');
+                
+                // Limpiar estilos de Desktop Nav
+                const btnD = document.getElementById('btnNavDesktop-' + id);
+                btnD.classList.remove('bg-brand-600', 'text-white', 'shadow-md', 'shadow-brand-600/20');
+                btnD.classList.add('text-slate-400');
+            });
+
+            // 2. Mostrar la vista solicitada
+            document.getElementById('vista-' + vistaId).classList.remove('hidden');
+            
+            // 3. Activar estilos en Mobile Nav
+            const btnMActive = document.getElementById('btnNavMobile-' + vistaId);
+            btnMActive.classList.remove('text-slate-400');
+            btnMActive.classList.add('text-brand-600');
+            
+            // 4. Activar estilos en Desktop Nav
+            const btnDActive = document.getElementById('btnNavDesktop-' + vistaId);
+            btnDActive.classList.remove('text-slate-400');
+            btnDActive.classList.add('bg-brand-600', 'text-white', 'shadow-md', 'shadow-brand-600/20');
+
+            // 5. Cargar datos si es necesario
+            if (vistaId === 'resumen' || vistaId === 'negocios') {
+                cargarDatosDashboard();
+            }
+        }
+
+        let mapaGlobal = null;
+        let pinesGlobales = [];
+
+        // --- CARGA DE DATOS DEL BACKEND ---
+        async function cargarDatosDashboard() {
+            try {
+                // Usamos la ruta pública porque solo queremos ver los datos
+                const response = await fetch('/api/negocios');
+                const negocios = await response.json();
+                console.log("DATOS DE NEGOCIOS:", negocios);
+
+                // 1. Actualizar Tarjeta Resumen
+                document.getElementById('statNegocios').innerText = negocios.length || 0;
+
+                // 2. Actualizar Tabla de Negocios
+                const lista = document.getElementById('listaNegocios');
+                if (!negocios || negocios.length === 0) {
+                    lista.innerHTML = `
+                        <li class="p-12 text-center text-slate-500">
+                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"><i data-feather="inbox" class="w-8 h-8 text-slate-300"></i></div>
+                            <h4 class="font-bold text-slate-700 text-lg">Cero Negocios</h4>
+                            <p class="text-sm mt-1">Haz clic en el botón Nuevo para agregar tu primer cliente.</p>
+                        </li>`;
+                    feather.replace();
+                    return;
+                }
+
+                // INICIALIZAR Y ACTUALIZAR MAPA GLOBAL
+                if (!mapaGlobal && document.getElementById('mapaGlobalNegocios')) {
+                    mapaGlobal = L.map('mapaGlobalNegocios', { 
+                        dragging: !L.Browser.mobile, // Bloqueado a 1 dedo en móvil para no interferir con scroll
+                        tap: false
+                    }).setView([24.1426, -110.3127], 13);
+                    
+                    if (L.Browser.mobile) {
+                        mapaGlobal.on('focus', function() { mapaGlobal.dragging.enable(); });
+                        mapaGlobal.on('blur', function() { mapaGlobal.dragging.disable(); });
+                    }
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaGlobal);
+                }
+
+                if (mapaGlobal) {
+                    pinesGlobales.forEach(p => mapaGlobal.removeLayer(p));
+                    pinesGlobales = [];
+                    const bounds = L.latLngBounds();
+
+                    negocios.forEach(n => {
+                        if (n.lat && n.lng) {
+                            const customIcon = L.divIcon({
+                                className: 'custom-pin',
+                                html: `<div class="w-5 h-5 bg-brand-600 rounded-full border-2 border-white shadow-md"></div>`,
+                                iconSize: [20, 20],
+                                iconAnchor: [10, 10]
+                            });
+                            const marker = L.marker([n.lat, n.lng], {icon: customIcon}).addTo(mapaGlobal)
+                                .bindPopup(`<b>${n.nombre_comercial}</b>`);
+                            pinesGlobales.push(marker);
+                            bounds.extend([n.lat, n.lng]);
+                        }
+                    });
+
+                    if (pinesGlobales.length > 0) {
+                        mapaGlobal.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+                    }
+                    // Forzar redibujado de Leaflet (importante si el contenedor estaba oculto)
+                    setTimeout(() => mapaGlobal.invalidateSize(), 100);
+                    setTimeout(() => mapaGlobal.invalidateSize(), 500);
+                }
+
+                // Generar lista bonita
+                lista.innerHTML = negocios.map((n, i) => {
+                    // Colores alternados para los iconos iniciales
+                    const colores = ['bg-blue-100 text-blue-600', 'bg-brand-100 text-brand-600', 'bg-purple-100 text-purple-600', 'bg-orange-100 text-orange-600'];
+                    const colorElegido = colores[i % colores.length];
+                    const inicial = n.nombre_comercial.charAt(0).toUpperCase();
+                    const linkM = `${window.location.origin}/${n.slug}`;
+
+                    return `
+                    <li class="flex flex-col sm:flex-row sm:items-center justify-between p-5 hover:bg-slate-50 transition-colors gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 ${colorElegido} rounded-2xl flex items-center justify-center font-extrabold text-xl shadow-sm">
+                                ${inicial}
+                            </div>
+                            <div class="max-w-[200px] sm:max-w-none">
+                                <h4 class="font-bold text-slate-900 text-lg truncate">${n.nombre_comercial}</h4>
+                                <a href="${linkM}" target="_blank" class="text-xs text-brand-600 font-medium hover:underline truncate block">${linkM}</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="navigator.clipboard.writeText('${linkM}'); alert('¡Enlace copiado exitosamente!');" class="flex-1 sm:flex-none text-center px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                                <i data-feather="copy" class="w-4 h-4"></i> <span class="sm:hidden">Copiar</span>
+                            </button>
+                            <button class="p-2 text-slate-400 hover:text-slate-900 bg-white shadow-sm border border-slate-200 rounded-lg hover:border-slate-300 transition-all">
+                                <i data-feather="settings" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </li>
+                `}).join('');
+                
+                feather.replace(); // Renderizar iconos de la lista
+
+            } catch (err) {
+                console.error("Error al cargar listado", err);
+            }
+        }
+
+        // --- LÓGICA DEL MODAL Y MAPA (NUEVO NEGOCIO) ---
+        let mapaAdmin = null;
+        let pinActual = null;
+        const modalOverlay = document.getElementById('modalNuevoNegocioOverlay');
+        const modalContent = document.getElementById('modalNuevoNegocioContent');
+
+        function abrirModalNegocio() {
+            // Mostrar overlay (display: flex)
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.remove('pointer-events-none');
+            
+            // Timeout cortito para que el navegador procese el render antes de animar opacidad y transform
+            setTimeout(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalContent.classList.add('open'); // Desliza el panel hacia arriba
+                
+                // Instanciar mapa solo la primera vez que se abre
+                if (!mapaAdmin) {
+                    mapaAdmin = L.map('mapaAdmin', { zoomControl: false }).setView([24.1426, -110.3127], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaAdmin);
+                    
+                    mapaAdmin.on('click', function (e) {
+                        const lat = e.latlng.lat.toFixed(6);
+                        const lng = e.latlng.lng.toFixed(6);
+                        
+                        if (pinActual) {
+                            pinActual.setLatLng(e.latlng);
+                        } else {
+                            // Crear pin visual
+                            const customIcon = L.divIcon({
+                                className: 'custom-pin',
+                                html: `<div class="w-5 h-5 bg-brand-600 rounded-full border-2 border-white shadow-md"></div>`,
+                                iconSize: [20, 20],
+                                iconAnchor: [10, 10]
+                            });
+                            pinActual = L.marker(e.latlng, {icon: customIcon}).addTo(mapaAdmin);
+                        }
+                        
+                        document.getElementById('lat').value = lat;
+                        document.getElementById('lng').value = lng;
+                        mapaAdmin.panTo(e.latlng);
+                    });
+                }
+                
+                // Truco maestro para Leaflet: Forzar a recalcular su tamaño cuando estaba oculto
+                setTimeout(() => mapaAdmin.invalidateSize(), 350);
+
+            }, 20);
+        }
+
+        function cerrarModalNegocio() {
+            modalOverlay.classList.add('opacity-0');
+            modalContent.classList.remove('open'); // Desliza hacia abajo
+            
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                modalOverlay.classList.add('pointer-events-none');
+            }, 300); // Igual a la duración de la transición
+        }
+
+        // --- ENVÍO DE FORMULARIO CON TOKEN ---
+        document.getElementById('formNegocio').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>';
+            btn.disabled = true;
+
+            const nombre = document.getElementById('nombre').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const lat = document.getElementById('lat').value;
+            const lng = document.getElementById('lng').value;
+
+            if (!lat || !lng) {
+                alert("Debes tocar el mapa para indicar la ubicación.");
+                btn.innerHTML = originalHtml; btn.disabled = false; return;
+            }
+
+            try {
+                const response = await fetch('/api/negocios', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${tokenAdmin}` // La barrera de seguridad
+                    },
+                    body: JSON.stringify({ nombre, whatsapp, lat, lng })
+                });
+
+                if (response.status === 401) {
+                    alert("Tu sesión expiró. Inicia sesión de nuevo.");
+                    cerrarSesion();
+                    return;
+                }
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || "No se pudo guardar.");
+                }
+
+                // Si todo salió bien:
+                document.getElementById('formNegocio').reset();
+                if (pinActual) { mapaAdmin.removeLayer(pinActual); pinActual = null; }
+                cerrarModalNegocio();
+                
+                // Recargar dashboard para que aparezca el nuevo!
+                cargarDatosDashboard(); 
+
+                // Feedback visual rápido
+                setTimeout(() => alert("¡Negocio registrado y en línea!"), 350);
+
+            } catch (error) {
+                alert(error.message);
+            } finally {
+                btn.innerHTML = originalHtml; btn.disabled = false;
+            }
+        });
+
+        // ARRANCAR APP
+        cambiarVista('resumen'); // Comienza siempre en resumen
+    </script>
+</body>
+</html>

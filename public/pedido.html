@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargando negocio...</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Leaflet CSS y JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet GeoSearch (Buscador) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
+    <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex items-center justify-center font-sans text-slate-800">
+
+    <!-- Pantalla de Carga (Mientras buscamos el negocio) -->
+    <div id="loader" class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-slate-500 font-medium">Buscando negocio...</p>
+    </div>
+
+    <!-- Mensaje de Error (Si ponen un link que no existe) -->
+    <div id="error-box"
+        class="hidden text-center bg-red-50 p-8 rounded-2xl border border-red-100 max-w-md w-full mx-4 shadow-sm">
+        <h2 class="text-2xl font-bold text-red-600 mb-2">Negocio no encontrado</h2>
+        <p class="text-slate-600">Revisa que el enlace esté escrito correctamente.</p>
+    </div>
+
+    <!-- Contenedor Principal del Pedido -->
+    <div id="app-container"
+        class="hidden w-full max-w-md mx-auto bg-white min-h-screen sm:min-h-fit sm:rounded-3xl sm:shadow-2xl overflow-hidden relative">
+
+        <!-- Cabecera Personalizada -->
+        <div class="bg-blue-600 px-6 py-8 text-white text-center shadow-inner relative overflow-hidden">
+            <!-- Efecto visual de fondo -->
+            <div class="absolute top-0 left-0 w-full h-full bg-black/10"></div>
+
+            <h1 id="nombre-negocio" class="relative text-3xl font-extrabold tracking-tight z-10">
+                Nombre del Negocio
+            </h1>
+            <p class="relative text-blue-100 font-medium mt-1 z-10">Servicio a Domicilio Oficial</p>
+        </div>
+
+        <!-- Formulario del Cliente -->
+        <div class="p-6">
+            <h2 class="text-lg font-bold text-slate-800 mb-4">¿A dónde te enviamos?</h2>
+
+            <form id="formPedido" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Tu Nombre</label>
+                    <input type="text" id="nombreCliente" placeholder="Ej. Juan Pérez" required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Tu Número (WhatsApp)</label>
+                    <input type="tel" id="whatsappCliente" placeholder="10 dígitos" required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Detalles de Dirección</label>
+                    <input type="text" id="direccionDetalles" placeholder="Ej. Calle principal, portón negro..." required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50">
+                </div>
+
+                <!-- Contenedor del Mapa -->
+                <div class="space-y-2 mt-4">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Ubicación de Entrega</label>
+                    
+                    <div class="relative w-full h-[300px] rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100">
+                        <div id="mapaPedido" class="absolute inset-0 w-full h-full z-0"></div>
+                        
+                        <!-- Botón GPS flotante -->
+                        <button type="button" id="btnGPS" class="absolute bottom-4 right-4 z-10 bg-white p-2.5 rounded-xl shadow-lg text-blue-600 hover:text-blue-800 active:bg-blue-50 transition-colors focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h4m10 0h4M12 3v4m0 10v4m-5-5a5 5 0 1110 0 5 5 0 01-10 0z"></path></svg>
+                        </button>
+
+                        <!-- Marcador central fijo (Estilo Uber/Rappi) -->
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[100%] z-10 pointer-events-none drop-shadow-lg">
+                            <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 24 24" stroke="white" stroke-width="1">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-slate-500 text-center font-medium">Desliza el mapa para ubicar el pin rojo en tu domicilio exacto</p>
+                    
+                    <!-- Coordenadas ocultas listas para enviar al backend -->
+                    <input type="hidden" id="latDestino" required>
+                    <input type="hidden" id="lngDestino" required>
+                </div>
+
+                <button type="submit" id="btnCalcular"
+                    class="w-full mt-6 bg-slate-900 hover:bg-black text-white font-bold py-4 px-4 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 text-lg flex justify-center items-center">
+                    <span>Calcular Envío</span>
+                </button>
+
+                <!-- Resultados del cálculo -->
+                <div id="resultadoEnvio" class="hidden mt-6 bg-green-50 border border-green-200 rounded-2xl p-5 text-center shadow-sm">
+                    <p class="text-sm text-green-800 font-medium mb-1">Distancia al negocio: <span id="txtDistancia" class="font-bold"></span> km</p>
+                    <p class="text-2xl text-green-900 font-extrabold mb-4">Envío: $<span id="txtCosto"></span> <span class="text-sm font-medium">MXN</span></p>
+                    <button type="button" id="btnConfirmarPedido" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 text-lg">
+                        Confirmar y Pedir por WhatsApp
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. Extraer el "slug" (ej. carniceria-talamantes) de la barra de direcciones del navegador
+        const urlParams = window.location.pathname;
+        const slug = urlParams.replace('/', ''); // Quitamos la diagonal inicial
+
+        // Referencias a la interfaz
+        const loader = document.getElementById('loader');
+        const errorBox = document.getElementById('error-box');
+        const appContainer = document.getElementById('app-container');
+        const tituloNegocio = document.getElementById('nombre-negocio');
+
+        let whatsappNegocioGlobal = ""; // Para guardar el número del negocio
+        
+        // Cargar datos guardados previamente para ahorrarle tiempo al cliente
+        document.getElementById('nombreCliente').value = localStorage.getItem('laas_nombre') || '';
+        document.getElementById('whatsappCliente').value = localStorage.getItem('laas_whatsapp') || '';
+        document.getElementById('direccionDetalles').value = localStorage.getItem('laas_direccion') || '';
+
+        // 2. Función para buscar el negocio en nuestra API
+        async function cargarDatosNegocio() {
+            if (!slug) {
+                loader.classList.add('hidden');
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                // Consultamos a Node.js
+                const respuesta = await fetch(`/api/negocio/${slug}`);
+
+                if (!respuesta.ok) throw new Error('No encontrado');
+
+                const datos = await respuesta.json();
+
+                // 3. ¡Magia! Actualizamos el HTML con los datos de Supabase
+                document.title = `Pedir en ${datos.nombre_comercial}`;
+                tituloNegocio.innerText = datos.nombre_comercial;
+                whatsappNegocioGlobal = datos.whatsapp; // Guardamos el número para después
+
+                // Ocultamos el loader y mostramos la app
+                loader.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+
+                // Inicializar mapa ahora que ya se ve el contenedor
+                inicializarMapa();
+
+            } catch (error) {
+                // Si el negocio no existe (ej. escribieron mal el link)
+                loader.classList.add('hidden');
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        // --- LÓGICA DEL MAPA ---
+        let mapaPedido = null;
+
+        function inicializarMapa() {
+            if (mapaPedido) return;
+
+            // Centro por defecto
+            const coordsDefault = [24.1426, -110.3127];
+            
+            mapaPedido = L.map('mapaPedido', {
+                zoomControl: false // Interfaz más limpia en móvil
+            }).setView(coordsDefault, 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(mapaPedido);
+
+            // Integrar Buscador (Leaflet GeoSearch)
+            const provider = new window.GeoSearch.OpenStreetMapProvider();
+            const searchControl = new window.GeoSearch.GeoSearchControl({
+                provider: provider,
+                style: 'bar',
+                autoComplete: true,
+                autoCompleteDelay: 250,
+                showMarker: false, // Ocultar pin azul, ya tenemos el rojo central
+                retainZoomLevel: false,
+                animateZoom: true,
+                keepResult: true,
+                searchLabel: 'Buscar colonia o calle...'
+            });
+            mapaPedido.addControl(searchControl);
+
+            // Botón GPS
+            const btnGPS = document.getElementById('btnGPS');
+            btnGPS.addEventListener('click', () => {
+                const originalIcon = btnGPS.innerHTML;
+                btnGPS.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        mapaPedido.setView([pos.coords.latitude, pos.coords.longitude], 17);
+                        btnGPS.innerHTML = originalIcon;
+                    },
+                    (err) => {
+                        alert("No pudimos obtener tu ubicación. Revisa los permisos de tu navegador.");
+                        btnGPS.innerHTML = originalIcon;
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            });
+
+            // Intentar geolocalizar al usuario
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const userLat = pos.coords.latitude;
+                        const userLng = pos.coords.longitude;
+                        mapaPedido.setView([userLat, userLng], 17);
+                        actualizarCoordenadas(userLat, userLng);
+                    },
+                    (err) => {
+                        console.warn("Geolocalización denegada o fallida.");
+                        actualizarCoordenadas(coordsDefault[0], coordsDefault[1]);
+                    }
+                );
+            } else {
+                actualizarCoordenadas(coordsDefault[0], coordsDefault[1]);
+            }
+
+            // Cada vez que se mueve el mapa, actualizamos coordenadas
+            mapaPedido.on('move', function () {
+                const center = mapaPedido.getCenter();
+                actualizarCoordenadas(center.lat, center.lng);
+            });
+            
+            // Necesario para que Leaflet dibuje bien si el contenedor estaba oculto (display: none)
+            setTimeout(() => mapaPedido.invalidateSize(), 100);
+        }
+
+        function actualizarCoordenadas(lat, lng) {
+            document.getElementById('latDestino').value = lat.toFixed(6);
+            document.getElementById('lngDestino').value = lng.toFixed(6);
+        }
+
+        // --- LÓGICA DE CALCULAR ENVÍO Y WHATSAPP ---
+        const formPedido = document.getElementById('formPedido');
+        const btnCalcular = document.getElementById('btnCalcular');
+        const resultadoEnvio = document.getElementById('resultadoEnvio');
+        const txtDistancia = document.getElementById('txtDistancia');
+        const txtCosto = document.getElementById('txtCosto');
+        const btnConfirmarPedido = document.getElementById('btnConfirmarPedido');
+        
+        let datosCalculados = null;
+
+        formPedido.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evitar que la página recargue
+            
+            const nombreInput = document.getElementById('nombreCliente').value; 
+            const whatsappInput = document.getElementById('whatsappCliente').value;
+            const direccionInput = document.getElementById('direccionDetalles').value;
+            const latDestino = document.getElementById('latDestino').value;
+            const lngDestino = document.getElementById('lngDestino').value;
+
+            // Memoria: Guardar estos datos localmente para su próximo pedido
+            localStorage.setItem('laas_nombre', nombreInput);
+            localStorage.setItem('laas_whatsapp', whatsappInput);
+            localStorage.setItem('laas_direccion', direccionInput);
+
+            if (!latDestino || !lngDestino) {
+                alert("Por favor ubica tu dirección en el mapa moviendo el pin.");
+                return;
+            }
+
+            // Cambiar estado del botón
+            const textoOriginal = btnCalcular.innerHTML;
+            btnCalcular.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div><span>Calculando...</span>';
+            btnCalcular.disabled = true;
+
+            try {
+                // Llamar al backend
+                const response = await fetch('/api/calcular-envio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slug, latDestino, lngDestino })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Error al calcular');
+
+                // Mostrar resultados
+                txtDistancia.innerText = data.distancia_km;
+                txtCosto.innerText = data.costo_envio;
+                resultadoEnvio.classList.remove('hidden');
+                
+                // Guardar datos para el paso final
+                datosCalculados = {
+                    ...data,
+                    nombreCliente: nombreInput,
+                    whatsappCliente: whatsappInput,
+                    direccionDetalles: direccionInput
+                };
+                
+                // Ocultar botón calcular
+                btnCalcular.classList.add('hidden');
+
+            } catch (error) {
+                alert("Hubo un error: " + error.message);
+                btnCalcular.innerHTML = textoOriginal;
+                btnCalcular.disabled = false;
+            }
+        });
+
+        // Al hacer clic en "Confirmar y Pedir por WhatsApp"
+        btnConfirmarPedido.addEventListener('click', async () => {
+            if (!datosCalculados || !whatsappNegocioGlobal) return;
+            
+            const btnOriginalTexto = btnConfirmarPedido.innerText;
+            btnConfirmarPedido.innerText = "Registrando pedido...";
+            btnConfirmarPedido.disabled = true;
+
+            const latD = document.getElementById('latDestino').value;
+            const lngD = document.getElementById('lngDestino').value;
+
+            try {
+                // 1. Guardar en Base de Datos primero
+                await fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        negocio_slug: slug, 
+                        nombre_cliente: datosCalculados.nombreCliente, 
+                        telefono: datosCalculados.whatsappCliente, 
+                        direccion_detalles: datosCalculados.direccionDetalles, 
+                        costo_envio: datosCalculados.costo_envio, 
+                        latDestino: latD, 
+                        lngDestino: lngD 
+                    })
+                });
+            } catch (error) {
+                console.error("El pedido no se guardó en la DB, pero redirigimos a WA de todos modos.");
+            }
+
+            // 2. Armar el mensaje pre-llenado
+            const mensaje = `Hola *${tituloNegocio.innerText}*, soy ${datosCalculados.nombreCliente}.\n\n` +
+                            `Quiero hacer un pedido a domicilio.\n` +
+                            `📍 *Mi ubicación:* https://maps.google.com/?q=${latD},${lngD}\n` +
+                            `🏠 *Detalles:* ${datosCalculados.direccionDetalles}\n` +
+                            `🛣️ *Distancia:* ${datosCalculados.distancia_km} km\n` +
+                            `🚚 *Costo de envío aceptado:* $${datosCalculados.costo_envio} MXN\n\n` +
+                            `Mi pedido es: `;
+                            
+            // 3. Abrir WhatsApp
+            const urlWhatsApp = `https://wa.me/${whatsappNegocioGlobal}?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+
+            btnConfirmarPedido.innerText = "¡Pedido enviado a WhatsApp!";
+        });
+
+        // Arrancar la magia al cargar la página
+        cargarDatosNegocio();
+    </script>
+</body>
+
+</html>
