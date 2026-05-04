@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LogiLink | Panel de Control</title>
+    <title>Repartidores Camino Real | Panel de Control</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { brand: { 500: '#22c55e', 600: '#16a34a' } } } }
+            theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { brand: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' } } } }
         }
     </script>
 
@@ -35,8 +35,8 @@
     <!-- SIDEBAR (Solo visible en PC/Tablets grandes) -->
     <aside class="hidden md:flex flex-col w-64 bg-slate-900 text-white h-full shadow-2xl z-20">
         <div class="p-6 border-b border-slate-800">
-            <h1 class="text-2xl font-extrabold text-white tracking-tight">Logi<span class="text-brand-500">Link</span></h1>
-            <p class="text-slate-400 text-xs mt-1 tracking-wider uppercase font-bold">Panel Admin</p>
+            <h1 class="text-base font-extrabold text-white tracking-tight leading-none uppercase">REPARTIDORES <span class="text-amber-400">CAMINO REAL</span></h1>
+            <p class="text-brand-300 text-[10px] mt-1 tracking-wider uppercase font-bold">Panel Administrativo</p>
         </div>
         <nav class="flex-1 p-4 space-y-2 mt-4">
             <button onclick="cambiarVista('resumen')" id="btnNavDesktop-resumen" class="w-full flex items-center gap-3 px-4 py-3 bg-brand-600 text-white rounded-xl font-medium transition-colors shadow-md shadow-brand-600/20">
@@ -68,7 +68,7 @@
                 <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
                     <i data-feather="package" class="w-4 h-4 text-white"></i>
                 </div>
-                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">LogiLink</h1>
+                <h1 class="text-sm font-extrabold text-slate-900 tracking-tight uppercase">REPARTIDORES CAMINO REAL</h1>
             </div>
             <button onclick="cerrarSesion()" class="text-slate-400 hover:text-red-500 bg-slate-100 p-2 rounded-full transition-colors">
                 <i data-feather="log-out" class="w-4 h-4"></i>
@@ -85,56 +85,56 @@
                 <!-- Tarjetas de Estadísticas (Optimizadas para hacer grid en móvil) -->
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
                     <!-- Tarjeta Negocios -->
-                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-5">
-                        <div class="w-10 h-10 md:w-14 md:h-14 bg-blue-50 text-blue-600 rounded-full md:rounded-2xl flex items-center justify-center"><i data-feather="shopping-bag" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="bg-orange-50 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-orange-200 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-5">
+                        <div class="w-10 h-10 md:w-14 md:h-14 bg-orange-100 text-orange-600 rounded-full md:rounded-2xl flex items-center justify-center"><i data-feather="shopping-bag" class="w-5 h-5 md:w-6 md:h-6"></i></div>
                         <div>
-                            <p class="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Comercios</p>
+                            <p class="text-orange-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Comercios</p>
                             <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900" id="statNegocios">0</h3>
                         </div>
                     </div>
                     <!-- Tarjeta Clientes -->
-                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-5">
-                        <div class="w-10 h-10 md:w-14 md:h-14 bg-brand-50 text-brand-600 rounded-full md:rounded-2xl flex items-center justify-center"><i data-feather="users" class="w-5 h-5 md:w-6 md:h-6"></i></div>
+                    <div class="bg-orange-50 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-orange-200 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-5">
+                        <div class="w-10 h-10 md:w-14 md:h-14 bg-orange-100 text-orange-600 rounded-full md:rounded-2xl flex items-center justify-center"><i data-feather="users" class="w-5 h-5 md:w-6 md:h-6"></i></div>
                         <div>
-                            <p class="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Clientes</p>
+                            <p class="text-orange-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Clientes</p>
                             <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900" id="statClientes">0</h3>
                         </div>
                     </div>
                     <!-- Tarjeta Ingresos -->
-                    <div class="col-span-2 md:col-span-1 bg-slate-900 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-lg border border-slate-800 flex items-center justify-between">
+                    <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-orange-500 to-red-700 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-lg border border-orange-600 flex items-center justify-between">
                         <div>
-                            <p class="text-slate-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Ingresos Envíos</p>
+                            <p class="text-orange-100/80 text-xs md:text-sm font-bold uppercase tracking-wider mb-1">Ingresos Envíos</p>
                             <h3 class="text-4xl font-extrabold text-white" id="statIngresos">$0</h3>
                         </div>
-                        <div class="w-12 h-12 bg-white/10 text-green-400 rounded-full flex items-center justify-center"><i data-feather="dollar-sign"></i></div>
+                        <div class="w-12 h-12 bg-white/15 text-white rounded-full flex items-center justify-center"><i data-feather="dollar-sign"></i></div>
                     </div>
                 </div>
                 
                 <!-- Paneles de Actividad Reciente -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Últimos Pedidos -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="bg-orange-50 p-6 rounded-3xl shadow-sm border border-orange-200">
                         <div class="flex justify-between items-center mb-6">
-                            <h4 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-feather="package" class="w-5 h-5 text-blue-500"></i> Últimos Pedidos</h4>
-                            <button onclick="cambiarVista('radar')" class="text-brand-600 font-bold text-sm hover:underline">Ver todos</button>
+                            <h4 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-feather="package" class="w-5 h-5 text-orange-500"></i> Últimos Pedidos</h4>
+                            <button onclick="cambiarVista('radar')" class="text-orange-600 font-bold text-sm hover:underline">Ver todos</button>
                         </div>
                         <div id="dashboardUltimosPedidos" class="space-y-4">
-                            <div class="text-center py-4 text-slate-400">
-                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500 mx-auto mb-2"></div>
+                            <div class="text-center py-4 text-orange-400">
+                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500 mx-auto mb-2"></div>
                                 Cargando...
                             </div>
                         </div>
                     </div>
 
                     <!-- Nuevos Clientes -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="bg-orange-50 p-6 rounded-3xl shadow-sm border border-orange-200">
                         <div class="flex justify-between items-center mb-6">
-                            <h4 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-feather="users" class="w-5 h-5 text-purple-500"></i> Clientes Recientes</h4>
-                            <button onclick="cambiarVista('clientes')" class="text-brand-600 font-bold text-sm hover:underline">Ver todos</button>
+                            <h4 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-feather="users" class="w-5 h-5 text-orange-500"></i> Clientes Recientes</h4>
+                            <button onclick="cambiarVista('clientes')" class="text-orange-600 font-bold text-sm hover:underline">Ver todos</button>
                         </div>
                         <div id="dashboardUltimosClientes" class="space-y-4">
-                            <div class="text-center py-4 text-slate-400">
-                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500 mx-auto mb-2"></div>
+                            <div class="text-center py-4 text-orange-400">
+                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500 mx-auto mb-2"></div>
                                 Cargando...
                             </div>
                         </div>
@@ -169,8 +169,8 @@
                 </div>
                 
                 <!-- Lista de negocios estilo moderno -->
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                    <ul id="listaNegocios" class="divide-y divide-slate-50">
+                <div class="bg-orange-50 rounded-3xl shadow-sm border border-orange-200 overflow-hidden">
+                    <ul id="listaNegocios" class="divide-y divide-orange-100">
                         <li class="p-12 text-center text-slate-500">
                             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
                             <p class="font-medium">Cargando base de datos...</p>
@@ -273,10 +273,10 @@
 
             <!-- VISTA: RADAR (PEDIDOS) -->
             <div id="vista-radar" class="hidden fade-in px-6 md:px-10 pt-8 pb-32">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 bg-orange-50 p-6 rounded-3xl shadow-sm border border-orange-200">
                     <div>
                         <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                            <i data-feather="navigation" class="w-8 h-8 text-blue-600"></i> El Radar
+                            <i data-feather="navigation" class="w-8 h-8 text-orange-500"></i> El Radar
                         </h2>
                         <p class="text-slate-500 mt-2 font-medium">Visualiza los últimos 50 pedidos entrantes.</p>
                     </div>
@@ -291,10 +291,10 @@
             <!-- VISTA: CLIENTES -->
             <div id="vista-clientes" class="hidden fade-in px-6 md:px-10 pt-8 pb-32">
                 <!-- Header Clientes -->
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 bg-orange-50 p-6 rounded-3xl shadow-sm border border-orange-200">
                     <div>
                         <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                            <i data-feather="users" class="w-8 h-8 text-brand-600"></i> Directorio de Clientes
+                            <i data-feather="users" class="w-8 h-8 text-orange-500"></i> Directorio de Clientes
                         </h2>
                         <p class="text-slate-500 mt-2 font-medium">Gestiona tu base de datos de compradores.</p>
                     </div>
@@ -312,8 +312,8 @@
                 </div>
 
                 <!-- Lista de Clientes -->
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                    <ul id="listaClientes" class="divide-y divide-slate-50">
+                <div class="bg-orange-50 rounded-3xl shadow-sm border border-orange-200 overflow-hidden">
+                    <ul id="listaClientes" class="divide-y divide-orange-100">
                         <!-- Generado por JS -->
                     </ul>
                 </div>
@@ -502,13 +502,16 @@
     <div id="modalDetallePedidoOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
         <div id="modalDetallePedidoContent" class="bg-white w-full max-w-2xl max-h-[90vh] rounded-3xl shadow-2xl relative transform scale-95 transition-transform duration-300 overflow-hidden flex flex-col">
             <!-- Header -->
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
+            <div class="p-6 border-b border-orange-100 flex justify-between items-center bg-orange-50 sticky top-0 z-10">
                 <h3 class="font-extrabold text-xl text-slate-900 flex items-center gap-2">
-                    <i data-feather="package" class="w-5 h-5 text-blue-600"></i> Detalles del Pedido
+                    <i data-feather="package" class="w-5 h-5 text-orange-600"></i> Detalles del Pedido
                 </h3>
-                <button onclick="cerrarModalPedido()" class="text-slate-400 hover:text-slate-900 transition-colors bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
-                    <i data-feather="x" class="w-5 h-5"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <div id="pedidoEstadoBadge" class="px-3 py-1 rounded-lg text-xs font-bold border"></div>
+                    <button onclick="cerrarModalPedido()" class="text-slate-400 hover:text-slate-900 transition-colors bg-white p-1 rounded-lg border border-orange-200 shadow-sm">
+                        <i data-feather="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
             </div>
             
             <!-- Contenido Scrolleable -->
@@ -531,10 +534,10 @@
                 </div>
 
                 <!-- Dirección y Costo -->
-                <div class="bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
-                    <p class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">Detalles de Entrega</p>
+                <div class="bg-orange-50/50 rounded-2xl p-4 border border-orange-100">
+                    <p class="text-xs font-bold text-orange-400 uppercase tracking-wider mb-2">Detalles de Entrega</p>
                     <p id="pedidoDireccion" class="font-medium text-slate-800 text-base mb-3 leading-relaxed"></p>
-                    <div class="inline-flex items-center gap-2 bg-blue-100/50 text-blue-800 px-3 py-1.5 rounded-lg font-bold text-sm">
+                    <div class="inline-flex items-center gap-2 bg-orange-100/50 text-orange-800 px-3 py-1.5 rounded-lg font-bold text-sm">
                         <i data-feather="truck" class="w-4 h-4"></i> Envío: $<span id="pedidoCosto"></span> MXN
                     </div>
                 </div>
@@ -549,10 +552,15 @@
             </div>
 
             <!-- Footer Fijo con Botón de Maps -->
-            <div class="p-6 border-t border-slate-100 bg-white sticky bottom-0">
-                <a href="#" id="btnGoogleMapsPedido" target="_blank" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-2 active:scale-95">
-                    <i data-feather="map-pin" class="w-5 h-5"></i> Iniciar Ruta en Google Maps
-                </a>
+            <div class="p-6 border-t border-orange-100 bg-white sticky bottom-0">
+                <div class="flex gap-3">
+                    <button id="btnToggleEstado" onclick="" class="flex-1 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95">
+                        <!-- Actualizado dinámicamente por JS -->
+                    </button>
+                    <a href="#" id="btnGoogleMapsPedido" target="_blank" class="flex-1 bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-2 active:scale-95">
+                        <i data-feather="map-pin" class="w-5 h-5"></i> Ruta GPS
+                    </a>
+                </div>
             </div>
         </div>
     </div>

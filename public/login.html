@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiLink | Inicio de Sesión</title>
+    <title>Repartidores Camino Real | Inicio de Sesión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
-                extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { brand: { 600: '#16a34a' } } }
+                extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { brand: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' } } }
             }
         }
     </script>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center relative overflow-hidden">
+<body class="bg-gradient-to-br from-amber-400 to-orange-500 min-h-screen flex items-center justify-center relative overflow-hidden">
     <!-- Fondos dinámicos -->
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-pulse"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30"></div>
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-pulse"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-red-900 rounded-full mix-blend-multiply filter blur-[100px] opacity-60"></div>
 
     <div class="w-full max-w-md p-8 relative z-10">
         <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-center">
             
             <div class="mb-8">
-                <div class="w-16 h-16 bg-brand-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-brand-500/50">
+                <div class="w-16 h-16 bg-brand-800 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-brand-900/50">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 </div>
-                <h1 class="text-3xl font-extrabold text-white mb-2">Acceso Seguro</h1>
-                <p class="text-slate-400">Panel exclusivo para administradores</p>
+                <h1 class="text-2xl font-extrabold text-white mb-2 uppercase tracking-tight">REPARTIDORES CAMINO REAL</h1>
+                <p class="text-white/80 font-medium">Panel exclusivo para administradores</p>
             </div>
 
             <form id="loginForm" class="space-y-6 text-left">
@@ -41,13 +41,13 @@
                 <div id="errorMsg" class="hidden text-red-400 text-sm text-center font-medium bg-red-400/10 py-2 rounded-lg border border-red-400/20"></div>
 
                 <button type="submit" id="btnSubmit"
-                    class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1">
+                    class="w-full bg-brand-800 hover:bg-brand-900 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1">
                     Entrar al Panel
                 </button>
             </form>
             
             <div class="mt-8 text-center">
-                <a href="/" class="text-slate-400 text-sm hover:text-white transition-colors flex items-center justify-center gap-2">
+                <a href="/" class="text-white/70 text-sm hover:text-white transition-colors flex items-center justify-center gap-2 font-medium">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Volver al inicio
                 </a>

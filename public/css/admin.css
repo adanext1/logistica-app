@@ -1,38 +1,182 @@
 /* ==========================================================================
-   Estilos Globales del Panel de Administración (LogiLink)
+   Estilos Globales - REPARTIDORES CAMINO REAL
+   Tema: Modo Claro Naranja ☀️🍊
    ========================================================================== */
 
-/* Animaciones suaves para las transiciones entre pantallas (SPA) */
-.fade-in { 
-    animation: fadeIn 0.3s ease-in-out; 
-}
-
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { 
-    from { 
-        opacity: 0; 
-        transform: translateY(10px); 
-    } 
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    } 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }
 
-/* 
-  Modal deslizable (Bottom Sheet) para la versión Móvil.
-  Nota: Aunque actualmente migramos a una vista de pantalla completa,
-  se conservan estas clases por si se requieren modales rápidos en el futuro.
-*/
-.bottom-sheet { 
-    transform: translateY(100%); 
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+.bottom-sheet { transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.bottom-sheet.open { transform: translateY(0); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* ===== MODO CLARO NARANJA ===== */
+
+body {
+    background: #fff3e0 !important;
 }
 
-.bottom-sheet.open { 
-    transform: translateY(0); 
+/* Sidebar escritorio - rojo oscuro como la franja de la imagen */
+aside.bg-slate-900,
+aside {
+    background: linear-gradient(180deg, #7f1d1d 0%, #991b1b 100%) !important;
+}
+aside .border-b.border-slate-800,
+aside .border-t.border-slate-800 {
+    border-color: rgba(255,255,255,0.1) !important;
+}
+aside p.text-brand-300 {
+    color: #fbbf24 !important;
+}
+aside nav button.text-slate-400 {
+    color: rgba(255,255,255,0.65) !important;
+}
+aside nav button.text-slate-400:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+}
+aside nav button.bg-brand-600 {
+    background: linear-gradient(135deg, #f97316, #ea580c) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4) !important;
+}
+aside button.text-red-400 {
+    color: rgba(255,255,255,0.7) !important;
+    background: rgba(255,255,255,0.08) !important;
+}
+aside button.text-red-400:hover {
+    background: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
 }
 
-/* Ajuste vital para Safari/iOS: Evita que el contenido inferior sea tapado por la barra del sistema */
-.pb-safe { 
-    padding-bottom: env(safe-area-inset-bottom); 
+/* Main area */
+main.bg-slate-50, main {
+    background: #fff3e0 !important;
 }
+
+/* Mobile header */
+header.bg-white\/80 {
+    background: rgba(255, 243, 224, 0.9) !important;
+    border-bottom: 1px solid rgba(249,115,22,0.15) !important;
+}
+
+/* Bottom nav mobile */
+nav.bg-white {
+    background: rgba(255,248,238,0.98) !important;
+    border-top: 1px solid rgba(249,115,22,0.15) !important;
+}
+nav.bg-white button.text-brand-600 {
+    color: #ea580c !important;
+}
+
+/* ===== TARJETAS ===== */
+.bg-white {
+    background: #ffffff !important;
+    border-color: rgba(249,115,22,0.12) !important;
+}
+
+/* Tarjeta de ingresos */
+div.bg-slate-900 {
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+    border-color: transparent !important;
+}
+div.bg-slate-900 .text-slate-400 {
+    color: rgba(255,255,255,0.75) !important;
+}
+
+/* Bordes */
+.border-slate-100 { border-color: rgba(249,115,22,0.1) !important; }
+.border-slate-200 { border-color: rgba(249,115,22,0.15) !important; }
+.divide-slate-50 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(249,115,22,0.08) !important; }
+
+/* ===== INPUTS ===== */
+input.bg-slate-50, textarea.bg-slate-50,
+input.bg-slate-100 {
+    background: #fff8f0 !important;
+    border-color: rgba(249,115,22,0.2) !important;
+}
+.bg-slate-100 {
+    background: #fff0de !important;
+}
+input:focus, textarea:focus {
+    border-color: #f97316 !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+}
+
+/* ===== BOTONES ===== */
+.bg-brand-600, button.bg-brand-600 {
+    background: linear-gradient(135deg, #f97316, #ea580c) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3) !important;
+}
+.bg-brand-600:hover, button.bg-brand-600:hover,
+.hover\:bg-brand-700:hover {
+    background: linear-gradient(135deg, #fb923c, #f97316) !important;
+}
+.text-brand-600 { color: #ea580c !important; }
+.text-brand-500 { color: #f97316 !important; }
+.bg-brand-50 { background: #fff2e5 !important; }
+.bg-brand-100 { background: #ffe4cc !important; }
+.text-brand-700 { color: #c2410c !important; }
+
+/* Icon badges */
+.bg-blue-50 { background: #eff6ff !important; }
+
+/* Greens */
+.bg-green-50 { background: #f0fdf4 !important; }
+
+/* Mapa contenedores */
+.bg-slate-200 {
+    background: #ffe8cc !important;
+    border-color: rgba(249,115,22,0.15) !important;
+}
+
+/* ===== MODALES ===== */
+#modalBorrarOverlay,
+#modalEditarClienteOverlay,
+#modalPerfilClienteOverlay {
+    background: rgba(120, 50, 0, 0.4) !important;
+}
+#modalBorrarContent,
+#modalEditarClienteContent,
+#modalPerfilClienteContent {
+    background: #fff !important;
+    border: 1px solid rgba(249,115,22,0.15) !important;
+}
+
+/* Perfil Cliente header */
+#modalPerfilClienteContent .bg-slate-50 {
+    background: #fff6ec !important;
+}
+
+/* Client avatar */
+.bg-brand-100 {
+    background: #ffe4cc !important;
+}
+
+/* Spinner */
+.border-b-2.border-brand-500,
+.border-b-2.border-brand-600 {
+    border-color: #f97316 !important;
+}
+
+/* Shadow ajustados */
+.shadow-brand-500\/30 { box-shadow: 0 10px 25px rgba(249,115,22,0.2) !important; }
+.shadow-brand-600\/20 { box-shadow: 0 4px 15px rgba(249,115,22,0.15) !important; }
+
+/* Scrollbar */
+main::-webkit-scrollbar { width: 6px; }
+main::-webkit-scrollbar-track { background: #fff3e0; }
+main::-webkit-scrollbar-thumb { background: rgba(249,115,22,0.25); border-radius: 3px; }
+main::-webkit-scrollbar-thumb:hover { background: rgba(249,115,22,0.4); }
+
+/* Dashed upload */
+.border-dashed { border-color: rgba(249,115,22,0.3) !important; }
+.hover\:border-brand-500:hover { border-color: #f97316 !important; }
+.hover\:bg-brand-50:hover { background: #fff2e5 !important; }
+
+/* Selection */
+::selection { background: #f97316 !important; color: #fff !important; }

@@ -1,9 +1,8 @@
 /**
  * ============================================================================
- * LOGILINK - Lógica Central del Panel de Administración
+ * REPARTIDORES CAMINO REAL - Lógica Central del Panel de Administración
  * ============================================================================
- * Este archivo contiene toda la lógica frontend del dashboard:
- * - Autenticación y cierre de sesión.
+ * - Autenticación JWT con expiración automática.
  * - Navegación SPA (Single Page Application) entre vistas.
  * - Peticiones a la API de Supabase (CRUD de negocios).
  * - Renderizado de Leaflet Maps y marcadores dinámicos.
@@ -11,21 +10,37 @@
  */
 
 // ============================================================================
-// 1. AUTENTICACIÓN Y SEGURIDAD
+// 1. AUTENTICACIÓN Y SEGURIDAD (JWT)
 // ============================================================================
 
-// Verificación temprana del token
 const tokenAdmin = localStorage.getItem('admin_token');
 if (!tokenAdmin) {
-    window.location.href = '/login.html'; // Redirigir si no hay sesión
+    window.location.href = '/login.html';
 }
 
-/**
- * Cierra la sesión eliminando el token del almacenamiento local y redirige al login.
- */
 function cerrarSesion() {
     localStorage.removeItem('admin_token');
     window.location.href = '/login.html';
+}
+
+/**
+ * Fetch wrapper que detecta sesiones expiradas (401) y redirige al login.
+ */
+async function fetchConAuth(url, options = {}) {
+    options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${tokenAdmin}`
+    };
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+        const data = await res.json().catch(() => ({}));
+        if (data.expired) {
+            alert('Tu sesión ha expirado. Vuelve a iniciar sesión.');
+        }
+        cerrarSesion();
+        return null;
+    }
+    return res;
 }
 
 // Inicializar iconos Feather al cargar el script
@@ -121,9 +136,11 @@ async function cargarDatosDashboard() {
         // Ejecutar promesas en paralelo para mayor velocidad
         const [resNegocios, resClientes, resPedidos] = await Promise.all([
             fetch('/api/negocios'),
-            fetch('/api/clientes', { headers: { 'Authorization': `Bearer ${tokenAdmin}` } }),
-            fetch('/api/pedidos', { headers: { 'Authorization': `Bearer ${tokenAdmin}` } })
+            fetchConAuth('/api/clientes'),
+            fetchConAuth('/api/pedidos')
         ]);
+
+        if (!resClientes || !resPedidos) return; // Session expired, redirecting
 
         const negocios = await resNegocios.json();
         negociosGlobales = negocios;
@@ -1184,11 +1201,8 @@ function eliminarCliente(id, nombre) {
 
 async function cargarPedidosRadar() {
     try {
-        const response = await fetch('/api/pedidos', {
-            headers: { 'Authorization': `Bearer ${tokenAdmin}` }
-        });
-
-        if (response.status === 401) { cerrarSesion(); return; }
+        const response = await fetchConAuth('/api/pedidos');
+        if (!response) return;
 
         const pedidos = await response.json();
         pedidosGlobales = pedidos;
@@ -1214,21 +1228,27 @@ function renderizarPedidosRadar(pedidos) {
 
     lista.innerHTML = pedidos.map((p) => {
         const fecha = new Date(p.created_at).toLocaleDateString('es-MX', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const estado = p.estado || 'pendiente';
+        const esPendiente = estado === 'pendiente';
+        const badgeClase = esPendiente 
+            ? 'bg-amber-100 text-amber-700 border-amber-200' 
+            : 'bg-green-100 text-green-700 border-green-200';
+        const badgeTexto = esPendiente ? '⏳ Pendiente' : '✅ Entregado';
         
         return `
-        <div onclick="abrirDetallePedido('${p.id}')" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-5 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all group">
+        <div onclick="abrirDetallePedido('${p.id}')" class="bg-white rounded-3xl shadow-sm border border-orange-100 p-5 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all group">
             <div class="flex justify-between items-start mb-3">
-                <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                <div class="bg-orange-100 text-orange-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
                     <i data-feather="clock" class="w-3 h-3"></i> ${fecha}
                 </div>
-                <div class="text-slate-400 group-hover:text-blue-500 transition-colors">
-                    <i data-feather="chevron-right" class="w-5 h-5"></i>
+                <div class="${badgeClase} border px-2 py-1 rounded-lg text-xs font-bold">
+                    ${badgeTexto}
                 </div>
             </div>
             <h3 class="font-bold text-slate-900 text-lg line-clamp-1 mb-1">${p.nombre_cliente || 'Cliente'}</h3>
             <p class="text-sm text-slate-500 flex items-center gap-1.5 mb-3"><i data-feather="shopping-bag" class="w-3.5 h-3.5"></i> ${p.negocio_slug}</p>
             
-            <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-sm font-bold">
+            <div class="pt-3 border-t border-orange-100 flex justify-between items-center text-sm font-bold">
                 <span class="text-slate-600">Envío:</span>
                 <span class="text-green-600 bg-green-50 px-2 py-0.5 rounded-md">$${p.costo_envio} MXN</span>
             </div>
@@ -1303,6 +1323,25 @@ function abrirDetallePedido(id) {
         content.classList.remove('scale-95');
         content.classList.add('scale-100');
     }, 10);
+
+    // Estado del pedido
+    const estado = p.estado || 'pendiente';
+    const badge = document.getElementById('pedidoEstadoBadge');
+    const btnToggle = document.getElementById('btnToggleEstado');
+    
+    if (estado === 'pendiente') {
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-bold border bg-amber-100 text-amber-700 border-amber-200';
+        badge.textContent = '⏳ Pendiente';
+        btnToggle.className = 'flex-1 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95 bg-green-500 hover:bg-green-600 text-white';
+        btnToggle.innerHTML = '<i data-feather="check-circle" class="w-5 h-5"></i> Marcar Entregado';
+    } else {
+        badge.className = 'px-3 py-1 rounded-lg text-xs font-bold border bg-green-100 text-green-700 border-green-200';
+        badge.textContent = '✅ Entregado';
+        btnToggle.className = 'flex-1 font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95 bg-amber-500 hover:bg-amber-600 text-white';
+        btnToggle.innerHTML = '<i data-feather="rotate-ccw" class="w-5 h-5"></i> Marcar Pendiente';
+    }
+    btnToggle.setAttribute('onclick', `toggleEstadoPedido('${p.id}')`);
+
     feather.replace();
 }
 
@@ -1315,7 +1354,36 @@ function cerrarModalPedido() {
     setTimeout(() => overlay.classList.add('hidden', 'pointer-events-none'), 300);
 }
 
+/**
+ * Cambia el estado de un pedido entre pendiente y entregado.
+ */
+async function toggleEstadoPedido(id) {
+    const p = pedidosGlobales.find(x => x.id === id);
+    if (!p) return;
+
+    const nuevoEstado = (p.estado || 'pendiente') === 'pendiente' ? 'entregado' : 'pendiente';
+    
+    try {
+        const res = await fetchConAuth(`/api/pedidos/${id}/estado`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado: nuevoEstado })
+        });
+        
+        if (!res) return;
+        if (res.ok) {
+            p.estado = nuevoEstado;
+            renderizarPedidosRadar(pedidosGlobales);
+            cerrarModalPedido();
+        } else {
+            alert('Error al cambiar el estado del pedido.');
+        }
+    } catch (err) {
+        console.error('Error al cambiar estado:', err);
+    }
+}
+
 // ============================================================================
 // BOOTSTRAP (ARRANQUE DE LA APP)
 // ============================================================================
-cambiarVista('resumen'); // Comienza siempre en la vista de resumen al cargar la página
+cambiarVista('resumen');
