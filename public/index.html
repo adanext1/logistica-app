@@ -202,13 +202,7 @@
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Custom Icon para los pines
-        const customIcon = L.divIcon({
-            className: 'custom-pin',
-            html: `<div class="w-5 h-5 bg-brand-600 rounded-full border-2 border-white shadow-md hover:scale-125 transition-transform duration-300"></div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-        });
+
 
         // 2. Cargar Negocios desde la API
         async function cargarNegocios() {
@@ -259,18 +253,38 @@
 
                     // --- 2. Agregar Pin al Mapa ---
                     if (n.lat && n.lng) {
+                        const inicialPin = n.nombre_comercial.charAt(0).toUpperCase();
+                        const logoElement = n.logo_url ? `<img src="${n.logo_url}" class="w-full h-full object-cover">` : inicialPin;
+
+                        const customIcon = L.divIcon({
+                            className: 'bg-transparent border-none',
+                            html: `
+                                <div class="relative flex flex-col items-center group cursor-pointer z-50">
+                                    <div class="bg-white rounded-full shadow-lg shadow-slate-200/50 border border-slate-100 p-1 pr-3.5 flex items-center gap-2 transition-transform duration-300 transform group-hover:-translate-y-1 group-hover:shadow-2xl hover:border-brand-200">
+                                        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-100 to-brand-50 text-brand-600 flex items-center justify-center font-extrabold text-[11px] shadow-inner overflow-hidden border border-white">
+                                            ${logoElement}
+                                        </div>
+                                        <span class="font-extrabold text-slate-800 text-[11px] whitespace-nowrap tracking-tight">${n.nombre_comercial}</span>
+                                    </div>
+                                    <div class="w-2.5 h-2.5 bg-white transform rotate-45 -mt-1.5 border-b border-r border-slate-100 shadow-sm z-0"></div>
+                                </div>
+                            `,
+                            iconSize: [120, 50],
+                            iconAnchor: [60, 48]
+                        });
+
                         const marker = L.marker([n.lat, n.lng], { icon: customIcon }).addTo(map);
                         
                         // Popup estilizado
                         const popupContent = `
-                            <div class="text-center">
-                                <strong class="block text-slate-900 mb-1">${n.nombre_comercial}</strong>
-                                <a href="/${n.slug}" class="text-brand-600 text-sm font-bold hover:underline">Pedir aquí</a>
+                            <div class="text-center pb-1">
+                                <strong class="block text-slate-900 mb-2 border-b border-slate-100 pb-1">${n.nombre_comercial}</strong>
+                                <a href="/${n.slug}" class="inline-block bg-brand-50 text-brand-700 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-brand-100 transition-colors w-full border border-brand-100 shadow-sm">Pedir aquí</a>
                             </div>
                         `;
-                        marker.bindPopup(popupContent, { closeButton: false, minWidth: 100 });
+                        marker.bindPopup(popupContent, { closeButton: false, minWidth: 120 });
                         
-                        // Abrir popup al pasar el mouse
+                        // Abrir popup al pasar el mouse (opcional, los pines ya muestran el nombre, pero se mantiene por UX del botón)
                         marker.on('mouseover', function (e) { this.openPopup(); });
                         marker.on('mouseout', function (e) { this.closePopup(); });
                         marker.on('click', function (e) { window.location.href = `/${n.slug}`; });
