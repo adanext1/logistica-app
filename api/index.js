@@ -161,6 +161,71 @@ const protegerRutaAdmin = (req, res, next) => {
     }
 };
 
+/**
+ * Middleware de protección para REPARTIDORES: Verifica JWT válido (rol driver).
+ */
+const protegerRutaDriver = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No autorizado. Inicia sesión.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role !== 'driver') {
+            return res.status(403).json({ error: 'Acceso denegado. Solo para repartidores.' });
+        }
+        req.driverUser = decoded;
+        next();
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ error: 'Sesión expirada. Vuelve a iniciar sesión.', expired: true });
+        }
+        return res.status(401).json({ error: 'Token inválido.' });
+    }
+};
+
+// Login Repartidor
+app.post('/api/driver/login', async (req, res) => {
+    try {
+        const { telefono, pin } = req.body;
+        
+        if (!telefono || !pin) {
+            return res.status(400).json({ error: 'Teléfono y PIN son requeridos.' });
+        }
+
+        const { data: repartidor, error } = await supabase
+            .from('repartidores')
+            .select('id, nombre, estado, pin')
+            .eq('telefono', telefono)
+            .single();
+
+        if (error || !repartidor) {
+            return res.status(401).json({ error: 'Número de teléfono o PIN incorrecto.' });
+        }
+
+        if (repartidor.pin !== pin) {
+            return res.status(401).json({ error: 'Número de teléfono o PIN incorrecto.' });
+        }
+
+        if (repartidor.estado !== 'activo') {
+            return res.status(403).json({ error: 'Tu cuenta está inactiva. Contacta al administrador.' });
+        }
+
+        const token = jwt.sign(
+            { role: 'driver', id: repartidor.id, nombre: repartidor.nombre },
+            JWT_SECRET,
+            { expiresIn: '30d' } // Sesión larga para repartidores
+        );
+        
+        res.json({ token, message: 'Login exitoso', repartidor: { id: repartidor.id, nombre: repartidor.nombre } });
+    } catch (err) {
+        console.error("Error en login driver:", err);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
 // =============================================================================
 // RUTAS: NEGOCIOS
 // =============================================================================
@@ -453,6 +518,59 @@ app.patch('/api/pedidos/:id/estado', protegerRutaAdmin, async (req, res) => {
 });
 
 // =============================================================================
+// RUTAS: DRIVER (APP REPARTIDOR)
+// =============================================================================
+
+// Obtener pedidos pendientes para el radar del repartidor
+app.get('/api/driver/pedidos', protegerRutaDriver, async (req, res) => {
+    try {
+        // En una app más avanzada, solo enviaríamos los asignados.
+        // Aquí mostramos todos los 'pendientes' en el radar.
+        const { data: pedidos, error } = await supabase
+            .from('pedidos')
+            .select('*')
+            .eq('estado', 'pendiente')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const pedidosProcesados = pedidos.map(p => {
+            const { lat, lng } = parsearCoordenadas(p.ubicacion_cliente);
+            return { ...p, lat, lng };
+        });
+
+        res.json(pedidosProcesados);
+    } catch (err) {
+        console.error("Error al obtener pedidos driver:", err);
+        res.status(500).json({ error: 'Error interno al cargar pedidos' });
+    }
+});
+
+// Cambiar estado a entregado (por el repartidor)
+app.patch('/api/driver/pedidos/:id/estado', protegerRutaDriver, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { estado } = req.body;
+
+        if (estado !== 'entregado') {
+            return res.status(400).json({ error: 'Solo puedes marcar como entregado.' });
+        }
+
+        const { data, error } = await supabase
+            .from('pedidos')
+            .update({ estado, repartidor_id: req.driverUser.id }) // Registrar quién lo entregó
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+        res.json({ mensaje: `Pedido marcado como ${estado}`, pedido: data[0] });
+    } catch (err) {
+        console.error("Error al actualizar estado driver:", err);
+        res.status(500).json({ error: 'Error interno' });
+    }
+});
+
+// =============================================================================
 // RUTAS: CLIENTES
 // =============================================================================
 
@@ -567,6 +685,83 @@ app.delete('/api/clientes/:id', protegerRutaAdmin, async (req, res) => {
     } catch (err) {
         console.error("Error al eliminar cliente:", err);
         res.status(500).json({ error: 'Error interno al eliminar cliente' });
+    }
+});
+
+// =============================================================================
+// RUTAS: REPARTIDORES
+// =============================================================================
+
+app.get('/api/repartidores', protegerRutaAdmin, async (req, res) => {
+    try {
+        const { data: repartidores, error } = await supabase
+            .from('repartidores')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json(repartidores);
+    } catch (err) {
+        console.error("Error al obtener repartidores:", err);
+        res.status(500).json({ error: 'Error interno al cargar repartidores' });
+    }
+});
+
+app.post('/api/repartidores', protegerRutaAdmin, async (req, res) => {
+    try {
+        const { nombre, telefono, vehiculo, placas, estado, pin } = req.body;
+
+        if (!nombre || !telefono) {
+            return res.status(400).json({ error: 'El nombre y teléfono son obligatorios' });
+        }
+
+        const { data, error } = await supabase
+            .from('repartidores')
+            .insert([{ nombre, telefono, vehiculo, placas, estado: estado || 'activo', pin: pin || '1234' }])
+            .select();
+
+        if (error) throw error;
+        res.status(201).json({ mensaje: 'Repartidor registrado', repartidor: data[0] });
+    } catch (err) {
+        console.error("Error al registrar repartidor:", err);
+        res.status(500).json({ error: 'Error interno al registrar repartidor' });
+    }
+});
+
+app.put('/api/repartidores/:id', protegerRutaAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, telefono, vehiculo, placas, estado, pin } = req.body;
+
+        if (!nombre || !telefono) {
+            return res.status(400).json({ error: 'El nombre y teléfono son obligatorios' });
+        }
+
+        const actualizacion = { nombre, telefono, vehiculo, placas, estado };
+        if (pin) actualizacion.pin = pin;
+
+        const { data, error } = await supabase
+            .from('repartidores')
+            .update(actualizacion)
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+        res.json({ mensaje: 'Repartidor actualizado', repartidor: data[0] });
+    } catch (err) {
+        console.error("Error al actualizar repartidor:", err);
+        res.status(500).json({ error: 'Error interno al actualizar repartidor' });
+    }
+});
+
+app.delete('/api/repartidores/:id', protegerRutaAdmin, async (req, res) => {
+    try {
+        const { error } = await supabase.from('repartidores').delete().eq('id', req.params.id);
+        if (error) throw error;
+        res.json({ mensaje: 'Repartidor eliminado correctamente' });
+    } catch (err) {
+        console.error("Error al eliminar repartidor:", err);
+        res.status(500).json({ error: 'Error interno al eliminar repartidor' });
     }
 });
 
