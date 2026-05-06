@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carnicería Talamantes | Pedidos a Domicilio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        // Paleta Rústica Premium exclusiva para este negocio
+                        shop: { 50: '#fef2f2', 100: '#fee2e2', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 900: '#7f1d1d' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        body {
+            background: #f5f5f4;
+        }
+
+        /* Tono stone-100 para un toque orgánico */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="text-stone-800 antialiased overflow-x-hidden pb-24">
+
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-gradient-to-b from-stone-900/80 to-transparent"
+        id="navbar">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/directorio.html"
+                class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition border border-white/30">
+                <i data-feather="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="flex gap-2">
+                <button
+                    class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition border border-white/30">
+                    <i data-feather="share-2" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative h-[35vh] sm:h-[45vh] w-full">
+        <img src="https://tse3.mm.bing.net/th/id/OIP.t7PIMaN4X8dtgcq2dAEnugHaEy?rs=1&pid=ImgDetMain&o=7&rm=3"
+            alt="Portada Carnicería" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/40 to-transparent"></div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 relative -mt-16 sm:-mt-24 z-10">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-xl border border-stone-100">
+
+            <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
+                <div
+                    class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-2xl p-1 shadow-md border-2 border-shop-100 flex-shrink-0 -mt-12 sm:-mt-16">
+                    <img src="https://ui-avatars.com/api/?name=CT&background=dc2626&color=fff&size=128" alt="Logo"
+                        class="w-full h-full rounded-xl object-cover">
+                </div>
+
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h1 class="text-2xl sm:text-3xl font-black text-stone-900 leading-tight">Carnicería y Abarrotes
+                            Talamantes</h1>
+                        <i data-feather="check-circle" class="w-5 h-5 text-blue-500 fill-blue-50"></i>
+                    </div>
+                    <p class="text-stone-500 text-sm mb-3">Cortes finos, productos locales y todo para tu despensa en un
+                        solo lugar.</p>
+
+                    <div class="flex flex-wrap gap-2 text-xs font-bold">
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-md flex items-center gap-1"><span
+                                class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Abierto ahora</span>
+                        <span class="bg-stone-100 text-stone-600 px-2 py-1 rounded-md flex items-center gap-1"><i
+                                data-feather="star" class="w-3 h-3 text-amber-500 fill-amber-500"></i> 4.9 (120+)</span>
+                        <span class="bg-shop-50 text-shop-600 px-2 py-1 rounded-md flex items-center gap-1"><i
+                                data-feather="map-pin" class="w-3 h-3"></i> Col. Centro, La Paz</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-6 pt-6 border-t border-stone-100">
+                <button
+                    class="bg-stone-50 hover:bg-stone-100 text-stone-700 font-bold py-2.5 rounded-xl text-sm transition-colors border border-stone-200 flex items-center justify-center gap-2">
+                    <i data-feather="info" class="w-4 h-4"></i> Info y Horarios
+                </button>
+                <button
+                    class="bg-stone-50 hover:bg-stone-100 text-stone-700 font-bold py-2.5 rounded-xl text-sm transition-colors border border-stone-200 flex items-center justify-center gap-2">
+                    <i data-feather="image" class="w-4 h-4"></i> Ver Galería (5)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 mt-8">
+
+        <div class="mb-10">
+            <div
+                class="bg-gradient-to-r from-shop-600 to-shop-900 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden shadow-lg">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                <div class="relative z-10 flex flex-col sm:flex-row items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 border border-white/30">
+                        <span class="text-3xl">🥩</span>
+                    </div>
+                    <div>
+                        <div class="text-shop-200 text-xs font-black uppercase tracking-widest mb-1">Promo Fin de Semana
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-1">Paquete Parrillero Familiar</h3>
+                        <p class="text-shop-100 text-sm">2kg de Ribeye + 1 Bolsa de Carbón + Salsas caseras por solo
+                            $850. ¡Agrégalo al carrito!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 sticky top-0 z-40 bg-[#f5f5f4] pt-2 pb-4">
+            <h2 class="text-xl font-black text-stone-900 mb-3">Menú Digital</h2>
+
+            <div class="flex gap-2 overflow-x-auto hide-scrollbar">
+                <button
+                    class="bg-shop-600 text-white px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap shadow-md">🍖
+                    Cortes Finos</button>
+                <button
+                    class="bg-white text-stone-600 hover:bg-stone-100 border border-stone-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition">🛒
+                    Abarrotes</button>
+                <button
+                    class="bg-white text-stone-600 hover:bg-stone-100 border border-stone-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition">🥤
+                    Bebidas</button>
+                <button
+                    class="bg-white text-stone-600 hover:bg-stone-100 border border-stone-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition">🔥
+                    Carbón y Extras</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <div
+                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
+                <div class="w-24 h-24 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1603048297172-c92544798d5e?w=200&h=200&fit=crop"
+                        class="w-full h-full object-cover" alt="Ribeye">
+                </div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Ribeye Calidad Choice</h3>
+                        <p class="text-xs text-stone-500 line-clamp-2">Corte grueso de 1 pulgada, ideal para asador.
+                            Precio por kilo.</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-black text-lg text-shop-600">$420<span
+                                class="text-xs text-stone-400 font-medium">/kg</span></span>
+                        <button
+                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                            <i data-feather="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
+                <div class="w-24 h-24 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1558030006-450675393462?w=200&h=200&fit=crop"
+                        class="w-full h-full object-cover" alt="Arrachera">
+                </div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Arrachera Marinada</h3>
+                        <p class="text-xs text-stone-500 line-clamp-2">Nuestra receta secreta de la casa. Lista para
+                            asar. Precio por kilo.</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-black text-lg text-shop-600">$380<span
+                                class="text-xs text-stone-400 font-medium">/kg</span></span>
+                        <button
+                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                            <i data-feather="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
+                <div
+                    class="w-24 h-24 rounded-xl bg-stone-50 flex-shrink-0 flex items-center justify-center text-3xl border border-stone-100">
+                    🥑
+                </div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Aguacate Hass</h3>
+                        <p class="text-xs text-stone-500 line-clamp-2">Fresco y en su punto. Precio por kilo.</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-black text-lg text-shop-600">$85<span
+                                class="text-xs text-stone-400 font-medium">/kg</span></span>
+                        <button
+                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                            <i data-feather="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
+                <div
+                    class="w-24 h-24 rounded-xl bg-stone-50 flex-shrink-0 flex items-center justify-center text-3xl border border-stone-100">
+                    🔥
+                </div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Bolsa de Carbón (3kg)</h3>
+                        <p class="text-xs text-stone-500 line-clamp-2">Carbón de mezquite de encendido rápido.</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-black text-lg text-shop-600">$60<span
+                                class="text-xs text-stone-400 font-medium">/pza</span></span>
+                        <button
+                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                            <i data-feather="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div
+        class="fixed bottom-0 w-full bg-white border-t border-stone-200 p-4 sm:p-6 z-50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+        <div class="max-w-4xl mx-auto">
+            <a href="/pedido.html?n=carniceria-talamantes"
+                class="w-full bg-shop-600 hover:bg-shop-700 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-between transition-colors shadow-lg shadow-shop-600/30">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-sm border border-white/30">
+                        2</div>
+                    <span>Confirmar Pedido</span>
+                </div>
+                <span class="text-lg">$800.00</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+
+        // Efecto del Navbar al hacer scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-white', 'shadow-md');
+                nav.classList.remove('bg-gradient-to-b', 'from-stone-900/80', 'to-transparent');
+                // Cambiar color de iconos
+                nav.querySelectorAll('a, button').forEach(el => {
+                    el.classList.remove('bg-white/20', 'text-white', 'border-white/30');
+                    el.classList.add('bg-stone-100', 'text-stone-800', 'border-stone-200');
+                });
+            } else {
+                nav.classList.remove('bg-white', 'shadow-md');
+                nav.classList.add('bg-gradient-to-b', 'from-stone-900/80', 'to-transparent');
+                // Restaurar color de iconos
+                nav.querySelectorAll('a, button').forEach(el => {
+                    el.classList.add('bg-white/20', 'text-white', 'border-white/30');
+                    el.classList.remove('bg-stone-100', 'text-stone-800', 'border-stone-200');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

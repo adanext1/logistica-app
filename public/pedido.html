@@ -149,9 +149,15 @@
     </div>
 
     <script>
-        // 1. Extraer el "slug" (ej. carniceria-talamantes) de la barra de direcciones del navegador
-        const urlParams = window.location.pathname;
-        const slug = urlParams.replace('/', ''); // Quitamos la diagonal inicial
+        // 1. Extraer el "slug" (ej. carniceria-talamantes) de forma robusta
+        const pathSegments = window.location.pathname.split('/').filter(s => s);
+        let slug = pathSegments[0]; 
+        
+        // Si el slug es "pedido.html", intentamos buscarlo en los parámetros (?n=slug)
+        if (slug === 'pedido.html' || !slug) {
+            const params = new URLSearchParams(window.location.search);
+            slug = params.get('n') || params.get('negocio');
+        }
 
         // Referencias a la interfaz
         const loader = document.getElementById('loader');

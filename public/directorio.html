@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comercios Aliados | Repartidores Camino Real</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        .glass-panel {
+            background: rgba(255, 248, 238, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+        }
+
+        body {
+            background: #fff3e0;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-[#fff3e0] text-slate-800 antialiased overflow-x-hidden min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 transition-all duration-300 shadow-md" style="background: rgba(255, 248, 238, 0.95);"
+        id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2">
+                <div
+                    class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-black border border-orange-200">
+                    CR
+                </div>
+                <div
+                    class="text-[11px] sm:text-xl font-extrabold tracking-tight text-orange-600 uppercase leading-none">
+                    REPARTIDORES <span class="text-slate-900 block sm:inline text-[9px] sm:text-xl">CAMINO REAL</span>
+                </div>
+            </a>
+
+            <!-- Desktop -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/login-cliente.html"
+                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 px-4 py-2 rounded-xl font-bold transition-colors shadow-sm">Ingresar
+                    / Registro</a>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button id="btnMenuDir" class="md:hidden p-2 text-orange-600 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors">
+                <i data-feather="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown -->
+        <div id="menuDropDir" class="md:hidden absolute top-full left-3 right-3 mt-2 rounded-2xl shadow-xl p-4 transition-all duration-300 origin-top opacity-0 scale-95 pointer-events-none" style="background: rgba(255, 248, 238, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(249,115,22,0.15);">
+            <a href="/login-cliente.html" class="block bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all">
+                <i data-feather="user" class="w-4 h-4 inline-block mr-1 -mt-0.5"></i> Ingresar / Registro
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 pt-24 pb-20 bg-[#ffe8cc]">
+
+        <!-- HEADER & BUSCADOR -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-4 mb-8">
+            <div
+                class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-orange-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 mb-1">¿Qué se te antoja hoy?</h1>
+                    <p class="text-slate-500 text-sm sm:text-base">Pide de los mejores locales en La Paz, B.C.S.</p>
+                </div>
+                <div class="w-full md:w-auto relative">
+                    <input type="text" id="searchInput" placeholder="Buscar negocios o platillos..."
+                        class="w-full md:w-80 pl-11 pr-4 py-3 sm:py-4 rounded-xl border border-orange-200 shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-50/50 text-sm font-medium transition-all">
+                    <i data-feather="search" class="w-5 h-5 text-orange-400 absolute left-4 top-3.5 sm:top-4"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: HISTORIAS / PROMOS DINÁMICAS -->
+        <div id="seccionPromos" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
+            <h2 class="text-xs font-extrabold tracking-widest text-orange-600 uppercase mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Promos en vivo
+            </h2>
+
+            <div class="flex gap-4 sm:gap-6 overflow-x-auto hide-scrollbar pb-4 pt-1 px-1">
+                <!-- Historia Nueva -->
+                <button
+                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
+                    <div
+                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-gradient-to-tr from-orange-400 via-red-500 to-purple-500 shadow-md group-hover:shadow-lg">
+                        <div class="w-full h-full bg-white rounded-full p-1 border-2 border-white">
+                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop"
+                                class="w-full h-full rounded-full object-cover" alt="Pizza Promo">
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">2x1 Pizzas</span>
+                </button>
+
+                <!-- Historia Nueva -->
+                <button
+                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
+                    <div
+                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-gradient-to-tr from-orange-400 via-red-500 to-purple-500 shadow-md group-hover:shadow-lg">
+                        <div class="w-full h-full bg-white rounded-full p-1 border-2 border-white">
+                            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=200&h=200&fit=crop"
+                                class="w-full h-full rounded-full object-cover" alt="Burger Promo">
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">Combos</span>
+                </button>
+
+                <!-- Historia Vista (Gris) -->
+                <button
+                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[2px] bg-slate-300 shadow-sm">
+                        <div class="w-full h-full bg-white rounded-full p-1 border-2 border-white">
+                            <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?w=200&h=200&fit=crop"
+                                class="w-full h-full rounded-full object-cover opacity-80" alt="Carnes">
+                        </div>
+                    </div>
+                    <span class="text-xs font-medium text-slate-500">Parrillada</span>
+                </button>
+
+                <!-- Botón de Negocios (Añadir promo) -->
+                <button
+                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
+                    <div
+                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-orange-300 bg-orange-50 flex items-center justify-center text-orange-400 group-hover:bg-orange-100 group-hover:border-orange-400 transition-colors">
+                        <i data-feather="plus" class="w-8 h-8"></i>
+                    </div>
+                    <span class="text-xs font-bold text-orange-600">Tu Promo Aquí</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: BENTO BOX (NEGOCIOS VIP) -->
+        <div id="seccionBentos" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
+            <div class="mb-6">
+                <div
+                    class="inline-block px-3 py-1 bg-white text-orange-600 font-extrabold rounded-full mb-2 text-[10px] tracking-widest uppercase shadow-sm">
+                    Recomendados</div>
+                <h2 class="text-3xl font-extrabold text-slate-900 leading-none">Top en La Paz</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px] md:auto-rows-[220px]">
+
+                <!-- Bento VIP (2x2) -->
+                <a href="/carniceria-talamantes"
+                    class="col-span-2 md:col-span-2 row-span-1 sm:row-span-2 relative rounded-[2rem] overflow-hidden group shadow-md border-2 border-white">
+                    <img src="https://images.unsplash.com/photo-1603048297172-c92544798d5e?q=80&w=800&auto=format&fit=crop"
+                        alt="Carnicería Talamantes"
+                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90">
+                    </div>
+
+                    <div class="absolute inset-0 p-5 sm:p-8 flex flex-col justify-end">
+                        <div
+                            class="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl p-1 shadow-xl mb-3 border border-slate-100">
+                            <img src="https://ui-avatars.com/api/?name=CT&background=f97316&color=fff&size=128"
+                                alt="Logo" class="w-full h-full rounded-lg">
+                        </div>
+                        <h3 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1 sm:mb-2 leading-tight">Carnicería
+                            Talamantes</h3>
+                        <p class="text-orange-100 text-xs sm:text-sm font-medium mb-3 sm:mb-5 hidden sm:block">Cortes finos y paquetes para parrilladas
+                            locales.</p>
+
+                        <div
+                            class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 sm:py-3.5 px-4 sm:px-6 rounded-xl w-max flex items-center gap-2 transition-colors shadow-lg shadow-orange-500/30 text-xs sm:text-sm">
+                            <i data-feather="shopping-bag" class="w-4 h-4"></i> Pedir ahora
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bento Horizontal (2x1) -->
+                <a href="/sushi-loko"
+                    class="col-span-2 md:col-span-2 row-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white">
+                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=800&auto=format&fit=crop"
+                        alt="Sushi Loko"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent">
+                    </div>
+
+                    <div class="absolute inset-0 p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-xl p-1 shadow-lg flex-shrink-0">
+                            <img src="https://ui-avatars.com/api/?name=SL&background=0f172a&color=fff" alt="Logo"
+                                class="w-full h-full rounded-lg">
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-2xl font-extrabold text-white mb-1">Sushi Loko</h3>
+                            <p class="text-slate-300 text-xs sm:text-sm mb-1 sm:mb-3">Rollos y promociones</p>
+                            <span
+                                class="text-orange-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                                <i data-feather="clock" class="w-3 h-3"></i> 30 min
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Bento Cuadrado 1 (1x1) -->
+                <a href="/cafe-brisa"
+                    class="col-span-1 row-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white">
+                    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400&auto=format&fit=crop"
+                        alt="Café Brisa"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-80"></div>
+
+                    <div class="absolute bottom-0 left-0 p-4 sm:p-5 w-full">
+                        <h3 class="text-base sm:text-lg font-extrabold text-white">Café Brisa</h3>
+                        <p class="text-orange-200 text-[10px] sm:text-xs font-medium">Postres y Frappes</p>
+                    </div>
+                </a>
+
+                <!-- Bento Cuadrado 2 (1x1) -->
+                <a href="/tacos-fuego"
+                    class="col-span-1 row-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white">
+                    <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=400&auto=format&fit=crop"
+                        alt="Tacos Fuego"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-80"></div>
+
+                    <div class="absolute bottom-0 left-0 p-4 sm:p-5 w-full">
+                        <h3 class="text-base sm:text-lg font-extrabold text-white">Tacos Fuego</h3>
+                        <p class="text-orange-200 text-[10px] sm:text-xs font-medium">Cenas y antojitos</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: EL BANNER DE CATEGORÍAS -->
+        <div id="seccionCategorias" class="max-w-7xl mx-auto px-4 sm:px-6 mb-16 transition-all duration-300">
+            <a href="/categorias.html"
+                class="block w-full bg-gradient-to-r from-orange-500 to-red-500 rounded-[2rem] p-8 sm:p-10 text-white relative overflow-hidden group shadow-lg shadow-orange-500/20">
+                <div
+                    class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000">
+                </div>
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="text-2xl sm:text-3xl font-black mb-2">Explorar Categorías</h3>
+                        <p class="text-orange-100 font-medium">Pizzas, Hamburguesas, Farmacias, Abarrotes y más.</p>
+                    </div>
+                    <div
+                        class="bg-white text-orange-600 font-extrabold py-3 px-8 rounded-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all flex items-center gap-2 whitespace-nowrap">
+                        <i data-feather="grid" class="w-5 h-5"></i> Ver Catálogo
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- BOTÓN EXPLORAR EN MAPA -->
+        <div id="seccionMapa" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
+            <a href="/mapa.html"
+                class="block w-full bg-slate-900 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all">
+                <div class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
+                            <i data-feather="map" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-black">Explorar Negocios Cercanos</h3>
+                            <p class="text-slate-400 text-sm font-medium">Busca en el mapa interactivo de La Paz, B.C.S.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 whitespace-nowrap transition-colors">
+                        Abrir Mapa <i data-feather="arrow-right" class="w-4 h-4"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- SECCIÓN 4: TODOS LOS COMERCIOS (Mini Bentos) -->
+        <div id="seccionGrid" class="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="tituloGrid" class="text-2xl font-extrabold text-slate-900">Todos los Comercios</h2>
+                <span id="contadorResultados" class="text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-lg shadow-sm border border-orange-100">Cargando...</span>
+            </div>
+
+            <div id="gridNegocios" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px]">
+                <!-- Skeletons bento -->
+                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 row-span-2"></div>
+                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
+                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
+                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
+                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 hidden sm:block"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        feather.replace();
+
+        // --- Menú Hamburguesa ---
+        const btnMenuDir = document.getElementById('btnMenuDir');
+        const menuDropDir = document.getElementById('menuDropDir');
+        let menuOpen = false;
+
+        btnMenuDir.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                menuDropDir.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                btnMenuDir.innerHTML = '<i data-feather="x" class="w-5 h-5"></i>';
+            } else {
+                menuDropDir.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                btnMenuDir.innerHTML = '<i data-feather="menu" class="w-5 h-5"></i>';
+            }
+            feather.replace();
+        });
+
+        const fotosPlaceholders = [
+            'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80'
+        ];
+
+        let todosLosNegocios = [];
+
+        function actualizarContador(cantidad) {
+            document.getElementById('contadorResultados').textContent =
+                cantidad === 0 ? 'Sin resultados' : `Mostrando ${cantidad} local${cantidad !== 1 ? 'es' : ''}`;
+        }
+
+        // Patrón Bento: cada 5 tarjetas → la primera es grande (2col x 2row), las siguientes 4 son normales
+        function getBentoClass(posEnCiclo) {
+            return posEnCiclo === 0 ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
+        }
+
+        function renderizarNegocios(negocios) {
+            const grid = document.getElementById('gridNegocios');
+            grid.innerHTML = '';
+
+            if (!negocios || negocios.length === 0) {
+                actualizarContador(0);
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 px-6 bg-white rounded-3xl border border-orange-100 shadow-sm">
+                        <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                            <i data-feather="search" class="w-10 h-10 text-orange-300"></i>
+                        </div>
+                        <p class="text-slate-800 font-bold text-lg mb-1">No encontramos resultados</p>
+                        <p class="text-slate-500 text-sm max-w-sm mx-auto">Intenta buscar con otro nombre.</p>
+                    </div>`;
+                feather.replace();
+                return;
+            }
+
+            actualizarContador(negocios.length);
+
+            negocios.forEach((n, index) => {
+                const foto = fotosPlaceholders[index % fotosPlaceholders.length];
+                const posEnCiclo = index % 5;
+                const bentoClass = getBentoClass(posEnCiclo);
+                const isLarge = posEnCiclo === 0;
+
+                const card = document.createElement('a');
+                card.href = `/${n.slug}`;
+                card.className = `${bentoClass} relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-xl transition-all duration-300`;
+
+                const logoHtml = n.logo_url
+                    ? `<img src="${n.logo_url}" class="w-10 h-10 ${isLarge ? 'sm:w-14 sm:h-14' : ''} rounded-xl object-cover border-2 border-white shadow-md bg-white">`
+                    : `<div class="w-10 h-10 ${isLarge ? 'sm:w-14 sm:h-14' : ''} rounded-xl bg-orange-100 text-orange-600 font-black ${isLarge ? 'text-xl' : 'text-lg'} flex items-center justify-center border-2 border-white shadow-md">${n.nombre_comercial.charAt(0)}</div>`;
+
+                card.innerHTML = `
+                    <img src="${foto}" alt="${n.nombre_comercial}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+
+                    <div class="absolute top-3 left-3">
+                        <span class="bg-green-500/90 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <i data-feather="check-circle" class="w-2.5 h-2.5"></i> Activo
+                        </span>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 right-0 p-4 ${isLarge ? 'sm:p-6' : ''}">
+                        <div class="flex items-end gap-3">
+                            ${logoHtml}
+                            <div class="flex-1 min-w-0">
+                                <h3 class="${isLarge ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base'} font-extrabold text-white leading-tight truncate">${n.nombre_comercial}</h3>
+                                <p class="text-[10px] sm:text-xs text-orange-200 flex items-center gap-1 mt-0.5">
+                                    <i data-feather="map-pin" class="w-2.5 h-2.5"></i> La Paz
+                                </p>
+                            </div>
+                        </div>
+                        ${isLarge ? `
+                        <div class="mt-4 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-5 rounded-xl w-max flex items-center gap-2 text-sm transition-colors shadow-lg shadow-orange-500/30">
+                            <i data-feather="shopping-bag" class="w-4 h-4"></i> Ver Tienda
+                        </div>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            feather.replace();
+        }
+
+        async function cargarNegocios() {
+            try {
+                const response = await fetch('/api/negocios');
+                todosLosNegocios = await response.json();
+                renderizarNegocios(todosLosNegocios);
+            } catch (error) {
+                console.error('Error al cargar negocios:', error);
+                document.getElementById('contadorResultados').textContent = 'Error';
+                document.getElementById('gridNegocios').innerHTML = `
+                    <div class="col-span-full text-center py-16 px-6 bg-red-50 rounded-3xl border border-red-100 shadow-sm">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-feather="wifi-off" class="w-8 h-8 text-red-400"></i>
+                        </div>
+                        <p class="text-red-700 font-bold text-lg">Error de conexión</p>
+                        <p class="text-red-500 text-sm mt-1">No pudimos conectar con el servidor.</p>
+                        <button onclick="location.reload()" class="mt-4 bg-red-500 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-red-600 transition-colors text-sm">Reintentar</button>
+                    </div>`;
+                feather.replace();
+            }
+        }
+
+        // Secciones a ocultar durante búsqueda
+        const seccionesDecorativas = ['seccionPromos', 'seccionBentos', 'seccionCategorias', 'seccionMapa'];
+
+        function toggleSecciones(mostrar) {
+            seccionesDecorativas.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.display = mostrar ? '' : 'none';
+                }
+            });
+            // Cambiar título del grid
+            const titulo = document.getElementById('tituloGrid');
+            titulo.textContent = mostrar ? 'Todos los Comercios' : 'Resultados de búsqueda';
+        }
+
+        // Buscador en tiempo real
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+
+            if (term === '') {
+                // Sin búsqueda → mostrar todo
+                toggleSecciones(true);
+                renderizarNegocios(todosLosNegocios);
+            } else {
+                // Con búsqueda → ocultar secciones y filtrar grid
+                toggleSecciones(false);
+                const filtrados = todosLosNegocios.filter(n => n.nombre_comercial.toLowerCase().includes(term));
+                renderizarNegocios(filtrados);
+            }
+        });
+
+        cargarNegocios();
+    </script>
+</body>
+
+</html>

@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
@@ -233,7 +234,7 @@ app.post('/api/driver/login', async (req, res) => {
 // Crear negocio
 app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
     try {
-        const { nombre, whatsapp, lat, lng, logo_base64 } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64 } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -249,7 +250,7 @@ app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
 
         const { data, error } = await supabase
             .from('negocios')
-            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url }])
+            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan }])
             .select();
 
         if (error) {
@@ -274,7 +275,7 @@ app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
 app.put('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
     try {
         const { slug } = req.params;
-        const { nombre, whatsapp, lat, lng, logo_base64 } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64 } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos' });
@@ -283,6 +284,7 @@ app.put('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
         let actualizacion = {
             nombre_comercial: nombre,
             whatsapp,
+            plan,
             ubicacion_origen: `POINT(${lng} ${lat})`
         };
 
@@ -329,7 +331,7 @@ app.get('/api/negocio/:slug', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('negocios')
-            .select('nombre_comercial, whatsapp, ubicacion_origen, logo_url')
+            .select('nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan')
             .eq('slug', req.params.slug)
             .single();
 
@@ -346,13 +348,21 @@ app.get('/api/negocios', async (req, res) => {
     try {
         const { data: negocios, error } = await supabase
             .from('negocios')
-            .select('nombre_comercial, slug, ubicacion_origen');
+            .select('nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp');
 
         if (error) throw error;
 
         const negociosProcesados = negocios.map(n => {
             const { lat, lng } = parsearCoordenadas(n.ubicacion_origen);
-            return { nombre_comercial: n.nombre_comercial, slug: n.slug, lat, lng };
+            return { 
+                nombre_comercial: n.nombre_comercial, 
+                slug: n.slug, 
+                lat, 
+                lng, 
+                logo_url: n.logo_url, 
+                plan: n.plan || 'basico',
+                whatsapp: n.whatsapp 
+            };
         });
 
         res.json(negociosProcesados);
@@ -391,11 +401,14 @@ app.post('/api/calcular-envio', async (req, res) => {
         // Calcular distancia: OSRM (real) con fallback a Haversine
         let distanciaKm;
         try {
-            const osrmUrl = `http://router.project-osrm.org/route/v1/driving/${lngOrigen},${latOrigen};${lngDestino},${latDestino}?overview=false`;
+            // Se solicita alternatives=true para obtener varias opciones y elegir la más corta en distancia
+            const osrmUrl = `http://router.project-osrm.org/route/v1/driving/${lngOrigen},${latOrigen};${lngDestino},${latDestino}?overview=false&alternatives=true`;
             const response = await axios.get(osrmUrl, { timeout: 3000 });
 
             if (response.data?.code === 'Ok' && response.data.routes?.length > 0) {
-                distanciaKm = response.data.routes[0].distance / 1000;
+                // Seleccionar la ruta con la distancia más corta (por defecto OSRM ordena por la más rápida)
+                const rutaMasCorta = response.data.routes.reduce((min, route) => route.distance < min.distance ? route : min, response.data.routes[0]);
+                distanciaKm = rutaMasCorta.distance / 1000;
             } else {
                 throw new Error('Respuesta inválida de OSRM');
             }
@@ -769,8 +782,48 @@ app.delete('/api/repartidores/:id', protegerRutaAdmin, async (req, res) => {
 // RUTA ATRAPA-TODO (Debe ir al final)
 // =============================================================================
 
-app.get('/:slug', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/pedido.html'));
+app.get('/:slug', async (req, res) => {
+    const slug = req.params.slug;
+    const vistaPedido = req.query.v === 'pedido';
+
+    // Ignorar archivos estáticos y rutas conocidas
+    if (slug.includes('.') || slug.startsWith('api')) {
+        return res.status(404).send('No encontrado');
+    }
+
+    try {
+        const { data: negocio } = await supabase
+            .from('negocios')
+            .select('plan')
+            .eq('slug', slug)
+            .single();
+
+        // Si se pide explícitamente la vista de pedido (?v=pedido) → servir pedido.html
+        if (vistaPedido) {
+            return res.sendFile(path.join(__dirname, '../public/pedido.html'));
+        }
+
+        // Si es premium, buscar HTML personalizado
+        if (negocio && negocio.plan === 'premium') {
+            const premiumPath = path.join(__dirname, `../public/p/${slug}.html`);
+            if (fs.existsSync(premiumPath)) {
+                return res.sendFile(premiumPath);
+            }
+            // Fallback a genérico si no existe el archivo premium
+            return res.sendFile(path.join(__dirname, '../public/g/tienda.html'));
+        }
+
+        // Si es genérico, servir template
+        if (negocio && negocio.plan === 'generico') {
+            return res.sendFile(path.join(__dirname, '../public/g/tienda.html'));
+        }
+
+        // Básico o no encontrado → pedido.html
+        res.sendFile(path.join(__dirname, '../public/pedido.html'));
+    } catch (err) {
+        // Error de BD → fallback a pedido.html
+        res.sendFile(path.join(__dirname, '../public/pedido.html'));
+    }
 });
 
 if (process.env.NODE_ENV !== 'production') {
