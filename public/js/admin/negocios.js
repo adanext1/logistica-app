@@ -145,6 +145,8 @@ export function abrirFormularioNegocio(slug = null) {
             document.getElementById('nombre').value = n.nombre_comercial;
             document.getElementById('whatsapp').value = n.whatsapp;
             document.getElementById('plan').value = n.plan || 'basico';
+            document.getElementById('usuario').value = n.usuario || '';
+            document.getElementById('pin').value = n.pin || '';
             document.getElementById('lat').value = n.lat || '';
             document.getElementById('lng').value = n.lng || '';
             
@@ -162,6 +164,8 @@ export function abrirFormularioNegocio(slug = null) {
     } else {
         // MODO CREACIÓN
         document.getElementById('formNegocio').reset();
+        document.getElementById('usuario').value = '';
+        document.getElementById('pin').value = '';
         document.getElementById('lat').value = '';
         document.getElementById('lng').value = '';
         
@@ -334,6 +338,8 @@ export function setupNegocios() {
             const nombre = document.getElementById('nombre').value;
             const whatsapp = document.getElementById('whatsapp').value;
             const plan = document.getElementById('plan').value;
+            const usuario = document.getElementById('usuario').value;
+            const pin = document.getElementById('pin').value;
             const lat = document.getElementById('lat').value;
             const lng = document.getElementById('lng').value;
 
@@ -354,7 +360,7 @@ export function setupNegocios() {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${tokenAdmin}`
                     },
-                    body: JSON.stringify({ nombre, whatsapp, plan, lat, lng, logo_base64: state.logoBase64 })
+                    body: JSON.stringify({ nombre, whatsapp, plan, usuario, pin, lat, lng, logo_base64: state.logoBase64 })
                 });
 
                 if (response.status === 401) {

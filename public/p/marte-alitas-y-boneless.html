@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Marte Alitas y Boneless | El Sabor de Marte en la Tierra</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#131313",
+                        "on-secondary-container": "#572000",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary": "#561f00",
+                        "surface-tint": "#ffb4a4",
+                        "on-surface-variant": "#e2beb7",
+                        "surface-container": "#201f1f",
+                        "primary-fixed": "#ffdad3",
+                        "secondary-fixed": "#ffdbcc",
+                        "tertiary": "#f1c100",
+                        "secondary": "#ffb693",
+                        "primary-fixed-dim": "#ffb4a4",
+                        "inverse-on-surface": "#313030",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed": "#ffe08b",
+                        "tertiary-container": "#d0a600",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary": "#3d2f00",
+                        "inverse-surface": "#e5e2e1",
+                        "primary-container": "#d14022",
+                        "tertiary-fixed-dim": "#f1c100",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "on-primary-fixed": "#3e0500",
+                        "surface-container-highest": "#353534",
+                        "secondary-container": "#fe6b00",
+                        "primary": "#ffb4a4",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-fixed-variant": "#8c1700",
+                        "on-error": "#690005",
+                        "background": "#131313",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-container": "#4e3d00",
+                        "on-primary-container": "#fffaf9",
+                        "surface-variant": "#353534",
+                        "on-tertiary-fixed": "#241a00",
+                        "outline": "#a98983",
+                        "inverse-primary": "#b32a0d",
+                        "outline-variant": "#5a413b",
+                        "on-primary": "#640e00",
+                        "surface-bright": "#3a3939",
+                        "on-background": "#e5e2e1",
+                        "on-secondary-fixed": "#351000",
+                        "surface": "#131313",
+                        "on-tertiary-fixed-variant": "#584400"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "lg": "24px",
+                        "md": "16px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "xl": "48px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "gutter": "20px"
+                    },
+                    fontFamily: {
+                        "label-bold": ["Space Grotesk"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-xl": ["Anton"],
+                        "headline-md": ["Anton"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "display-lg": ["Anton"]
+                    },
+                    fontSize: {
+                        "label-bold": ["14px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "headline-xl": ["48px", { lineHeight: "1.2", fontWeight: "400" }],
+                        "headline-md": ["32px", { lineHeight: "1.2", fontWeight: "400" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "display-lg": ["72px", { lineHeight: "1.1", letterSpacing: "0.02em", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .smoldering-glow {
+            box-shadow: 0 0 20px rgba(209, 64, 34, 0.15);
+        }
+
+        .smoldering-border:focus-within {
+            box-shadow: 0 1px 10px rgba(209, 64, 34, 0.3);
+            border-color: #ffb4a4;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
+    <!-- TopNavBar -->
+    <nav
+        class="bg-surface-dim/80 backdrop-blur-md dark:bg-surface-dim/80 docked full-width top-0 sticky z-50 shadow-sm border-b border-white/10">
+        <div class="flex justify-between items-center px-lg py-md max-w-container-max mx-auto">
+            <div class="font-headline-md text-headline-md text-primary tracking-wider flex items-center gap-sm">
+                <!-- Contenedor del Logo Dinámico -->
+                <div class="w-10 h-10 rounded-full overflow-hidden border border-primary/20 bg-surface-container-high flex items-center justify-center hidden" id="logoContainer">
+                    <img id="navLogo" src="" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <span class="material-symbols-outlined text-primary" id="fallbackIcon" data-icon="local_fire_department"
+                    data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                <span id="navBusinessName">Marte Alitas y Boneless</span>
+            </div>
+            <div class="hidden md:flex items-center gap-lg">
+                <a class="text-primary border-b-2 border-primary pb-1 font-label-bold text-label-bold hover:text-secondary transition-colors duration-300"
+                    href="#">Promos</a>
+                <a class="text-on-surface-variant font-label-bold text-label-bold hover:text-secondary transition-colors duration-300"
+                    href="#">Menú</a>
+                <a class="text-on-surface-variant font-label-bold text-label-bold hover:text-secondary transition-colors duration-300"
+                    href="#">Salsas</a>
+                <a class="text-on-surface-variant font-label-bold text-label-bold hover:text-secondary transition-colors duration-300"
+                    href="#">Nosotros</a>
+            </div>
+            <div class="flex items-center gap-md">
+                <button aria-label="shopping_cart"
+                    class="text-primary dark:text-primary scale-95 active:scale-90 transition-transform p-xs rounded-full hover:bg-white/5">
+                    <span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- Hero Section -->
+    <header class="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img id="heroSplash" alt="Hero Background" class="w-full h-full object-cover object-center opacity-40 brightness-50"
+                src="https://lh3.googleusercontent.com/aida/ADBb0uhUK35t72yK3xfewK20GaSfe67o9jMl0aSuK5QGpqBqPVeyydq6bRp49chou_PQbbSflWCRWO7VwjaHIgBnK-7gvCS1KKfnBED_m3gBtfhzKZE1hvasYRp7yHMTtBfKYBzAKr8C3aUN95i7q0-2JVX-1nLW_V3YzPeIWGMlKzMRwh9aoWbNnQLO1ue9HygRr8WNPdImg9h0kG7zMaH7egzODccoPhrbsiVDxVEZqk0Via2X0yW6s3BMcx5TC-wbaMfi_ELPGHwMN6U" />
+            <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
+        <div class="relative z-10 text-center px-lg max-w-4xl mx-auto flex flex-col items-center gap-lg">
+            <h1 class="font-display-lg text-display-lg text-on-primary-container drop-shadow-lg">
+                EL SABOR DE <span class="text-primary">MARTE</span>,<br />EN LA TIERRA.
+            </h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Auténticas alitas y boneless al rojo vivo, hechos con el secreto de la galaxia. Preparados para hacer
+                ignición en tu paladar.
+            </p>
+            <button
+                class="mt-md bg-secondary-container text-on-primary-container font-label-bold text-label-bold px-xl py-md rounded-full shadow-[0_0_20px_rgba(254,107,0,0.3)] hover:shadow-[0_0_30px_rgba(254,107,0,0.5)] transition-all duration-300 border border-secondary-container hover:border-white/50 relative overflow-hidden group">
+                <span class="relative z-10">PEDIR AHORA</span>
+                <div
+                    class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+            </button>
+        </div>
+    </header>
+    <!-- Status & Location Bar -->
+    <section
+        class="bg-surface-container border-y border-outline-variant/30 relative z-20 -mt-xl mx-auto max-w-5xl rounded-xl smoldering-glow backdrop-blur-md">
+        <div class="flex flex-col md:flex-row items-center justify-between p-lg gap-md">
+            <div class="flex items-center gap-md">
+                <div class="bg-surface-container-highest p-sm rounded-full text-secondary">
+                    <span class="material-symbols-outlined" data-icon="location_on" data-weight="fill"
+                        style="font-variation-settings: 'FILL' 1;">location_on</span>
+                </div>
+                <div>
+                    <p class="font-label-bold text-label-bold text-on-surface">Plaza Alameda, La Paz, BCS.</p>
+                    <p class="font-body-md text-body-md text-on-surface-variant text-sm flex items-center gap-xs mt-xs">
+                        <span class="material-symbols-outlined text-sm text-tertiary"
+                            data-icon="schedule">schedule</span>
+                        <span class="text-tertiary font-medium">ABIERTO AHORA</span> de 1pm a 9pm
+                    </p>
+                </div>
+            </div>
+            <button
+                class="bg-transparent border-2 border-primary text-primary hover:bg-primary/10 font-label-bold text-label-bold px-lg py-sm rounded-full transition-colors duration-300 flex items-center gap-sm w-full md:w-auto justify-center">
+                <span class="material-symbols-outlined" data-icon="chat">chat</span>
+                Llamar/Chat con Marte
+            </button>
+        </div>
+    </section>
+    <!-- Main Content Canvas -->
+    <main class="max-w-container-max mx-auto px-lg py-xl flex flex-col gap-xl">
+        <!-- Bento Grid Promos -->
+        <section>
+            <div class="flex items-center gap-sm mb-lg">
+                <span class="material-symbols-outlined text-primary text-3xl" data-icon="local_fire_department"
+                    data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                <h2 class="font-headline-md text-headline-md text-on-surface">PROMOS SUPERNOVA</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+                <!-- Promo 1 -->
+                <div
+                    class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow group relative flex flex-col justify-end h-[420px] md:h-80 cursor-pointer">
+                    <div class="absolute inset-0 z-0">
+                        <img alt="Promo Individual 1 Wings"
+                            class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-50"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5DVAHPM6mRN8MSLdL3Ac0xOsu7YQL8uLRbA01EQJzjAqq-ZkDgM_yy4qytu-aUsUtUAEB8dozlBwtwsNl4Fa3dRZAttNeLKQLvGkvGIimAKPXbwsuJFuo31366fOhpxINjs1nY6hde4KMRBofRVo8cVeH5yy9sQIdT1qmx395eQnPZiUIJPE-NzQvgmBz9-83MaPYJI8StX3vclgaWjrb0fyjDe0p6-hY0FimKZIrw0vorVHMPTZ3dB8GN9ThyK51wFnTBed0emJO" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent">
+                        </div>
+                    </div>
+                    <div class="relative z-10 p-md flex flex-col gap-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <h3 class="font-headline-md text-headline-md text-on-primary-container text-xl leading-tight">Promo Individual #1</h3>
+                            <span class="text-primary font-headline-md">$170</span>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-xs mb-2">6 Alitas + 150g Boneless + Refresco</p>
+                        <button class="w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] font-label-bold text-on-surface transition-all uppercase tracking-widest">Añadir al carrito</button>
+                    </div>
+                </div>
+                <!-- Promo 2 -->
+                <div
+                    class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow group relative flex flex-col justify-end h-[420px] md:h-80 lg:col-span-2 cursor-pointer">
+                    <div class="absolute inset-0 z-0">
+                        <img alt="Paquete Marte 1"
+                            class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60"
+                            src="https://lh3.googleusercontent.com/aida/ADBb0ui5nplIRR1EmRwbiPVdYM712Hh2kITFVszLpXq77j284wBq0lYrmvmTSXWmuz6Ssrx7zZI8raGoBbj9tsbPBrcauWh52CtzCvQLQhx7hNdJ_RPx425No-RyG3E0gEX8IKGzEMzU61VetFkiTDS3koRJ43wARUCkeBGfU_5uSJVzSirFOAGcua_DeiFMWYzqwj852IqGx9ADBGAP75dNrm1TFyKJIP1NErDSQcWOMwS-Rj-GvH3-cHa8tmsJNfmj9obCqsWeulfISGI" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent">
+                        </div>
+                    </div>
+                    <div class="relative z-10 p-md flex flex-col gap-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <h3 class="font-headline-md text-headline-md text-on-primary-container text-2xl leading-tight">Paquete Marte #1</h3>
+                            <span class="text-primary font-headline-md text-2xl">$360</span>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-xs mb-2">12 Alitas + Papas Francesas + 300g Boneless + Refresco 1.5L</p>
+                        <button class="w-full py-2 bg-secondary-container/20 hover:bg-secondary-container/40 border border-secondary-container/30 rounded-lg text-[10px] font-label-bold text-primary transition-all uppercase tracking-widest">Añadir al carrito</button>
+                    </div>
+                </div>
+                <!-- Promo 3 -->
+                <div
+                    class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow group relative flex flex-col justify-end h-[420px] md:h-80 cursor-pointer">
+                    <div class="absolute inset-0 z-0">
+                        <img alt="Marte Burguer Combo"
+                            class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-50"
+                            src="https://lh3.googleusercontent.com/aida/ADBb0ugHnnKVcHyRhLRrG4oREdUPLuJ-s3W_ALKqCBUQiBp-NJfpOwOJPbWJP8qnpw83SlPlAjbgw9Waq4hfTiY7DVfL7RNGsXYfD1FxZw0KXHZVO_J2tKDMp1Uz0s2k79R1bRh6ircRumKCdVEEVEwMVgeDjlecCOgOoZURf05qgHzsnlWmxOCK9jkaR76DlsoJC7nQIw-hlbyjig-5fxcTj8U2Jwll2Td7vRAP30YORJOQrBmJupBxzOb6YGadWI0U7NsUIdUcL7XIcNM" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent">
+                        </div>
+                    </div>
+                    <div class="relative z-10 p-md flex flex-col gap-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <h3 class="font-headline-md text-headline-md text-on-primary-container text-xl leading-tight">Combo Marte Burguer</h3>
+                            <span class="text-primary font-headline-md">$160</span>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-xs mb-2">Hamburguesa Boneless + Papas Gajo + Soda</p>
+                        <button class="w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] font-label-bold text-on-surface transition-all uppercase tracking-widest">Añadir al carrito</button>
+                    </div>
+                </div>
+                <!-- Promo 4 -->
+                <div
+                    class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow group relative flex flex-col justify-end h-80 lg:col-span-4 cursor-pointer">
+                    <div class="absolute inset-0 z-0 flex md:justify-end">
+                        <img alt="Flamin Hot Boneless"
+                            class="w-full md:w-2/3 h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60 md:opacity-80 mask-image:linear-gradient(to_left,black,transparent)"
+                            src="https://lh3.googleusercontent.com/aida/ADBb0uhUK35t72yK3xfewK20GaSfe67o9jMl0aSuK5QGpqBqPVeyydq6bRp49chou_PQbbSflWCRWO7VwjaHIgBnK-7gvCS1KKfnBED_m3gBtfhzKZE1hvasYRp7yHMTtBfKYBzAKr8C3aUN95i7q0-2JVX-1nLW_V3YzPeIWGMlKzMRwh9aoWbNnQLO1ue9HygRr8WNPdImg9h0kG7zMaH7egzODccoPhrbsiVDxVEZqk0Via2X0yW6s3BMcx5TC-wbaMfi_ELPGHwMN6U" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-background via-background/90 md:via-background/70 to-transparent">
+                        </div>
+                    </div>
+                    <div class="relative z-10 p-lg flex flex-col gap-sm md:w-1/2 justify-center h-full">
+                        <div
+                            class="bg-primary-container text-on-primary-container font-label-bold text-label-bold px-md py-sm rounded-full w-max mb-xs flex items-center gap-xs">
+                            <span class="material-symbols-outlined text-sm" data-icon="whatshot"
+                                data-weight="fill">whatshot</span>
+                            NIVEL SUPERNOVA
+                        </div>
+                        <h3 class="font-headline-xl text-headline-xl text-white tracking-tight" style="text-shadow: 2px 2px 0px rgba(0,0,0,0.5); -webkit-font-smoothing: antialiased;">300g Flamin' Hot</h3>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant">Nuestros clásicos boneless
+                            espolvoreados con auténtico polvo Cheeto Flamin' Hot. Una explosión de sabor que no perdona.
+                        </p>
+                        <div class="mt-sm flex items-center gap-md">
+                            <span class="font-headline-md text-headline-md text-primary">$155</span>
+                            <button
+                                class="bg-white/10 hover:bg-white/20 text-on-surface border border-white/20 font-label-bold text-label-bold px-lg py-sm rounded-full transition-colors duration-300">
+                                AGREGAR AL CARRITO
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Category Nav -->
+        <section class="py-md">
+            <div class="flex overflow-x-auto pb-sm gap-md hide-scrollbar snap-x">
+                <button class="snap-start flex-none flex flex-col items-center gap-sm min-w-[100px] group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container-high group-hover:bg-primary/20 border-2 border-transparent group-hover:border-primary transition-all duration-300 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-3xl"
+                            data-icon="restaurant_menu">restaurant_menu</span>
+                    </div>
+                    <span
+                        class="font-label-bold text-label-bold text-on-surface group-hover:text-primary transition-colors">Alitas</span>
+                </button>
+                <button class="snap-start flex-none flex flex-col items-center gap-sm min-w-[100px] group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary smoldering-glow">
+                        <span class="material-symbols-outlined text-3xl" data-icon="fastfood">fastfood</span>
+                    </div>
+                    <span class="font-label-bold text-label-bold text-primary">Boneless</span>
+                </button>
+                <button class="snap-start flex-none flex flex-col items-center gap-sm min-w-[100px] group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container-high group-hover:bg-primary/20 border-2 border-transparent group-hover:border-primary transition-all duration-300 flex items-center justify-center text-on-surface-variant group-hover:text-primary">
+                        <span class="material-symbols-outlined text-3xl" data-icon="lunch_dining">lunch_dining</span>
+                    </div>
+                    <span
+                        class="font-label-bold text-label-bold text-on-surface group-hover:text-primary transition-colors">Burgers</span>
+                </button>
+                <button class="snap-start flex-none flex flex-col items-center gap-sm min-w-[100px] group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container-high group-hover:bg-primary/20 border-2 border-transparent group-hover:border-primary transition-all duration-300 flex items-center justify-center text-on-surface-variant group-hover:text-primary">
+                        <span class="material-symbols-outlined text-3xl" data-icon="tapas">tapas</span>
+                    </div>
+                    <span
+                        class="font-label-bold text-label-bold text-on-surface group-hover:text-primary transition-colors">Extras</span>
+                </button>
+                <button class="snap-start flex-none flex flex-col items-center gap-sm min-w-[100px] group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container-high group-hover:bg-primary/20 border-2 border-transparent group-hover:border-primary transition-all duration-300 flex items-center justify-center text-on-surface-variant group-hover:text-primary">
+                        <span class="material-symbols-outlined text-3xl" data-icon="local_drink">local_drink</span>
+                    </div>
+                    <span
+                        class="font-label-bold text-label-bold text-on-surface group-hover:text-primary transition-colors">Bebidas</span>
+                </button>
+            </div>
+        </section>
+        <!-- Product Catalog (3x3 Grid example) -->
+        <section>
+            <h2 class="font-headline-md text-headline-md text-on-surface mb-lg">EL MENÚ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+                <!-- Product Card 1 -->
+                <article class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow flex flex-col">
+                    <div class="h-48 overflow-hidden relative">
+                        <img alt="Boneless 500gr"
+                            class="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                            data-alt="A top-down view of a generous 500-gram portion of crispy, golden-brown boneless chicken chunks served in a classic red-and-white checkered paper basket. The chicken is glistening with a light coat of oil, suggesting they are freshly fried and piping hot. The background is a sleek, dark slate table, creating a high-contrast, moody aesthetic that highlights the warm, savory tones of the food."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuMF1Jeg-O_nCkb7Wm3t6o0Q9k6dA9q31CnilwPm0MBWp709dCNyZUbudlDu6IQQf2pV_VmrK3pCMUg8iTJOP1PHUEnKR7I-Z8m0-YxYmU4_80MrctpbxgswI3sGEn_15xo2qIHgJokM6hOYug8PhpfSax46Tm11f7J-g47F3cl9z6k2CVcZANxFYm-Jj7iDoYzXx_KnOkjLRDZhr7Dt213_5lJQO2o5kPqeLkKyixlpsGvpiHk3SbgwZd0S5E6bGNZFS7gnU-qfuF" />
+                        <div
+                            class="absolute top-sm right-sm bg-secondary-container text-on-primary-container font-label-bold text-label-bold px-sm py-xs rounded-full shadow-md">
+                            $205
+                        </div>
+                    </div>
+                    <div class="p-lg flex flex-col flex-grow gap-sm">
+                        <h3 class="font-headline-md text-headline-md text-on-surface text-2xl">Boneless 500gr</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">Medio kilo de puro sabor.
+                            Crujientes por fuera, jugosos por dentro. Elige hasta 2 salsas.</p>
+                        <div class="mt-auto">
+                            <label
+                                class="font-label-bold text-label-bold text-on-surface-variant text-xs mb-xs block uppercase">Elige
+                                Salsa 1</label>
+                            <select
+                                class="w-full bg-surface-container border-b border-primary/30 text-on-surface rounded-t-md p-sm focus:ring-0 focus:border-primary smoldering-border transition-colors outline-none font-body-md text-body-md mb-sm appearance-none cursor-pointer">
+                                <option>Marte (Nuestra especialidad)</option>
+                                <option>BBQ</option>
+                                <option>Flamin Hot</option>
+                                <option>Mango Habanero</option>
+                            </select>
+                            <button
+                                class="w-full bg-surface-container-highest hover:bg-surface-bright text-primary font-label-bold text-label-bold py-md rounded-lg flex items-center justify-center gap-sm transition-colors border border-white/5">
+                                <span class="material-symbols-outlined"
+                                    data-icon="add_shopping_cart">add_shopping_cart</span>
+                                AÑADIR
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                <!-- Product Card 2 -->
+                <article class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow flex flex-col">
+                    <div class="h-48 overflow-hidden relative">
+                        <img alt="Alitas 24 piezas"
+                            class="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                            data-alt="A dramatic, close-up shot of a large platter containing 24 saucy, deep-fried chicken wings. The wings are coated in a dark, rich, fiery red glaze that catches the light, giving them a sticky, irresistible appearance. They are presented on a dark, textured cast iron surface, with subtle wisps of steam rising from the hot food, enhancing the moody, intense, high-energy atmosphere of the scene."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkzxbW9tyhCoB7UTAyKBAEsp0eUb3_lH54h5NZnqet5b96hwfok_sXbclMPPnQD3Mx4QRpmntQCXxKh9ZuMGN0gJvAb2brFfO8t1UaSStl8Ms7pFOsrT1xOdjTg5nT-bKwi_GLdKHdEzrY9wO8Qlkmd8ETCWD0tLP6eqJ4DMnANBQuv8TJMlyRBYRUaX0bCjZRV38WgdAanfSeK1RZZdrVIJ_cxfAdMJQxJscpZkbmudvEZ0GeYf_msZJA3GYdw_I9xUeoeek5Cj85" />
+                        <div
+                            class="absolute top-sm right-sm bg-secondary-container text-on-primary-container font-label-bold text-label-bold px-sm py-xs rounded-full shadow-md">
+                            $310
+                        </div>
+                    </div>
+                    <div class="p-lg flex flex-col flex-grow gap-sm">
+                        <h3 class="font-headline-md text-headline-md text-on-surface text-2xl">Alitas 24 piezas</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">El escuadrón completo.
+                            Perfecto para la reunión. Bañadas en la salsa de tu elección.</p>
+                        <div class="mt-auto">
+                            <label
+                                class="font-label-bold text-label-bold text-on-surface-variant text-xs mb-xs block uppercase">Elige
+                                Salsa</label>
+                            <select
+                                class="w-full bg-surface-container border-b border-primary/30 text-on-surface rounded-t-md p-sm focus:ring-0 focus:border-primary smoldering-border transition-colors outline-none font-body-md text-body-md mb-sm appearance-none cursor-pointer">
+                                <option>Buffalo</option>
+                                <option>Teriyaki</option>
+                                <option>Parmesano</option>
+                                <option>Tamarindo</option>
+                            </select>
+                            <button
+                                class="w-full bg-surface-container-highest hover:bg-surface-bright text-primary font-label-bold text-label-bold py-md rounded-lg flex items-center justify-center gap-sm transition-colors border border-white/5">
+                                <span class="material-symbols-outlined"
+                                    data-icon="add_shopping_cart">add_shopping_cart</span>
+                                AÑADIR
+                            </button>
+                        </div>
+                    </div>
+                </article>
+                <!-- Product Card 3 -->
+                <article class="bg-[#1A1A1A] rounded-xl overflow-hidden smoldering-glow flex flex-col">
+                    <div class="h-48 overflow-hidden relative">
+                        <img alt="Papas Gajo"
+                            class="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                            data-alt="A stylized, high-contrast photograph of thick-cut, seasoned potato wedges spilling out of a sleek, matte black paper cone. The wedges are golden-orange, crusted with visible spices and herbs, illuminated by a warm, directional light against a pitch-black background. A small, dark ceramic ramekin filled with a creamy, pale dipping sauce sits beside them, creating a premium, modern fast-food visual."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYZP_vaXc0p-Vs7xQLoITeg1ptid9xPmiwDoY9CU3Q0tNIRGIotYWD9MtNV5iiHYS6S86hJeI8kc29yv_sJ6PxgB2kJSYKmdAc7sgpIVsYPvTQ8L5sUhxPxwwh_iu32BJG6FnZ8IL_K9tqjFQp9Qz9pt4RdVDH7pMq0OlgLeGk7eRKCX5eQ8AhUtjW3bWOA1NDXWlueP5jZHwEQy0EcSkHHw_NySAeKMZSHYwhLRaWIcjsAofDlm15Ixo_YWHO5oStZ5E0CIeOK-lz" />
+                        <div
+                            class="absolute top-sm right-sm bg-secondary-container text-on-primary-container font-label-bold text-label-bold px-sm py-xs rounded-full shadow-md">
+                            $75
+                        </div>
+                    </div>
+                    <div class="p-lg flex flex-col flex-grow gap-sm">
+                        <h3 class="font-headline-md text-headline-md text-on-surface text-2xl">Papas Gajo</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">Gajos de papa sazonados
+                            con nuestra mezcla secreta de especias. Crujientes y suaves a la vez.</p>
+                        <div class="mt-auto pt-sm border-t border-white/5">
+                            <div class="flex items-center justify-between mb-sm">
+                                <span
+                                    class="font-label-bold text-label-bold text-on-surface-variant text-xs uppercase">Cantidad</span>
+                                <div class="flex items-center bg-surface-container rounded-md overflow-hidden">
+                                    <button class="px-sm py-xs hover:bg-white/10 text-on-surface">-</button>
+                                    <span class="px-sm py-xs font-body-md text-body-md text-on-surface">1</span>
+                                    <button class="px-sm py-xs hover:bg-white/10 text-on-surface">+</button>
+                                </div>
+                            </div>
+                            <button
+                                class="w-full bg-surface-container-highest hover:bg-surface-bright text-primary font-label-bold text-label-bold py-md rounded-lg flex items-center justify-center gap-sm transition-colors border border-white/5">
+                                <span class="material-symbols-outlined"
+                                    data-icon="add_shopping_cart">add_shopping_cart</span>
+                                AÑADIR
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="bg-surface-container-lowest dark:bg-surface-container-lowest full-width p-xl border-t border-outline-variant flat mt-xl">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-xl max-w-container-max mx-auto px-lg">
+            <div class="flex flex-col gap-md">
+                <div class="font-headline-md text-headline-md text-primary flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-primary" data-icon="rocket_launch" data-weight="fill"
+                        style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+                    Marte
+                </div>
+                <p class="font-body-md text-body-md text-on-surface-variant max-w-xs">
+                    El calor de otro planeta, servido en tu mesa. Especialistas en alitas, boneless y explosiones de
+                    sabor.
+                </p>
+            </div>
+            <div class="flex flex-col gap-sm">
+                <h4 class="font-label-bold text-label-bold text-on-surface mb-xs uppercase tracking-wider">Navegación
+                    Espacial</h4>
+                <a class="text-secondary dark:text-secondary font-label-bold text-label-bold opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary underline-offset-4 transition-all w-max"
+                    href="#">Ubicación</a>
+                <a class="text-on-surface-variant font-label-bold text-label-bold opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary underline-offset-4 transition-all w-max"
+                    href="#">Horarios</a>
+                <a class="text-on-surface-variant font-label-bold text-label-bold opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary underline-offset-4 transition-all w-max"
+                    href="#">Contacto</a>
+                <a class="text-on-surface-variant font-label-bold text-label-bold opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary underline-offset-4 transition-all w-max"
+                    href="#">Términos</a>
+            </div>
+            <div class="flex flex-col gap-sm md:items-end text-left md:text-right">
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    © 2024 Marte Alitas y Boneless. Sabor Espacial en la Tierra.
+                </p>
+                <div class="flex gap-md mt-sm">
+                    <a class="text-on-surface-variant hover:text-primary transition-colors p-sm bg-surface-container rounded-full"
+                        href="#"><span class="material-symbols-outlined" data-icon="thumb_up">thumb_up</span></a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors p-sm bg-surface-container rounded-full"
+                        href="#"><span class="material-symbols-outlined"
+                            data-icon="photo_camera">photo_camera</span></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Intentar obtener el ID del negocio (usamos el del localStorage o uno por defecto para el demo)
+            const negocioId = localStorage.getItem('negocio_id');
+            if (!negocioId) return;
+
+            try {
+                const response = await fetch(`/api/negocio/${negocioId}`);
+                if (!response.ok) return;
+                const data = await response.json();
+
+                // 1. Actualizar Nombre
+                if (data.nombre) {
+                    document.getElementById('navBusinessName').innerText = data.nombre;
+                    document.title = `${data.nombre} | El Sabor de Marte`;
+                }
+
+                // 2. Actualizar Logo
+                if (data.logo) {
+                    const logoImg = document.getElementById('navLogo');
+                    const logoContainer = document.getElementById('logoContainer');
+                    const fallbackIcon = document.getElementById('fallbackIcon');
+                    
+                    logoImg.src = data.logo;
+                    logoContainer.classList.remove('hidden');
+                    fallbackIcon.classList.add('hidden');
+                }
+
+                // 3. Actualizar Hero SplashArt
+                if (data.splashart) {
+                    document.getElementById('heroSplash').src = data.splashart;
+                }
+
+            } catch (error) {
+                console.error("Error al cargar datos dinámicos:", error);
+            }
+        });
+    </script>
+</body>
+
+</html>

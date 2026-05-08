@@ -13,6 +13,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 
+app.get('/api/ping', (req, res) => res.json({ status: 'ok', time: new Date() }));
+
 // --- Supabase ---
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -228,13 +230,309 @@ app.post('/api/driver/login', async (req, res) => {
 });
 
 // =============================================================================
+// AUTH NEGOCIOS
+// =============================================================================
+
+app.post('/api/login-negocio', async (req, res) => {
+    console.log("Petición recibida en /api/login-negocio:", req.body);
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).send('Usuario y PIN son requeridos');
+    }
+
+    try {
+        const { data: negocio, error } = await supabase
+            .from('negocios')
+            .select('id, slug, nombre_comercial')
+            .eq('usuario', username.toLowerCase().trim())
+            .eq('pin', password.trim())
+            .single();
+
+        if (error || !negocio) {
+            return res.status(401).json({ error: 'Usuario o PIN incorrectos' });
+        }
+
+        res.json({ 
+            message: 'Login exitoso', 
+            negocio: { 
+                id: negocio.id,
+                slug: negocio.slug, 
+                nombre: negocio.nombre_comercial 
+            } 
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error interno' });
+    }
+});
+
+// Obtener estadísticas reales para el dashboard
+app.get('/api/negocio/:id/stats', async (req, res) => {
+    try {
+        const negocioId = req.params.id;
+
+        // 1. Conteo de productos
+        const { count: totalProductos } = await supabase
+            .from('productos')
+            .select('*', { count: 'exact', head: true })
+            .eq('negocio_id', negocioId);
+
+        // 2. Conteo de visitas (eventos tipo 'view')
+        const { count: totalVisitas } = await supabase
+            .from('metricas_eventos')
+            .select('*', { count: 'exact', head: true })
+            .eq('negocio_id', negocioId)
+            .eq('tipo_evento', 'view');
+
+        // 3. Carritos generados (eventos tipo 'cart')
+        const { count: totalCarritos } = await supabase
+            .from('metricas_eventos')
+            .select('*', { count: 'exact', head: true })
+            .eq('negocio_id', negocioId)
+            .eq('tipo_evento', 'cart');
+
+        // 4. Calcular progreso (lógica simple basada en si tiene logo y descripción)
+        const { data: negocio } = await supabase
+            .from('negocios')
+            .select('nombre_comercial, logo_url, description')
+            .eq('id', negocioId)
+            .single();
+
+        let progreso = 50;
+        if (negocio?.logo_url) progreso += 25;
+        if (negocio?.description) progreso += 25;
+
+        res.json({
+            nombre: negocio?.nombre_comercial || 'Socio',
+            visitas: totalVisitas || 0,
+            productos: totalProductos || 0,
+            carritos: totalCarritos || 0,
+            progreso: progreso
+        });
+    } catch (err) {
+        console.error("Error al cargar estadísticas:", err);
+        res.status(500).json({ error: 'Error al cargar estadísticas' });
+    }
+});
+
+// Actualizar perfil por negocio (Partner)
+app.get('/api/negocio/:id', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('negocios')
+            .select('*')
+            .eq('id', req.params.id)
+            .single();
+
+        if (error || !data) return res.status(404).json({ error: 'Negocio no encontrado' });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al cargar perfil' });
+    }
+});
+
+app.put('/api/negocio/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { 
+            nombre_comercial, 
+            whatsapp, 
+            description, 
+            description_long, 
+            address_text,
+            lat,
+            lng,
+            logo_base64,
+            splash_base64
+        } = req.body;
+
+        let updateData = {
+            nombre_comercial,
+            whatsapp,
+            description,
+            description_long,
+            address_text
+        };
+
+        if (lat && lng) {
+            updateData.ubicacion_origen = `POINT(${lng} ${lat})`;
+        }
+
+        // Procesar imágenes si vienen
+        if (logo_base64) {
+            updateData.logo_url = await subirImagenBase64(logo_base64, `logo-${id}`, 'logos-comercios');
+        }
+        if (splash_base64) {
+            updateData.splash_url = await subirImagenBase64(splash_base64, `splash-${id}`, 'logos-comercios');
+        }
+
+        const { data, error } = await supabase
+            .from('negocios')
+            .update(updateData)
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+        res.json({ mensaje: 'Perfil actualizado con éxito', negocio: data[0] });
+    } catch (err) {
+        console.error("Error al actualizar perfil:", err);
+        res.status(500).json({ error: 'Error al actualizar perfil' });
+    }
+});
+
+// --- CATEGORÍAS ---
+
+// Listar categorías de un negocio
+app.get('/api/negocio/:id/categorias', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('categorias_productos')
+            .select('*')
+            .eq('negocio_id', req.params.id)
+            .order('nombre', { ascending: true });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al cargar categorías' });
+    }
+});
+
+// Crear categoría
+app.post('/api/categorias', async (req, res) => {
+    try {
+        const { negocio_id, nombre } = req.body;
+        if (!negocio_id || !nombre) return res.status(400).json({ error: 'Datos insuficientes' });
+
+        const slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+        const { data, error } = await supabase
+            .from('categorias_productos')
+            .insert([{ negocio_id, nombre, slug }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.status(201).json(data);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al crear categoría' });
+    }
+});
+
+// Listar productos de un negocio
+app.get('/api/negocio/:id/productos', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('productos')
+            .select('*')
+            .eq('negocio_id', req.params.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al cargar productos' });
+    }
+});
+
+// Crear producto
+app.post('/api/productos', async (req, res) => {
+    try {
+        const { negocio_id, nombre, precio, unidad, categoria, descripcion, disponible, imagen_base64 } = req.body;
+
+        if (!negocio_id || !nombre || !precio) {
+            return res.status(400).json({ error: 'Faltan campos obligatorios' });
+        }
+
+        let imagen_url = null;
+        if (imagen_base64) {
+            const fileName = `${negocio_id}-${Date.now()}`;
+            imagen_url = await subirImagenBase64(imagen_base64, fileName, 'productos');
+        }
+
+        const { data, error } = await supabase
+            .from('productos')
+            .insert([{
+                negocio_id,
+                nombre,
+                precio,
+                precio_medida_unit: unidad,
+                descripcion,
+                esta_disponible: disponible !== undefined ? disponible : true,
+                imagen_url
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.status(201).json(data);
+    } catch (err) {
+        console.error("Error al crear producto:", err);
+        res.status(500).json({ error: 'Error al crear producto' });
+    }
+});
+
+// Eliminar producto
+app.delete('/api/productos/:id', async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('productos')
+            .delete()
+            .eq('id', req.params.id);
+
+        if (error) throw error;
+        res.json({ mensaje: 'Producto eliminado' });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al eliminar producto' });
+    }
+});
+
+// --- HORARIOS ---
+
+app.get('/api/negocio/:id/horario', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('horarios_negocio')
+            .select('*')
+            .eq('negocio_id', req.params.id)
+            .order('day_of_week', { ascending: true });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al cargar horarios' });
+    }
+});
+
+app.post('/api/negocio/:id/horario', async (req, res) => {
+    try {
+        const { horarios } = req.body; // Array de objetos { day_of_week, open_time, close_time, esta_cerrado }
+        const negocio_id = req.params.id;
+
+        // Limpiar horarios anteriores
+        await supabase.from('horarios_negocio').delete().eq('negocio_id', negocio_id);
+
+        // Insertar nuevos
+        const dataToInsert = horarios.map(h => ({ ...h, negocio_id }));
+        const { error } = await supabase.from('horarios_negocio').insert(dataToInsert);
+
+        if (error) throw error;
+        res.json({ mensaje: 'Horarios actualizados' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al guardar horarios' });
+    }
+});
+
+// =============================================================================
 // RUTAS: NEGOCIOS
 // =============================================================================
 
 // Crear negocio
 app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
     try {
-        const { nombre, whatsapp, plan, lat, lng, logo_base64 } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -250,7 +548,7 @@ app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
 
         const { data, error } = await supabase
             .from('negocios')
-            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan }])
+            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan, usuario, pin }])
             .select();
 
         if (error) {
@@ -275,7 +573,7 @@ app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
 app.put('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
     try {
         const { slug } = req.params;
-        const { nombre, whatsapp, plan, lat, lng, logo_base64 } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos' });
@@ -285,7 +583,9 @@ app.put('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
             nombre_comercial: nombre,
             whatsapp,
             plan,
-            ubicacion_origen: `POINT(${lng} ${lat})`
+            ubicacion_origen: `POINT(${lng} ${lat})`,
+            usuario,
+            pin
         };
 
         const nuevaUrl = await subirImagenBase64(logo_base64, slug, 'logos-comercios');
@@ -348,7 +648,7 @@ app.get('/api/negocios', async (req, res) => {
     try {
         const { data: negocios, error } = await supabase
             .from('negocios')
-            .select('nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp');
+            .select('nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin');
 
         if (error) throw error;
 
@@ -361,7 +661,9 @@ app.get('/api/negocios', async (req, res) => {
                 lng, 
                 logo_url: n.logo_url, 
                 plan: n.plan || 'basico',
-                whatsapp: n.whatsapp 
+                whatsapp: n.whatsapp,
+                usuario: n.usuario,
+                pin: n.pin
             };
         });
 

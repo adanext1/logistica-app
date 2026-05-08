@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Camino Real - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#a39989",
+                        "on-secondary-fixed-variant": "#7f2b00",
+                        "on-surface": "#251913",
+                        "secondary-container": "#fd651e",
+                        "on-tertiary-fixed": "#201b10",
+                        "inverse-on-surface": "#ffede6",
+                        "secondary": "#a73a00",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#ffb690",
+                        "surface-tint": "#9d4300",
+                        "secondary-fixed": "#ffdbce",
+                        "on-primary-fixed": "#341100",
+                        "primary-container": "#f97316",
+                        "on-background": "#251913",
+                        "tertiary-fixed-dim": "#d0c5b3",
+                        "on-tertiary-fixed-variant": "#4d4638",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ede1cf",
+                        "on-tertiary-container": "#383125",
+                        "surface-container-low": "#fff1eb",
+                        "surface-container-high": "#fce3d9",
+                        "outline": "#8c7164",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#e0c0b1",
+                        "inverse-surface": "#3c2d26",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#370e00",
+                        "background": "#fff8f6",
+                        "tertiary": "#655d4f",
+                        "surface-container-highest": "#f6ded3",
+                        "on-primary-container": "#582200",
+                        "primary": "#9d4300",
+                        "surface-dim": "#edd5cb",
+                        "secondary-fixed-dim": "#ffb599",
+                        "surface-bright": "#fff8f6",
+                        "primary-fixed": "#ffdbca",
+                        "surface-variant": "#f6ded3",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#571a00",
+                        "surface": "#fff8f6",
+                        "on-primary-fixed-variant": "#783200",
+                        "surface-container": "#ffeae0",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#ffb690",
+                        "on-surface-variant": "#584237",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "2rem",
+                        "section-margin": "3rem",
+                        "unit": "4px",
+                        "card-gap": "1rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Outfit"],
+                        "h2": ["Outfit"],
+                        "caption": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "label-sm": ["Outfit"],
+                        "h3": ["Outfit"],
+                        "body-lg": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "h1": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "h2": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "h3": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background text-on-background min-h-screen flex flex-col font-body-md text-body-md antialiased pt-28 pb-32">
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-container-padding h-20 bg-surface/70 dark:bg-surface-container-highest/70 backdrop-blur-xl shadow-sm shadow-primary/5 transition-transform active:scale-95">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/30">
+                <img id="dashboardLogoNegocio" src="" alt="Logo" class="w-full h-full object-cover hidden">
+                <span id="dashboardLogoPlaceholder" class="material-symbols-outlined text-primary">storefront</span>
+            </div>
+            <h1 id="dashboardNombreNegocio" class="font-h3 text-h3 text-primary font-bold truncate max-w-[200px] md:max-w-md">Cargando...</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button aria-label="Notifications"
+                class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface hover:bg-primary/10 transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+            </button>
+            <button onclick="cerrarSesion()" aria-label="Cerrar sesión"
+                class="w-10 h-10 rounded-full flex items-center justify-center text-red-600 hover:bg-red-50 transition-colors active:scale-95">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
+    </header>
+    <!-- Main Canvas -->
+    <main class="flex-grow px-container-padding max-w-7xl mx-auto w-full flex flex-col gap-section-margin">
+        <!-- Profile Progress Widget -->
+        <section class="w-full">
+            <div
+                class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col gap-4 relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-bl-full -mr-10 -mt-10 blur-xl">
+                </div>
+                <div class="flex justify-between items-end relative z-10">
+                    <div class="flex flex-col gap-1">
+                        <h2 class="font-h2 text-h2 text-on-surface">Completa tu perfil para vender más</h2>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant">Los perfiles completos atraen un
+                            40% más clientes.</p>
+                    </div>
+                    <span class="font-h3 text-h3 text-primary font-bold" id="progresoTexto">--/5 pasos</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden mt-2 relative z-10">
+                    <div id="progresoBarra" class="h-full bg-primary rounded-full transition-all duration-500" style="width: 0%;"></div>
+                </div>
+            </div>
+        </section>
+        <!-- Quick Stats Bento Grid -->
+        <section class="w-full grid grid-cols-1 md:grid-cols-3 gap-card-gap">
+            <!-- Visitas -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex items-center gap-4 hover:shadow-lg transition-shadow">
+                <div class="w-14 h-14 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+                    <span class="material-symbols-outlined text-[32px]">trending_up</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-h2 text-h2 text-on-surface" id="stat-visitas">0</span>
+                    <span class="font-body-md text-body-md text-on-surface-variant">Visitas</span>
+                </div>
+            </div>
+            <!-- Carritos -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex items-center gap-4 hover:shadow-lg transition-shadow">
+                <div class="w-14 h-14 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-[32px]">shopping_cart</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-h2 text-h2 text-on-surface" id="stat-carts">0</span>
+                    <span class="font-body-md text-body-md text-on-surface-variant">Carritos</span>
+                </div>
+            </div>
+            <!-- Productos -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex items-center gap-4 hover:shadow-lg transition-shadow">
+                <div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                    <span class="material-symbols-outlined text-[32px]">inventory_2</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-h2 text-h2 text-on-surface" id="stat-productos">0</span>
+                    <span class="font-body-md text-body-md text-on-surface-variant">Productos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Products Section -->
+        <section class="w-full mt-4">
+            <h3 class="font-h3 text-h3 text-on-surface mb-4 px-2">Los Más Deseados (Top 5)</h3>
+            <div id="top-productos-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+        <!-- Quick Actions -->
+        <section class="w-full flex flex-col gap-4">
+            <h3 class="font-h3 text-h3 text-on-surface px-2">Acciones Rápidas</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-card-gap">
+                <a href="nuevo-producto.html"
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-secondary-container/20 group-hover:bg-secondary-container/30 flex items-center justify-center text-secondary transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface text-center">Agregar Producto</span>
+                </a>
+                <a href="promonovedades.html"
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-primary-container/20 group-hover:bg-primary-container/30 flex items-center justify-center text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">campaign</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface text-center">Subir Promoción</span>
+                </a>
+                <a href="horario.html"
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-tertiary-container/20 group-hover:bg-tertiary-container/30 flex items-center justify-center text-tertiary transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">schedule</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface text-center">Editar Horario</span>
+                </a>
+                <a href="nuevo-producto.html"
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-primary-container/10 group-hover:bg-primary-container/20 flex items-center justify-center text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">add_box</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface text-center">Nuevo Producto</span>
+                </a>
+            </div>
+        </section>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+        class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface/70 dark:bg-surface-container-highest/70 backdrop-blur-20 shadow-lg shadow-primary/5 rounded-t-lg md:hidden">
+        <a href="dashboard.html"
+            class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-lg p-2 min-w-[64px] active:scale-90 transition-all duration-200">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+            <span class="font-label-sm text-label-sm mt-1">Home</span>
+        </a>
+        <a href="perfil.html"
+            class="flex flex-col items-center justify-center text-on-surface-variant p-2 min-w-[64px] hover:bg-primary/5 rounded-lg active:scale-90 transition-all duration-200">
+            <span class="material-symbols-outlined">person</span>
+            <span class="font-label-sm text-label-sm mt-1">Profile</span>
+        </a>
+        <a href="catalogo.html"
+            class="flex flex-col items-center justify-center text-on-surface-variant p-2 min-w-[64px] hover:bg-primary/5 rounded-lg active:scale-90 transition-all duration-200">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="font-label-sm text-label-sm mt-1">Catalog</span>
+        </a>
+        <a href="promonovedades.html"
+            class="flex flex-col items-center justify-center text-on-surface-variant p-2 min-w-[64px] hover:bg-primary/5 rounded-lg active:scale-90 transition-all duration-200">
+            <span class="material-symbols-outlined">campaign</span>
+            <span class="font-label-sm text-label-sm mt-1">Promos</span>
+        </a>
+        <a href="horario.html"
+            class="flex flex-col items-center justify-center text-on-surface-variant p-2 min-w-[64px] hover:bg-primary/5 rounded-lg active:scale-90 transition-all duration-200">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <span class="font-label-sm text-label-sm mt-1">Horarios</span>
+        </a>
+    </nav>
+    <!-- Desktop SideNav Placeholder for fluid-to-fixed model if needed on larger screens, though focus is mobile-first -->
+    <aside
+        class="hidden md:flex flex-col w-64 fixed left-0 top-20 h-[calc(100vh-80px)] bg-surface-container-lowest border-r border-outline-variant p-4 gap-2 z-40">
+        <a href="dashboard.html"
+            class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+            Home
+        </a>
+        <a href="perfil.html"
+            class="flex items-center gap-3 text-on-surface-variant hover:bg-primary/5 rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm">
+            <span class="material-symbols-outlined">person</span>
+            Profile
+        </a>
+        <a href="catalogo.html"
+            class="flex items-center gap-3 text-on-surface-variant hover:bg-primary/5 rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm">
+            <span class="material-symbols-outlined">inventory_2</span>
+            Catalog
+        </a>
+        <a href="promonovedades.html"
+            class="flex items-center gap-3 text-on-surface-variant hover:bg-primary/5 rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm">
+            <span class="material-symbols-outlined">campaign</span>
+            Promos
+        </a>
+        <a href="horario.html"
+            class="flex items-center gap-3 text-on-surface-variant hover:bg-primary/5 rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm">
+            <span class="material-symbols-outlined">calendar_today</span>
+            Horarios
+        </a>
+        <a href="nuevo-producto.html"
+            class="flex items-center gap-3 text-on-surface-variant hover:bg-primary/5 rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm">
+            <span class="material-symbols-outlined">add_box</span>
+            Nuevo Producto
+        </a>
+        <button onclick="cerrarSesion()"
+            class="flex items-center gap-3 text-red-600 hover:bg-red-50 rounded-lg p-3 w-full text-left transition-colors font-label-sm text-label-sm mt-auto">
+            <span class="material-symbols-outlined">logout</span>
+            Cerrar Sesión
+        </button>
+    </aside>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <!-- Adjust main padding for desktop sidebar -->
+    <style>
+        @media (min-width: 768px) {
+            main {
+                padding-left: calc(16rem + 2rem) !important;
+                /* sidebar width + container padding */
+            }
+        }
+    </style>
+</body>
+
+</html>

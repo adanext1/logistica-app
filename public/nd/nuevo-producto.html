@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nuevo Producto - Camino Real</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#fff8f6",
+                        "on-surface": "#251913",
+                        "inverse-primary": "#ffb690",
+                        "surface-container": "#ffeae0",
+                        "primary-container": "#f97316",
+                        "on-primary-container": "#582200",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#d0c5b3",
+                        "surface-variant": "#f6ded3",
+                        "outline": "#8c7164",
+                        "outline-variant": "#e0c0b1",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#edd5cb",
+                        "on-secondary-fixed-variant": "#7f2b00",
+                        "surface-tint": "#9d4300",
+                        "primary-fixed": "#ffdbca",
+                        "on-primary-fixed": "#341100",
+                        "on-surface-variant": "#584237",
+                        "on-secondary-fixed": "#370e00",
+                        "secondary-container": "#fd651e",
+                        "surface-bright": "#fff8f6",
+                        "error-container": "#ffdad6",
+                        "primary": "#9d4300",
+                        "tertiary-fixed": "#ede1cf",
+                        "on-tertiary-fixed": "#201b10",
+                        "on-tertiary-fixed-variant": "#4d4638",
+                        "primary-fixed-dim": "#ffb690",
+                        "surface": "#fff8f6",
+                        "on-secondary-container": "#571a00",
+                        "tertiary": "#655d4f",
+                        "on-tertiary-container": "#383125",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#3c2d26",
+                        "on-primary-fixed-variant": "#783200",
+                        "inverse-on-surface": "#ffede6",
+                        "surface-container-low": "#fff1eb",
+                        "secondary-fixed-dim": "#ffb599",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdbce",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#fce3d9",
+                        "secondary": "#a73a00",
+                        "tertiary-container": "#a39989",
+                        "on-background": "#251913",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#f6ded3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-gap": "1rem",
+                        "section-margin": "3rem",
+                        "unit": "4px",
+                        "gutter": "1.5rem",
+                        "container-padding": "2rem"
+                    },
+                    "fontFamily": {
+                        "h2": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "h3": ["Outfit"],
+                        "label-sm": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "caption": ["Outfit"],
+                        "h1": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "label-sm": ["14px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+        @media (min-width: 768px) {
+            main {
+                padding-left: calc(16rem + 2rem) !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background antialiased min-h-screen pb-24 pt-24 md:pb-8">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-container-padding h-20 bg-surface/70 backdrop-blur-xl shadow-sm shadow-primary/5">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/30 flex items-center justify-center">
+                <img id="dashboardLogoNegocio" src="" alt="Logo" class="w-full h-full object-cover hidden">
+                <span id="dashboardLogoPlaceholder" class="material-symbols-outlined text-primary">storefront</span>
+            </div>
+            <h1 id="dashboardNombreNegocio" class="font-h3 text-h3 text-primary font-bold truncate max-w-[200px] md:max-w-md">Cargando...</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface hover:bg-primary/10 transition-colors active:scale-95">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+            </button>
+            <button onclick="cerrarSesion()" aria-label="Cerrar sesión" class="w-10 h-10 rounded-full flex items-center justify-center text-red-600 hover:bg-red-50 transition-colors active:scale-95">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-section-margin flex items-center gap-4">
+            <a href="catalogo.html" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div>
+                <h2 class="font-h2 text-h2 text-on-surface">Agregar Nuevo Producto</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">Completa los detalles para publicar en tu catálogo.</p>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-6 lg:p-8 border border-outline-variant/30 space-y-8">
+            <!-- Product Photo -->
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-3">Foto del Producto</label>
+                <div onclick="document.getElementById('product_photo').click()"
+                    class="h-48 w-full border-2 border-dashed border-primary-fixed-dim/50 bg-surface-container-low rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors group overflow-hidden">
+                    <input type="file" id="product_photo" class="hidden" accept="image/*" onchange="previewImage(this)">
+                    <div id="photo_placeholder" class="flex flex-col items-center">
+                        <div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center text-primary mb-2 group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+                        </div>
+                        <span class="font-body-md text-body-md text-primary font-medium">Subir foto del producto</span>
+                        <span class="font-caption text-caption text-on-surface-variant mt-1">PNG o JPG (Máx. 5MB)</span>
+                    </div>
+                    <img id="photo_preview" class="hidden h-full w-full object-contain">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Name -->
+                <div class="md:col-span-2">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_name">Nombre del Producto</label>
+                    <input class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="product_name" placeholder="Ej. Costilla Aguja" type="text" />
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_price">Precio</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-on-surface-variant">$</span>
+                        <input class="w-full bg-surface-container-low border-outline-variant rounded-lg pl-8 pr-4 py-3 font-body-md" id="product_price" placeholder="0.00" type="number" />
+                    </div>
+                </div>
+
+                <!-- Unit -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_unit">Unidad de Venta</label>
+                    <select class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md appearance-none" id="product_unit">
+                        <option value="kg">por kg</option>
+                        <option value="pieza">por pieza</option>
+                        <option value="litro">por litro</option>
+                    </select>
+                </div>
+
+                <!-- Category -->
+                <div class="md:col-span-2">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_category">Categoría</label>
+                    <select class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md appearance-none" id="product_category">
+                        <option disabled selected value="">Cargando categorías...</option>
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="md:col-span-2">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_description">Descripción (Opcional)</label>
+                    <textarea class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md resize-none" id="product_description" rows="3" placeholder="Agrega detalles sobre el producto..."></textarea>
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+                <div>
+                    <span class="block font-body-md font-medium text-on-surface">Disponible en la tienda</span>
+                    <span class="block font-caption text-on-surface-variant">Los clientes podrán comprarlo ahora.</span>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input checked class="sr-only peer" type="checkbox" id="esta_disponible" />
+                    <div class="w-11 h-6 bg-surface-variant rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                </label>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex flex-col md:flex-row-reverse gap-3 pt-4">
+                <button class="w-full md:w-auto bg-primary text-on-primary rounded-full px-12 py-4 font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center justify-center gap-2" type="button" id="saveProductBtn">
+                    <span class="material-symbols-outlined">save</span>
+                    Guardar Producto
+                </button>
+                <a href="catalogo.html" class="w-full md:w-auto border border-outline-variant text-on-surface rounded-full px-12 py-4 font-bold text-center hover:bg-surface-container transition-all">
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- BottomNavBar (Mobile) -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface/70 backdrop-blur-20 shadow-lg rounded-t-lg md:hidden">
+        <a href="dashboard.html" class="flex flex-col items-center p-2 min-w-[64px] text-on-surface-variant"><span class="material-symbols-outlined">home</span><span class="text-[10px] mt-1">Home</span></a>
+        <a href="perfil.html" class="flex flex-col items-center p-2 min-w-[64px] text-on-surface-variant"><span class="material-symbols-outlined">person</span><span class="text-[10px] mt-1">Perfil</span></a>
+        <a href="catalogo.html" class="flex flex-col items-center p-2 min-w-[64px] bg-primary-container text-on-primary-container rounded-lg"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span><span class="text-[10px] mt-1">Catálogo</span></a>
+        <a href="promonovedades.html" class="flex flex-col items-center p-2 min-w-[64px] text-on-surface-variant"><span class="material-symbols-outlined">campaign</span><span class="text-[10px] mt-1">Promos</span></a>
+        <a href="horario.html" class="flex flex-col items-center p-2 min-w-[64px] text-on-surface-variant"><span class="material-symbols-outlined">calendar_today</span><span class="text-[10px] mt-1">Horarios</span></a>
+    </nav>
+
+    <!-- SideNav (Desktop) -->
+    <aside class="hidden md:flex flex-col w-64 fixed left-0 top-20 h-[calc(100vh-80px)] bg-surface-container-lowest border-r border-outline-variant p-4 gap-2 z-40">
+        <a href="dashboard.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5 text-on-surface-variant"><span class="material-symbols-outlined">home</span>Home</a>
+        <a href="perfil.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5 text-on-surface-variant"><span class="material-symbols-outlined">person</span>Profile</a>
+        <a href="catalogo.html" class="flex items-center gap-3 p-3 rounded-lg bg-primary-container text-on-primary-container"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>Catalog</a>
+        <a href="promonovedades.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5 text-on-surface-variant"><span class="material-symbols-outlined">campaign</span>Promociones</a>
+        <a href="horario.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5 text-on-surface-variant"><span class="material-symbols-outlined">calendar_today</span>Horarios</a>
+    </aside>
+
+    <script src="js/auth.js"></script>
+    <script src="js/nuevo-producto.js"></script>
+</body>
+</html>
