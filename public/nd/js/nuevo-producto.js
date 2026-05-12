@@ -37,6 +37,41 @@ async function cargarCategorias(negocioId) {
     }
 }
 
+let variaciones = [];
+
+function addVariation() {
+    const input = document.getElementById('variation_input');
+    const value = input.value.trim();
+    if (!value) return;
+
+    if (variaciones.includes(value)) {
+        input.value = '';
+        return;
+    }
+
+    variaciones.push(value);
+    renderVariations();
+    input.value = '';
+    input.focus();
+}
+
+function removeVariation(index) {
+    variaciones.splice(index, 1);
+    renderVariations();
+}
+
+function renderVariations() {
+    const container = document.getElementById('variations_container');
+    container.innerHTML = variaciones.map((v, i) => `
+        <div class="flex items-center gap-2 bg-orange-100 text-orange-900 px-3 py-1.5 rounded-full text-sm font-bold animate-in zoom-in-50 duration-200">
+            <span>${v}</span>
+            <button onclick="removeVariation(${i})" type="button" class="w-4 h-4 rounded-full bg-orange-200 flex items-center justify-center hover:bg-orange-300 transition-colors">
+                <span class="material-symbols-outlined text-[12px] font-black">close</span>
+            </button>
+        </div>
+    `).join('');
+}
+
 async function guardarProducto(e, negocioId) {
     e.preventDefault();
     const btn = document.querySelector('button.bg-primary');
@@ -47,9 +82,9 @@ async function guardarProducto(e, negocioId) {
     const unidad = document.getElementById('product_unit').value;
     const categoria_id = document.getElementById('product_category').value;
     const descripcion = document.getElementById('product_description').value;
-    const fotoInput = document.getElementById('product_photo'); // Asegúrate de que el input tenga este ID
+    const fotoInput = document.getElementById('product_photo');
+    const esta_disponible = document.getElementById('esta_disponible').checked;
     
-    // Si el input de foto no tiene ID, intentamos buscarlo en el div de dropzone
     const dropzoneInput = document.querySelector('input[type="file"]');
     const fotoFile = (fotoInput ? fotoInput.files[0] : null) || (dropzoneInput ? dropzoneInput.files[0] : null);
 
@@ -70,7 +105,9 @@ async function guardarProducto(e, negocioId) {
         unidad,
         categoria_id,
         descripcion,
-        imagen_base64
+        imagen_base64,
+        variaciones,
+        disponible: esta_disponible
     };
 
     btn.innerHTML = "Guardando...";

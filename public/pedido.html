@@ -428,7 +428,7 @@
 
             try {
                 // 1. Guardar en Base de Datos primero
-                await fetch('/api/pedidos', {
+                const orderRes = await fetch('/api/pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -442,6 +442,14 @@
                         fotos: fotosBase64
                     })
                 });
+
+                // Registrar Evento de Conversión para Analíticas
+                if (orderRes.ok) {
+                    const orderData = await orderRes.json();
+                    // Usamos el ID del negocio que ya tenemos cargado
+                    // Necesitamos una función registrarEvento aquí también
+                    await registrarEventoGlobal(slug, 'order_init');
+                }
             } catch (error) {
                 console.error("El pedido no se guardó en la DB, pero redirigimos a WA de todos modos.");
             }
@@ -461,6 +469,24 @@
 
             btnConfirmarPedido.innerText = "¡Pedido enviado a WhatsApp!";
         });
+
+        async function registrarEventoGlobal(businessSlug, tipo) {
+            try {
+                // Buscamos el ID del negocio primero si no lo tenemos
+                const res = await fetch(`/api/negocio/${businessSlug}`);
+                const data = await res.json();
+                if (data.id) {
+                    await fetch('/api/eventos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            negocio_id: data.id,
+                            tipo_evento: tipo
+                        })
+                    });
+                }
+            } catch (e) { console.error("Error al registrar evento:", e); }
+        }
 
         // Arrancar la magia al cargar la página
         cargarDatosNegocio();

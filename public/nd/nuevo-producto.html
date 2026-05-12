@@ -201,6 +201,21 @@
                     <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_description">Descripción (Opcional)</label>
                     <textarea class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md resize-none" id="product_description" rows="3" placeholder="Agrega detalles sobre el producto..."></textarea>
                 </div>
+
+                <!-- Variations (Flavors, Options) -->
+                <div class="md:col-span-2 space-y-3">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Variaciones / Sabores (Opcional)</label>
+                    <div class="flex gap-2">
+                        <input class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="variation_input" placeholder="Ej. BBQ, Mango, Picante..." type="text" onkeypress="if(event.key === 'Enter') addVariation()"/>
+                        <button onclick="addVariation()" type="button" class="bg-primary-container text-on-primary-container px-6 rounded-lg font-bold hover:bg-primary-container/80 transition-colors">
+                            Añadir
+                        </button>
+                    </div>
+                    <div id="variations_container" class="flex flex-wrap gap-2 pt-2">
+                        <!-- Chips will appear here -->
+                    </div>
+                    <p class="text-[11px] text-on-surface-variant italic">Ingresa el sabor y presiona Añadir. Ej: BBQ, Buffalo, Lemon Pepper.</p>
+                </div>
             </div>
 
             <!-- Availability -->

@@ -49,6 +49,109 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Estilos Historias */
+        .story-card {
+            aspect-ratio: 9/16;
+            width: 140px;
+            flex-shrink: 0;
+            border-radius: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 640px) {
+            .story-card {
+                width: 180px;
+            }
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        /* Viewer Stories (TikTok Style) */
+        #viewerStories {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .story-track {
+            height: 100%;
+            width: 100%;
+            max-width: 500px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+
+        .story-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story-slide {
+            height: 100%;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .story-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.4) 100%);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .story-content {
+            pointer-events: auto;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            flex: 1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+        }
     </style>
 </head>
 
@@ -111,58 +214,19 @@
 
         <!-- SECCIÓN 1: HISTORIAS / PROMOS DINÁMICAS -->
         <div id="seccionPromos" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
-            <h2 class="text-xs font-extrabold tracking-widest text-orange-600 uppercase mb-4 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Promos en vivo
-            </h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xs font-extrabold tracking-widest text-orange-600 uppercase flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Promos en vivo
+                </h2>
+                <span class="text-[10px] font-bold text-slate-400">Desliza para ver más</span>
+            </div>
 
-            <div class="flex gap-4 sm:gap-6 overflow-x-auto hide-scrollbar pb-4 pt-1 px-1">
-                <!-- Historia Nueva -->
-                <button
-                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
-                    <div
-                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-gradient-to-tr from-orange-400 via-red-500 to-purple-500 shadow-md group-hover:shadow-lg">
-                        <div class="w-full h-full bg-white rounded-full p-1 border-2 border-white">
-                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop"
-                                class="w-full h-full rounded-full object-cover" alt="Pizza Promo">
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold text-slate-800">2x1 Pizzas</span>
-                </button>
-
-                <!-- Historia Nueva -->
-                <button
-                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
-                    <div
-                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-gradient-to-tr from-orange-400 via-red-500 to-purple-500 shadow-md group-hover:shadow-lg">
-                        <div class="w-full h-full bg-white rounded-full p-1 border-2 border-white">
-                            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=200&h=200&fit=crop"
-                                class="w-full h-full rounded-full object-cover" alt="Burger Promo">
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold text-slate-800">Combos</span>
-                </button>
-
-                <!-- Historia Vista (Gris) -->
-                <button
-                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
-                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[2px] bg-slate-300 shadow-sm">
-                        <div class="w-full h-full bg-white rounded-full p-1 border-2 border-white">
-                            <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?w=200&h=200&fit=crop"
-                                class="w-full h-full rounded-full object-cover opacity-80" alt="Carnes">
-                        </div>
-                    </div>
-                    <span class="text-xs font-medium text-slate-500">Parrillada</span>
-                </button>
-
-                <!-- Botón de Negocios (Añadir promo) -->
-                <button
-                    class="flex flex-col items-center gap-2 group flex-shrink-0 cursor-pointer hover:-translate-y-1 transition-transform">
-                    <div
-                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-orange-300 bg-orange-50 flex items-center justify-center text-orange-400 group-hover:bg-orange-100 group-hover:border-orange-400 transition-colors">
-                        <i data-feather="plus" class="w-8 h-8"></i>
-                    </div>
-                    <span class="text-xs font-bold text-orange-600">Tu Promo Aquí</span>
-                </button>
+            <div id="gridPromos" class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 pt-1 px-1">
+                <!-- Skeletons Promos -->
+                <div class="story-card animate-pulse bg-orange-100"></div>
+                <div class="story-card animate-pulse bg-orange-100"></div>
+                <div class="story-card animate-pulse bg-orange-100"></div>
+                <div class="story-card animate-pulse bg-orange-100"></div>
             </div>
         </div>
 
@@ -175,88 +239,12 @@
                 <h2 class="text-3xl font-extrabold text-slate-900 leading-none">Top en La Paz</h2>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px] md:auto-rows-[220px]">
-
-                <!-- Bento VIP (2x2) -->
-                <a href="/carniceria-talamantes"
-                    class="col-span-2 md:col-span-2 row-span-1 sm:row-span-2 relative rounded-[2rem] overflow-hidden group shadow-md border-2 border-white">
-                    <img src="https://images.unsplash.com/photo-1603048297172-c92544798d5e?q=80&w=800&auto=format&fit=crop"
-                        alt="Carnicería Talamantes"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90">
-                    </div>
-
-                    <div class="absolute inset-0 p-5 sm:p-8 flex flex-col justify-end">
-                        <div
-                            class="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl p-1 shadow-xl mb-3 border border-slate-100">
-                            <img src="https://ui-avatars.com/api/?name=CT&background=f97316&color=fff&size=128"
-                                alt="Logo" class="w-full h-full rounded-lg">
-                        </div>
-                        <h3 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1 sm:mb-2 leading-tight">Carnicería
-                            Talamantes</h3>
-                        <p class="text-orange-100 text-xs sm:text-sm font-medium mb-3 sm:mb-5 hidden sm:block">Cortes finos y paquetes para parrilladas
-                            locales.</p>
-
-                        <div
-                            class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 sm:py-3.5 px-4 sm:px-6 rounded-xl w-max flex items-center gap-2 transition-colors shadow-lg shadow-orange-500/30 text-xs sm:text-sm">
-                            <i data-feather="shopping-bag" class="w-4 h-4"></i> Pedir ahora
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Bento Horizontal (2x1) -->
-                <a href="/sushi-loko"
-                    class="col-span-2 md:col-span-2 row-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white">
-                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=800&auto=format&fit=crop"
-                        alt="Sushi Loko"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent">
-                    </div>
-
-                    <div class="absolute inset-0 p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-xl p-1 shadow-lg flex-shrink-0">
-                            <img src="https://ui-avatars.com/api/?name=SL&background=0f172a&color=fff" alt="Logo"
-                                class="w-full h-full rounded-lg">
-                        </div>
-                        <div>
-                            <h3 class="text-lg sm:text-2xl font-extrabold text-white mb-1">Sushi Loko</h3>
-                            <p class="text-slate-300 text-xs sm:text-sm mb-1 sm:mb-3">Rollos y promociones</p>
-                            <span
-                                class="text-orange-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                                <i data-feather="clock" class="w-3 h-3"></i> 30 min
-                            </span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Bento Cuadrado 1 (1x1) -->
-                <a href="/cafe-brisa"
-                    class="col-span-1 row-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white">
-                    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400&auto=format&fit=crop"
-                        alt="Café Brisa"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-80"></div>
-
-                    <div class="absolute bottom-0 left-0 p-4 sm:p-5 w-full">
-                        <h3 class="text-base sm:text-lg font-extrabold text-white">Café Brisa</h3>
-                        <p class="text-orange-200 text-[10px] sm:text-xs font-medium">Postres y Frappes</p>
-                    </div>
-                </a>
-
-                <!-- Bento Cuadrado 2 (1x1) -->
-                <a href="/tacos-fuego"
-                    class="col-span-1 row-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white">
-                    <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=400&auto=format&fit=crop"
-                        alt="Tacos Fuego"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-80"></div>
-
-                    <div class="absolute bottom-0 left-0 p-4 sm:p-5 w-full">
-                        <h3 class="text-base sm:text-lg font-extrabold text-white">Tacos Fuego</h3>
-                        <p class="text-orange-200 text-[10px] sm:text-xs font-medium">Cenas y antojitos</p>
-                    </div>
-                </a>
+            <div id="gridTop" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Skeletons Top -->
+                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
             </div>
         </div>
 
@@ -319,6 +307,26 @@
             </div>
         </div>
 
+        <!-- VIEWER STORIES (TIKTOK STYLE) -->
+        <div id="viewerStories">
+            <div class="progress-bar-container" id="progressBarContainer"></div>
+            
+            <button onclick="cerrarViewer()" class="absolute top-10 right-6 z-50 text-white p-2 bg-black/20 rounded-full backdrop-blur-md">
+                <i data-feather="x" class="w-6 h-6"></i>
+            </button>
+
+            <div id="storyTrack" class="story-track">
+                <!-- Slides dinámicos -->
+            </div>
+
+            <!-- Botón de Acción Fijo en el Viewer -->
+            <div class="absolute bottom-10 left-0 right-0 px-10 z-50 pointer-events-none">
+                <a id="btnStoryAction" href="#" class="pointer-events-auto block w-full bg-orange-600 text-white text-center font-bold py-4 rounded-2xl shadow-2xl transform active:scale-95 transition-all">
+                    PEDIR AHORA
+                </a>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -362,11 +370,15 @@
             return posEnCiclo === 0 ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
         }
 
-        function renderizarNegocios(negocios) {
+        function renderizarNegocios(negociosOrig) {
             const grid = document.getElementById('gridNegocios');
+            if (!grid) return;
+
+            // Filtrar el negocio del sistema para que no cuente ni se vea
+            const negocios = negociosOrig.filter(n => n.slug !== 'plataforma-rcr');
             grid.innerHTML = '';
 
-            if (!negocios || negocios.length === 0) {
+            if (negocios.length === 0) {
                 actualizarContador(0);
                 grid.innerHTML = `
                     <div class="col-span-full text-center py-16 px-6 bg-white rounded-3xl border border-orange-100 shadow-sm">
@@ -383,7 +395,8 @@
             actualizarContador(negocios.length);
 
             negocios.forEach((n, index) => {
-                const foto = fotosPlaceholders[index % fotosPlaceholders.length];
+                if (n.slug === 'plataforma-rcr') return;
+                const foto = n.splash_url || fotosPlaceholders[index % fotosPlaceholders.length];
                 const posEnCiclo = index % 5;
                 const bentoClass = getBentoClass(posEnCiclo);
                 const isLarge = posEnCiclo === 0;
@@ -422,9 +435,208 @@
                         </div>` : ''}
                     </div>
                 `;
+                card.addEventListener('click', () => registrarEvento(n.id, 'click_negocio_grid'));
                 grid.appendChild(card);
             });
             feather.replace();
+        }
+
+        // --- Stories Logic ---
+        let ofertasAgrupadas = [];
+        let currentGroupIndex = 0;
+        let currentPromoIndex = 0;
+        let storyInterval = null;
+
+        function abrirViewer(groupIndex) {
+            currentGroupIndex = groupIndex;
+            currentPromoIndex = 0;
+            const grupo = ofertasAgrupadas[currentGroupIndex];
+            
+            const viewer = document.getElementById('viewerStories');
+            const track = document.getElementById('storyTrack');
+            const progressContainer = document.getElementById('progressBarContainer');
+            
+            viewer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Render slides
+            track.innerHTML = grupo.promos.map((p, i) => `
+                <div class="story-slide" id="slide-${i}">
+                    <img src="${p.imagen_url}" class="story-img" alt="${p.titulo}">
+                    <div class="story-overlay">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-white">
+                                <img src="${grupo.negocio.logo_url || 'https://ui-avatars.com/api/?name=' + grupo.negocio.nombre_comercial}" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-white font-bold text-sm shadow-sm">${grupo.negocio.nombre_comercial}</span>
+                        </div>
+                        <div class="story-content text-white mb-20">
+                            <h3 class="text-2xl font-black mb-1">${p.titulo}</h3>
+                            <p class="text-sm opacity-90">${p.descripcion || ''}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render progress bars
+            progressContainer.innerHTML = grupo.promos.map((_, i) => `
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fill-${i}"></div>
+                </div>
+            `).join('');
+
+            document.getElementById('btnStoryAction').href = `/${grupo.negocio.slug}`;
+            
+            startStoryTimer();
+            feather.replace();
+        }
+
+        function startStoryTimer() {
+            if (storyInterval) clearInterval(storyInterval);
+            
+            let progress = 0;
+            const duration = 5000; // 5 segundos por historia
+            const step = 50; // actualizar cada 50ms
+            const increment = (step / duration) * 100;
+            
+            const fill = document.getElementById(`fill-${currentPromoIndex}`);
+            
+            storyInterval = setInterval(() => {
+                progress += increment;
+                if (fill) fill.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    siguientePromo();
+                }
+            }, step);
+        }
+
+        function siguientePromo() {
+            clearInterval(storyInterval);
+            const grupo = ofertasAgrupadas[currentGroupIndex];
+            
+            if (currentPromoIndex < grupo.promos.length - 1) {
+                currentPromoIndex++;
+                const slide = document.getElementById(`slide-${currentPromoIndex}`);
+                slide.scrollIntoView({ behavior: 'smooth' });
+                startStoryTimer();
+            } else {
+                cerrarViewer();
+            }
+        }
+
+        function cerrarViewer() {
+            clearInterval(storyInterval);
+            document.getElementById('viewerStories').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        async function cargarOfertas() {
+            try {
+                const res = await fetch('/api/ofertas');
+                ofertasAgrupadas = await res.json();
+                
+                const grid = document.getElementById('gridPromos');
+                if (ofertasAgrupadas.length === 0) {
+                    document.getElementById('seccionPromos').style.display = 'none';
+                    return;
+                }
+
+                grid.innerHTML = ofertasAgrupadas.map((grupo, idx) => `
+                    <div class="story-card group" onclick="registrarEvento('${grupo.negocio.id}', 'view_story'); abrirViewer(${idx})">
+                        <img src="${grupo.promos[0].imagen_url}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute top-2 left-2">
+                            <div class="w-8 h-8 rounded-full border-2 border-orange-500 overflow-hidden bg-white">
+                                <img src="${grupo.negocio.logo_url || 'https://ui-avatars.com/api/?name=' + grupo.negocio.nombre_comercial}" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <div class="absolute bottom-3 left-3 right-3">
+                            <p class="text-white text-[10px] font-black uppercase leading-tight truncate">${grupo.negocio.nombre_comercial}</p>
+                            <p class="text-orange-400 text-[8px] font-bold">${grupo.promos.length} oferta${grupo.promos.length > 1 ? 's' : ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error("Error al cargar ofertas:", err);
+                document.getElementById('seccionPromos').style.display = 'none';
+            }
+        }
+
+        async function cargarTopNegocios() {
+            try {
+                const res = await fetch('/api/negocios');
+                const negocios = await res.json();
+                
+                // Filtrar premium o simplemente los primeros 4 para el bento
+                // Filtrar sistema y tomar 4 premium
+                const top = negocios
+                    .filter(n => n.plan === 'premium' && n.slug !== 'plataforma-rcr')
+                    .slice(0, 4);
+                
+                // Si no hay 4 premium, rellenar con genéricos
+                if (top.length < 4) {
+                    const otros = negocios.filter(n => 
+                        n.plan !== 'premium' && 
+                        n.slug !== 'plataforma-rcr' && 
+                        !top.find(t => t.id === n.id)
+                    );
+                    top.push(...otros.slice(0, 4 - top.length));
+                }
+
+                const grid = document.getElementById('gridTop');
+                grid.innerHTML = '';
+
+                top.forEach((n, idx) => {
+                    const card = document.createElement('a');
+                    card.href = `/${n.slug}`;
+                    card.className = `relative rounded-[2rem] overflow-hidden group shadow-md border-2 border-white transition-all duration-500 hover:shadow-xl aspect-video sm:aspect-square lg:aspect-[4/5]`;
+                    
+                    const fotoFondo = n.splash_url || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800';
+                    
+                    card.innerHTML = `
+                        <img src="${fotoFondo}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-90"></div>
+                        
+                        <div class="absolute inset-0 p-5 flex flex-col justify-end">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-white rounded-xl p-1 shadow-xl border border-slate-100 flex-shrink-0">
+                                    <img src="${n.logo_url || 'https://ui-avatars.com/api/?name=' + n.nombre_comercial}" class="w-full h-full rounded-lg object-cover">
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h3 class="text-lg font-extrabold text-white leading-tight truncate">${n.nombre_comercial}</h3>
+                                    <p class="text-orange-200 text-[10px] font-medium truncate">${n.description || 'Calidad garantizada'}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white/10 backdrop-blur-md text-white border border-white/20 font-bold py-2 px-4 rounded-xl w-full text-center text-xs transition-all group-hover:bg-orange-500 group-hover:border-orange-500 group-hover:shadow-lg group-hover:shadow-orange-500/30">
+                                Ver tienda
+                            </div>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => registrarEvento(n.id, 'click_top'));
+                    grid.appendChild(card);
+                });
+                feather.replace();
+            } catch (err) {
+                console.error("Error al cargar top:", err);
+            }
+        }
+
+        async function registrarEvento(negocioId, tipo, detalles = {}) {
+            try {
+                await fetch('/api/eventos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        negocio_id: negocioId,
+                        tipo_evento: tipo,
+                        detalles
+                    })
+                });
+            } catch (e) {
+                // Silencioso
+            }
         }
 
         async function cargarNegocios() {
@@ -432,6 +644,7 @@
                 const response = await fetch('/api/negocios');
                 todosLosNegocios = await response.json();
                 renderizarNegocios(todosLosNegocios);
+                cargarTopNegocios(); // Llamar después de tener los datos (aunque aquí vuelve a hacer fetch, podríamos reusar)
             } catch (error) {
                 console.error('Error al cargar negocios:', error);
                 document.getElementById('contadorResultados').textContent = 'Error';
@@ -479,7 +692,15 @@
             }
         });
 
-        cargarNegocios();
+        const PLATAFORMA_ID = '02174c9f-7fc7-4ad1-9c1c-5a2d7500a5b9';
+
+        // --- Iniciar ---
+        async function iniciar() {
+            await cargarNegocios();
+            await cargarOfertas();
+            registrarEvento(PLATAFORMA_ID, 'view_directory');
+        }
+        iniciar();
     </script>
 </body>
 

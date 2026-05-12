@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Estadísticas de Productos - Camino Real</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#9d4300",
+                        "surface": "#fff8f6",
+                        "on-surface": "#251913",
+                        "outline-variant": "#e0c0b1",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-12">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 flex items-center gap-4 px-6 h-20 bg-white/80 backdrop-blur-xl border-b border-outline-variant/30">
+        <a href="dashboard.html" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-50 transition-colors">
+            <span class="material-symbols-outlined text-primary">arrow_back</span>
+        </a>
+        <h1 class="text-xl font-bold text-primary">Análisis de Rendimiento</h1>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6 pt-24 space-y-6">
+        <!-- Filtros de Tiempo -->
+        <div class="space-y-4">
+            <div class="flex flex-wrap justify-center gap-2 p-1 bg-orange-50 rounded-2xl mx-auto border border-orange-100 w-full max-w-full">
+                <button onclick="cargarRendimiento(7)" class="filter-btn px-6 py-2 rounded-xl text-xs font-bold transition-all bg-primary text-white">7 DÍAS</button>
+                <button onclick="cargarRendimiento(15)" class="filter-btn px-6 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-orange-100">15 DÍAS</button>
+                <button onclick="cargarRendimiento(30)" class="filter-btn px-6 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-orange-100">MES</button>
+                <button onclick="toggleCustomRange()" class="filter-btn px-6 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-orange-100 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">calendar_month</span>
+                    PERSONALIZADO
+                </button>
+            </div>
+
+            <!-- Panel de Rango Personalizado -->
+            <div id="custom-range-panel" class="hidden animate-in fade-in slide-in-from-top-2 duration-300 max-w-sm mx-auto bg-white p-4 rounded-2xl border border-orange-100 shadow-sm space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Desde</label>
+                        <input type="date" id="start-date" class="w-full bg-orange-50 border-none rounded-xl text-sm p-2 outline-none focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Hasta</label>
+                        <input type="date" id="end-date" class="w-full bg-orange-50 border-none rounded-xl text-sm p-2 outline-none focus:ring-2 focus:ring-primary/20">
+                    </div>
+                </div>
+                <button onclick="aplicarRangoPersonalizado()" class="w-full bg-primary text-white py-2 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                    Aplicar Filtro
+                </button>
+            </div>
+        </div>
+
+        <section class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100/50">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+                    <span class="material-symbols-outlined">analytics</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Ranking de Preferencia</h2>
+                    <p class="text-xs text-slate-500">¿Qué productos añaden más al carrito?</p>
+                </div>
+            </div>
+
+            <div id="loading" class="flex flex-col items-center py-12 space-y-4">
+                <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                <p class="text-sm text-slate-400 font-medium">Calculando ranking...</p>
+            </div>
+
+            <div id="listaProductos" class="space-y-6">
+                <!-- Product rows will appear here -->
+            </div>
+
+            <div id="no-data" class="hidden flex flex-col items-center py-12 text-center">
+                <span class="material-symbols-outlined text-4xl text-slate-200 mb-2">shopping_cart_off</span>
+                <p class="text-sm text-slate-400">No hay interacciones en este periodo.</p>
+            </div>
+
+            <!-- Nota de Interpretación (Productos) -->
+            <div class="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-2xl flex gap-3">
+                <span class="material-symbols-outlined text-blue-500 flex-shrink-0">lightbulb</span>
+                <div>
+                    <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1">¿Cómo interpretamos esto?</h3>
+                    <p class="text-[11px] text-blue-800 leading-relaxed">
+                        Este ranking muestra los productos que más interés generaron. Si un producto tiene <strong>muchos clics</strong> pero <strong>pocas ventas finales</strong>, revisa si el precio es competitivo o si le faltan opciones (como sabores o tamaños).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Promos -->
+        <section class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100/50">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+                    <span class="material-symbols-outlined">campaign</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Alcance de Promos (Historias)</h2>
+                    <p class="text-xs text-slate-500">Vistas totales de tus publicaciones tipo historia.</p>
+                </div>
+            </div>
+
+            <div id="loadingPromos" class="flex flex-col items-center py-12 space-y-4">
+                <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                <p class="text-sm text-slate-400 font-medium">Analizando impacto...</p>
+            </div>
+
+            <div id="listaPromos" class="space-y-4">
+                <!-- Promo rows will appear here -->
+            </div>
+
+            <div id="no-data-promos" class="hidden flex flex-col items-center py-12 text-center">
+                <span class="material-symbols-outlined text-4xl text-slate-200 mb-2">visibility_off</span>
+                <p class="text-sm text-slate-400">No hay vistas registradas en este periodo.</p>
+            </div>
+
+            <!-- Nota de Interpretación (Promos) -->
+            <div class="mt-8 p-4 bg-orange-50 border border-orange-100 rounded-2xl flex gap-3">
+                <span class="material-symbols-outlined text-orange-500 flex-shrink-0">insights</span>
+                <div>
+                    <h3 class="text-xs font-bold text-orange-900 uppercase tracking-wider mb-1">¿Qué nos dice este dato?</h3>
+                    <p class="text-[11px] text-orange-800 leading-relaxed">
+                        El alcance mide la efectividad de tu publicidad visual. Un alto número de vistas en una promo significa que tu contenido es <strong>atractivo</strong>. Si el alcance es alto pero no hay clics en productos, podrías probar con ofertas más agresivas o llamados a la acción más claros.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function toggleCustomRange() {
+            const panel = document.getElementById('custom-range-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        async function aplicarRangoPersonalizado() {
+            const start = document.getElementById('start-date').value;
+            const end = document.getElementById('end-date').value;
+            if (!start || !end) return alert("Selecciona ambas fechas");
+            
+            cargarRendimiento(null, start, end);
+            toggleCustomRange();
+        }
+
+        async function cargarRendimiento(range, start = null, end = null) {
+            // UI Update
+            if (window.event && window.event.target && window.event.target.classList && window.event.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-primary', 'text-white');
+                    btn.classList.add('bg-white', 'border', 'border-orange-100');
+                });
+                window.event.target.classList.add('bg-primary', 'text-white');
+                window.event.target.classList.remove('bg-white', 'border', 'border-orange-100');
+            }
+
+            const negocioId = localStorage.getItem('negocio_id');
+            
+            // Cargar ambos en paralelo
+            cargarProductos(negocioId, range, start, end);
+            cargarPromos(negocioId, range, start, end);
+        }
+
+        async function cargarProductos(negocioId, range, start, end) {
+            const list = document.getElementById('listaProductos');
+            const loader = document.getElementById('loading');
+            const noData = document.getElementById('no-data');
+
+            list.innerHTML = '';
+            loader.classList.remove('hidden');
+            noData.classList.add('hidden');
+
+            try {
+                let url = `/api/negocio/${negocioId}/product-performance?`;
+                if (start && end) {
+                    url += `start=${start}&end=${end}`;
+                } else {
+                    url += `range=${range || 7}`;
+                }
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                loader.classList.add('hidden');
+                if (data.length === 0) {
+                    noData.classList.remove('hidden');
+                    return;
+                }
+
+                const maxCount = Math.max(...data.map(p => p.count), 1);
+
+                data.forEach(p => {
+                    const pct = (p.count / maxCount) * 100;
+                    const item = document.createElement('div');
+                    item.className = "flex items-center gap-4 group";
+                    item.innerHTML = `
+                        <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0">
+                            ${p.imagen_url ? `<img src="${p.imagen_url}" class="w-full h-full object-cover">` : '<span class="material-symbols-outlined text-slate-400 w-full h-full flex items-center justify-center">image</span>'}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1 items-end">
+                                <span class="text-sm font-bold text-slate-700">${p.nombre}</span>
+                                <span class="text-xs font-black text-primary">${p.count} <span class="text-[9px] font-medium text-slate-400">CLICS</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-primary h-full transition-all duration-1000" style="width: 0%" data-width="${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+
+                setTimeout(() => {
+                    document.querySelectorAll('[data-width]').forEach(el => {
+                        el.style.width = el.getAttribute('data-width');
+                    });
+                }, 100);
+
+            } catch (error) {
+                console.error(error);
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function cargarPromos(negocioId, range, start, end) {
+            const list = document.getElementById('listaPromos');
+            const loader = document.getElementById('loadingPromos');
+            const noData = document.getElementById('no-data-promos');
+
+            list.innerHTML = '';
+            loader.classList.remove('hidden');
+            noData.classList.add('hidden');
+
+            try {
+                let url = `/api/negocio/${negocioId}/promo-performance?`;
+                if (start && end) {
+                    url += `start=${start}&end=${end}`;
+                } else {
+                    url += `range=${range || 7}`;
+                }
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                loader.classList.add('hidden');
+                if (data.length === 0) {
+                    noData.classList.remove('hidden');
+                    return;
+                }
+
+                data.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = "flex items-center gap-4 p-3 rounded-2xl border border-slate-50 bg-slate-50/50";
+                    item.innerHTML = `
+                        <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                            <img src="${p.imagen_url}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-bold text-slate-800 line-clamp-1">${p.titulo}</h3>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="material-symbols-outlined text-sm text-orange-500" style="font-variation-settings: 'FILL' 1">visibility</span>
+                                <span class="text-lg font-black text-slate-900">${p.count}</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Vistas</span>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error(error);
+                loader.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => cargarRendimiento(7));
+    </script>
+</body>
+</html>

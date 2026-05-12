@@ -183,6 +183,21 @@
 
         // --- Obtener slug de la URL ---
         const slug = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
+        let negocioIdGlobal = null;
+
+        async function registrarEvento(negocioId, tipo, detalles = {}) {
+            try {
+                await fetch('/api/eventos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        negocio_id: negocioId,
+                        tipo_evento: tipo,
+                        detalles
+                    })
+                });
+            } catch (e) { }
+        }
 
         // --- Productos de ejemplo (estáticos) ---
         const productosEjemplo = [
@@ -199,9 +214,14 @@
         // --- Cargar datos del negocio ---
         async function cargarNegocio() {
             try {
+                console.log("Cargando tienda para slug:", slug);
                 const res = await fetch(`/api/negocio/${slug}`);
                 if (!res.ok) throw new Error('No encontrado');
                 const negocio = await res.json();
+                negocioIdGlobal = negocio.id;
+
+                // Registrar visita
+                registrarEvento(negocio.id, 'view');
 
                 // Título
                 document.title = `${negocio.nombre_comercial} | Repartidores Camino Real`;
@@ -273,6 +293,7 @@
         // --- Carrito ---
         function agregarAlCarrito(id) {
             carrito[id] = (carrito[id] || 0) + 1;
+            registrarEvento(negocioIdGlobal, 'cart', { producto_id: id });
             actualizarCarrito();
             renderizarProductos(filtroActual);
         }

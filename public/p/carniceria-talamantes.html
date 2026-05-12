@@ -1,290 +1,926 @@
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html class="dark scroll-smooth" lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carnicería Talamantes | Pedidos a Domicilio</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                    colors: {
-                        // Paleta Rústica Premium exclusiva para este negocio
-                        shop: { 50: '#fef2f2', 100: '#fee2e2', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 900: '#7f1d1d' }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <script src="https://unpkg.com/feather-icons"></script>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Carnicería Talamantes - Cortes Premium</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Leaflet para el Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        body {
-            background: #f5f5f4;
-        }
-
-        /* Tono stone-100 para un toque orgánico */
-        .hide-scrollbar::-webkit-scrollbar {
+        /* Hide scrollbar for carousels */
+        .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
 
-        .hide-scrollbar {
+        .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        .whatsapp-island {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            filter: blur(10px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        .active-touch:active {
+            transform: scale(0.94);
+            filter: brightness(1.2);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Animación de brillo para tarjetas */
+        .premium-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: rotate(45deg);
+            transition: 0.8s;
+        }
+
+        .premium-card:hover::after {
+            left: 100%;
+            top: 100%;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 61, 61, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(255, 61, 61, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 5px rgba(255, 61, 61, 0.2);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .logo-glow {
+            animation: pulse-glow 3s infinite;
+        }
+        /* Leaflet Popup Custom Styles */
+        .leaflet-popup-content-wrapper {
+            background: rgba(15, 15, 15, 0.9) !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px !important;
+            padding: 5px;
+        }
+        .leaflet-popup-tip {
+            background: rgba(15, 15, 15, 0.9) !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button {
+            color: white !important;
+            padding: 8px 10px 0 0;
+        }
     </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#abb4ff",
+                        "inverse-on-surface": "#2a1a18",
+                        "on-tertiary-fixed": "#000c61",
+                        "surface-variant": "#1c1412",
+                        "surface-dim": "#0a0707",
+                        "on-primary-container": "#ffa092",
+                        "secondary": "#add461",
+                        "tertiary-fixed": "#dfe0ff",
+                        "on-tertiary": "#001998",
+                        "on-surface": "#f9e0dc",
+                        "primary-fixed-dim": "#ffb4a8",
+                        "background": "#070404",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#0029dc",
+                        "on-secondary-container": "#c9f27c",
+                        "secondary-fixed-dim": "#add461",
+                        "on-secondary-fixed": "#131f00",
+                        "secondary-fixed": "#c8f17a",
+                        "on-primary": "#690000",
+                        "on-surface-variant": "#d6b6b1",
+                        "tertiary": "#bcc2ff",
+                        "outline-variant": "#3d2a28",
+                        "primary-fixed": "#ffdad4",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#f9dcd7",
+                        "on-secondary-fixed-variant": "#364e00",
+                        "on-primary-fixed": "#410000",
+                        "on-background": "#f9dcd7",
+                        "surface": "#0a0707",
+                        "primary": "#ff3d3d",
+                        "surface-tint": "#ffb4a8",
+                        "surface-container-highest": "#251b1a",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#bcc2ff",
+                        "primary-container": "#990000",
+                        "surface-container-high": "#1c1413",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#4f7000",
+                        "on-tertiary-fixed-variant": "#0027d4",
+                        "on-secondary": "#243600",
+                        "inverse-primary": "#b82014",
+                        "outline": "#856f6c",
+                        "on-primary-fixed-variant": "#930000",
+                        "surface-bright": "#2d201e",
+                        "surface-container": "#140e0d",
+                        "surface-container-lowest": "#050303",
+                        "surface-container-low": "#0f0a0a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "section-gap": "80px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": [
+                            "EB Garamond"
+                        ],
+                        "price-display": [
+                            "Hanken Grotesk"
+                        ],
+                        "body-md": [
+                            "Hanken Grotesk"
+                        ],
+                        "headline-lg": [
+                            "EB Garamond"
+                        ],
+                        "body-lg": [
+                            "Hanken Grotesk"
+                        ],
+                        "headline-lg-mobile": [
+                            "EB Garamond"
+                        ],
+                        "label-sm": [
+                            "Hanken Grotesk"
+                        ],
+                        "display-lg": [
+                            "EB Garamond"
+                        ]
+                    },
+                    "fontSize": {
+                        "headline-md": [
+                            "28px",
+                            {
+                                "lineHeight": "1.3",
+                                "fontWeight": "500"
+                            }
+                        ],
+                        "price-display": [
+                            "20px",
+                            {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "body-md": [
+                            "16px",
+                            {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "headline-lg": [
+                            "40px",
+                            {
+                                "lineHeight": "1.2",
+                                "fontWeight": "500"
+                            }
+                        ],
+                        "body-lg": [
+                            "18px",
+                            {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "headline-lg-mobile": [
+                            "32px",
+                            {
+                                "lineHeight": "1.2",
+                                "fontWeight": "500"
+                            }
+                        ],
+                        "label-sm": [
+                            "12px",
+                            {
+                                "lineHeight": "1",
+                                "letterSpacing": "0.1em",
+                                "fontWeight": "700"
+                            }
+                        ],
+                        "display-lg": [
+                            "64px",
+                            {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                            }
+                        ]
+                    }
+                },
+            },
+        }
+    </script>
 </head>
 
-<body class="text-stone-800 antialiased overflow-x-hidden pb-24">
-
-    <nav class="fixed w-full z-50 transition-all duration-300 bg-gradient-to-b from-stone-900/80 to-transparent"
-        id="navbar">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/directorio.html"
-                class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition border border-white/30">
-                <i data-feather="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="flex gap-2">
-                <button
-                    class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition border border-white/30">
-                    <i data-feather="share-2" class="w-5 h-5"></i>
+<body
+    class="bg-background text-on-background font-body-md min-h-screen flex flex-col selection:bg-[#B43238] selection:text-white pb-24">
+    <!-- TopNavBar -->
+    <nav
+        class="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl docked full-width top-0 fixed z-50 border-b border-outline-variant/10 shadow-sm w-full transition-all duration-300">
+        <div
+            class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+            <div class="flex items-center gap-4 group cursor-pointer">
+                <img alt="Logo" id="navLogo"
+                    class="h-12 w-12 object-cover rounded-full border-2 border-primary/50 logo-glow"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG9D1rP_dajrnfEQQtFgj4PyCdZtZx-IleRKzyu7_HYAQf6ggvZUqcqpmiDMRPnfF59UqBDWBeVyzBKFofp6e7om2s0_hp64NXE64vuJPOF15-7ocOV8aIM8Tqon-YJR1eu8GSzja8icFE7FQd-NMp_o6GlcaFMXB1MaAI_89twj7CNRr3VU-r6a2mZc7KVAaGFDKKf8yvSRzS0neXv002Dq1ByG_OiIvjTj3-RJoPs8taoDtdk_CH11uQ-siASW3-coM9fkLCnVY" />
+                <span id="navBusinessName"
+                    class="text-headline-md font-headline-md font-bold tracking-tight text-white uppercase drop-shadow-sm group-hover:text-primary transition-colors duration-500">Carnicería
+                    Talamantes</span>
+            </div>
+            <!-- Desktop Nav -->
+            <ul class="hidden md:flex gap-8 items-center">
+                <li><a class="text-[#B43238] dark:text-[#B43238] font-bold border-b-2 border-[#B43238] pb-1 text-label-sm font-label-sm hover:bg-white/5 transition-all duration-300"
+                        href="#">Inicio</a></li>
+                <li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-[#B43238] transition-colors text-label-sm font-label-sm hover:bg-white/5 transition-all duration-300"
+                        href="#maestria">Maestría</a></li>
+                <li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-[#B43238] transition-colors text-label-sm font-label-sm hover:bg-white/5 transition-all duration-300"
+                        href="#catalogo">Catálogo</a></li>
+                <li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-[#B43238] transition-colors text-label-sm font-label-sm hover:bg-white/5 transition-all duration-300"
+                        href="#b2b">B2B</a></li>
+            </ul>
+            <div class="flex items-center gap-4">
+                <button aria-label="menu" class="md:hidden text-on-surface">
+                    <span class="material-symbols-outlined">menu</span>
                 </button>
             </div>
         </div>
     </nav>
-
-    <header class="relative h-[35vh] sm:h-[45vh] w-full">
-        <img src="https://tse3.mm.bing.net/th/id/OIP.t7PIMaN4X8dtgcq2dAEnugHaEy?rs=1&pid=ImgDetMain&o=7&rm=3"
-            alt="Portada Carnicería" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/40 to-transparent"></div>
-    </header>
-
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 relative -mt-16 sm:-mt-24 z-10">
-        <div class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-xl border border-stone-100">
-
-            <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
-                <div
-                    class="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-2xl p-1 shadow-md border-2 border-shop-100 flex-shrink-0 -mt-12 sm:-mt-16">
-                    <img src="https://ui-avatars.com/api/?name=CT&background=dc2626&color=fff&size=128" alt="Logo"
-                        class="w-full h-full rounded-xl object-cover">
-                </div>
-
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <h1 class="text-2xl sm:text-3xl font-black text-stone-900 leading-tight">Carnicería y Abarrotes
-                            Talamantes</h1>
-                        <i data-feather="check-circle" class="w-5 h-5 text-blue-500 fill-blue-50"></i>
-                    </div>
-                    <p class="text-stone-500 text-sm mb-3">Cortes finos, productos locales y todo para tu despensa en un
-                        solo lugar.</p>
-
-                    <div class="flex flex-wrap gap-2 text-xs font-bold">
-                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-md flex items-center gap-1"><span
-                                class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Abierto ahora</span>
-                        <span class="bg-stone-100 text-stone-600 px-2 py-1 rounded-md flex items-center gap-1"><i
-                                data-feather="star" class="w-3 h-3 text-amber-500 fill-amber-500"></i> 4.9 (120+)</span>
-                        <span class="bg-shop-50 text-shop-600 px-2 py-1 rounded-md flex items-center gap-1"><i
-                                data-feather="map-pin" class="w-3 h-3"></i> Col. Centro, La Paz</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 mt-6 pt-6 border-t border-stone-100">
-                <button
-                    class="bg-stone-50 hover:bg-stone-100 text-stone-700 font-bold py-2.5 rounded-xl text-sm transition-colors border border-stone-200 flex items-center justify-center gap-2">
-                    <i data-feather="info" class="w-4 h-4"></i> Info y Horarios
-                </button>
-                <button
-                    class="bg-stone-50 hover:bg-stone-100 text-stone-700 font-bold py-2.5 rounded-xl text-sm transition-colors border border-stone-200 flex items-center justify-center gap-2">
-                    <i data-feather="image" class="w-4 h-4"></i> Ver Galería (5)
-                </button>
-            </div>
+    <section class="bg-black border-b border-white/5 py-3 px-margin-mobile md:px-margin-desktop mt-16 lg:mt-[73px]">
+        <div
+            class="max-w-container-max mx-auto flex justify-center items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[18px] text-primary">do_not_disturb_on</span>
+            <span class="tracking-widest uppercase opacity-80">⛔ Nuestras cuchillas están descansando. Abrimos mañana a
+                las 7:00
+                AM.</span>
         </div>
-    </div>
-
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 mt-8">
-
-        <div class="mb-10">
-            <div
-                class="bg-gradient-to-r from-shop-600 to-shop-900 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden shadow-lg">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                <div class="relative z-10 flex flex-col sm:flex-row items-center gap-6">
-                    <div
-                        class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 border border-white/30">
-                        <span class="text-3xl">🥩</span>
-                    </div>
-                    <div>
-                        <div class="text-shop-200 text-xs font-black uppercase tracking-widest mb-1">Promo Fin de Semana
-                        </div>
-                        <h3 class="text-xl sm:text-2xl font-bold mb-1">Paquete Parrillero Familiar</h3>
-                        <p class="text-shop-100 text-sm">2kg de Ribeye + 1 Bolsa de Carbón + Salsas caseras por solo
-                            $850. ¡Agrégalo al carrito!</p>
-                    </div>
-                </div>
-            </div>
+    </section>
+    <header class="relative w-full h-[100vh] flex items-center justify-center overflow-hidden bg-black">
+        <div class="absolute inset-0 z-0 h-[120%] -top-[10%]" id="parallax-bg" style="transform: translateY(0px);">
+            <img alt="SplashArt" id="heroSplash" class="w-full h-full object-cover opacity-80 scale-105"
+                src="https://carnesjc.com/cdn/shop/files/Cowboy.jpg?v=1693958312&width=3840" />
+            <!-- Gradiente reforzado para mejor lectura -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/30"></div>
         </div>
-
-        <div class="mb-6 sticky top-0 z-40 bg-[#f5f5f4] pt-2 pb-4">
-            <h2 class="text-xl font-black text-stone-900 mb-3">Menú Digital</h2>
-
-            <div class="flex gap-2 overflow-x-auto hide-scrollbar">
-                <button
-                    class="bg-shop-600 text-white px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap shadow-md">🍖
-                    Cortes Finos</button>
-                <button
-                    class="bg-white text-stone-600 hover:bg-stone-100 border border-stone-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition">🛒
-                    Abarrotes</button>
-                <button
-                    class="bg-white text-stone-600 hover:bg-stone-100 border border-stone-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition">🥤
-                    Bebidas</button>
-                <button
-                    class="bg-white text-stone-600 hover:bg-stone-100 border border-stone-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition">🔥
-                    Carbón y Extras</button>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            <div
-                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
-                <div class="w-24 h-24 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0">
-                    <img src="https://images.unsplash.com/photo-1603048297172-c92544798d5e?w=200&h=200&fit=crop"
-                        class="w-full h-full object-cover" alt="Ribeye">
-                </div>
-                <div class="flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Ribeye Calidad Choice</h3>
-                        <p class="text-xs text-stone-500 line-clamp-2">Corte grueso de 1 pulgada, ideal para asador.
-                            Precio por kilo.</p>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="font-black text-lg text-shop-600">$420<span
-                                class="text-xs text-stone-400 font-medium">/kg</span></span>
-                        <button
-                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-feather="plus" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
-                <div class="w-24 h-24 rounded-xl overflow-hidden bg-stone-100 flex-shrink-0">
-                    <img src="https://images.unsplash.com/photo-1558030006-450675393462?w=200&h=200&fit=crop"
-                        class="w-full h-full object-cover" alt="Arrachera">
-                </div>
-                <div class="flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Arrachera Marinada</h3>
-                        <p class="text-xs text-stone-500 line-clamp-2">Nuestra receta secreta de la casa. Lista para
-                            asar. Precio por kilo.</p>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="font-black text-lg text-shop-600">$380<span
-                                class="text-xs text-stone-400 font-medium">/kg</span></span>
-                        <button
-                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-feather="plus" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
-                <div
-                    class="w-24 h-24 rounded-xl bg-stone-50 flex-shrink-0 flex items-center justify-center text-3xl border border-stone-100">
-                    🥑
-                </div>
-                <div class="flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Aguacate Hass</h3>
-                        <p class="text-xs text-stone-500 line-clamp-2">Fresco y en su punto. Precio por kilo.</p>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="font-black text-lg text-shop-600">$85<span
-                                class="text-xs text-stone-400 font-medium">/kg</span></span>
-                        <button
-                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-feather="plus" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex gap-4 hover:shadow-md transition">
-                <div
-                    class="w-24 h-24 rounded-xl bg-stone-50 flex-shrink-0 flex items-center justify-center text-3xl border border-stone-100">
-                    🔥
-                </div>
-                <div class="flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-stone-900 leading-tight mb-1">Bolsa de Carbón (3kg)</h3>
-                        <p class="text-xs text-stone-500 line-clamp-2">Carbón de mezquite de encendido rápido.</p>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="font-black text-lg text-shop-600">$60<span
-                                class="text-xs text-stone-400 font-medium">/pza</span></span>
-                        <button
-                            class="w-8 h-8 bg-shop-50 text-shop-600 hover:bg-shop-600 hover:text-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-feather="plus" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div
-        class="fixed bottom-0 w-full bg-white border-t border-stone-200 p-4 sm:p-6 z-50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
-        <div class="max-w-4xl mx-auto">
-            <a href="/pedido.html?n=carniceria-talamantes"
-                class="w-full bg-shop-600 hover:bg-shop-700 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-between transition-colors shadow-lg shadow-shop-600/30">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center text-sm border border-white/30">
-                        2</div>
-                    <span>Confirmar Pedido</span>
-                </div>
-                <span class="text-lg">$800.00</span>
+        <div
+            class="relative z-10 text-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto flex flex-col items-center gap-stack-lg mt-16">
+            <h1 class="text-display-lg md:text-[104px] font-display-lg text-white max-w-5xl leading-none tracking-tighter drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] reveal"
+                style="text-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);">
+                EL ARTE DE UN <br /><span class="text-primary italic">BUEN CORTE.</span></h1>
+            <p class="text-body-lg font-body-lg text-white/90 max-w-2xl text-xl md:text-2xl drop-shadow-lg reveal"
+                style="text-shadow: 0 2px 10px rgba(0,0,0,0.9); transition-delay: 0.2s;">
+                Cortes **regionales y orgánicos** con atención de maestros carniceros. Directo a tu mesa o negocio.
+            </p>
+            <a href="https://wa.me/526121234567" target="_blank"
+                class="mt-6 mb-12 bg-primary text-white px-12 py-6 rounded-full text-label-md font-bold uppercase tracking-widest active-touch transition-all duration-500 shadow-[0_20px_40px_rgba(255,61,61,0.3)] flex items-center gap-3 reveal"
+                style="transition-delay: 0.4s;">
+                <span class="material-symbols-outlined">chat</span>
+                Pide por WhatsApp
             </a>
         </div>
+        <!-- Explorar centrado con w-full para evitar desfases -->
+        <div class="absolute bottom-10 left-0 w-full z-20 flex flex-col items-center gap-2 animate-bounce cursor-pointer group"
+            onclick="document.getElementById('maestria').scrollIntoView({behavior: 'smooth'})">
+            <span
+                class="text-[10px] text-white uppercase tracking-[0.4em] font-bold drop-shadow-md group-hover:text-primary transition-colors">Explorar</span>
+            <span
+                class="material-symbols-outlined text-white text-3xl drop-shadow-md group-hover:text-primary transition-colors">keyboard_arrow_down</span>
+        </div>
+    </header>
+    <!-- Maestría en Cortes Section -->
+    <section class="py-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full relative reveal"
+        id="maestria">
+        <!-- Glow de fondo para profundidad -->
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 blur-[120px] rounded-full z-0"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+            <div class="flex flex-col gap-8">
+                <span class="text-primary font-label-sm tracking-widest uppercase flex items-center gap-3">
+                    <span class="w-12 h-[2px] bg-primary"></span> Atención Personalizada
+                </span>
+                <h2 class="text-display-lg md:text-[64px] font-display-lg text-white leading-[1.1]">
+                    Tu carnicería de <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">confianza,
+                        en casa.</span>
+                </h2>
+                <p class="text-body-lg text-on-surface-variant/80 text-xl leading-relaxed max-w-xl">
+                    Desde un kilo para la comida del día hasta la carne para tu próximo evento. Somos especialistas en
+                    entregarte productos **regionales, orgánicos y frescos**.
+                </p>
+
+                <!-- Cards de Beneficios -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div
+                        class="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl flex flex-col gap-4 hover:bg-white/10 transition-all duration-500 group active-touch premium-card reveal">
+                        <div
+                            class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-3xl">recommend</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold text-lg">Trato Directo</h3>
+                            <p class="text-on-surface-variant text-sm mt-1">Atención de tú a tú.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl flex flex-col gap-4 hover:bg-white/10 transition-all duration-500 group active-touch premium-card reveal"
+                        style="transition-delay: 0.1s;">
+                        <div
+                            class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-3xl">local_shipping</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold text-lg">A Domicilio</h3>
+                            <p class="text-on-surface-variant text-sm mt-1">Llegamos a tu puerta.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl flex flex-col gap-4 hover:bg-white/10 transition-all duration-500 group active-touch premium-card reveal"
+                        style="transition-delay: 0.2s;">
+                        <div
+                            class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-3xl">eco</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold text-lg">100% Orgánico</h3>
+                            <p class="text-on-surface-variant text-sm mt-1">Calidad garantizada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button
+                        onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20atención%20personalizada%20para%20un%20pedido', '_blank')"
+                        class="flex items-center gap-3 text-white font-bold hover:text-primary transition-colors group">
+                        Hablar con un maestro carnicero
+                        <span
+                            class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visual para Móvil y Desktop -->
+            <div class="relative group">
+                <div
+                    class="absolute -inset-4 bg-primary/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                </div>
+                <div class="relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+                    <img alt="Maestro Carnicero"
+                        class="w-full h-[400px] md:h-[600px] object-cover hover:scale-105 transition-transform duration-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnd6Uu8n99pYIu-WvV-G5vVp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X-Wp9Vp9X" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <div class="absolute bottom-8 left-8">
+                        <p class="text-white font-display-lg text-2xl drop-shadow-lg italic">"La calidad no es una
+                            opción, es nuestra tradición."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Bento Box Gallery -->
+    <section class="py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full reveal"
+        id="catalogo">
+        <div class="mb-16 flex flex-col md:flex-row justify-between items-end gap-8 border-b border-white/5 pb-12">
+            <div class="max-w-2xl">
+                <span class="text-primary font-bold tracking-[0.4em] uppercase text-[10px] mb-4 block">Selección de
+                    Autor</span>
+                <h2 class="text-display-lg font-display-lg text-white md:text-[64px] leading-[0.9]">Tu despensa <span
+                        class="italic text-primary">completa.</span></h2>
+                <p class="text-body-lg text-on-surface-variant/70 mt-6 text-xl leading-relaxed">Curamos los mejores
+                    cortes regionales y básicos indispensables para tu mesa. Calidad de origen garantizada.</p>
+            </div>
+            <a href="https://wa.me/526121234567" target="_blank"
+                class="group flex items-center gap-4 bg-white/5 border border-white/10 px-8 py-4 rounded-full text-white font-bold hover:bg-primary transition-all duration-500 active-touch premium-card">
+                Precios del Día
+                <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">payments</span>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-6 h-auto md:h-[1100px]">
+            <!-- Principal: Cortes Regionales (2x2) -->
+            <div class="group relative overflow-hidden rounded-[40px] md:col-span-2 md:row-span-2 block h-[500px] md:h-full cursor-pointer active-touch premium-card shadow-2xl reveal"
+                onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20cotizar%20cortes%20regionales', '_blank')">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10 transition-opacity group-hover:opacity-80">
+                </div>
+                <img alt="Cortes Regionales"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms] ease-out"
+                    src="https://res.cloudinary.com/dpcm85ots/image/upload/v1778554779/Cowboy_vfsdrf.webp" />
+                <div class="absolute top-8 left-8 z-20">
+                    <span
+                        class="bg-primary/20 backdrop-blur-md border border-primary/50 text-primary text-[10px] font-bold uppercase tracking-widest px-5 py-2 rounded-full">Orgullo
+                        Regional</span>
+                </div>
+                <div class="absolute bottom-0 left-0 p-10 z-20 w-full">
+                    <h3 class="text-display-lg text-white text-5xl font-display-lg leading-none">Cortes <br /><span
+                            class="text-primary italic">Regionales</span></h3>
+                    <p class="text-on-surface-variant/80 text-lg mt-4 max-w-xs">La mejor selección de nuestra tierra con
+                        sabor auténtico.</p>
+                </div>
+            </div>
+
+            <!-- Secundaria: Cerdo Orgánico (1x1) -->
+            <!-- Secundaria: Cerdo Orgánico (1x1) -->
+            <div class="group relative overflow-hidden rounded-[40px] md:col-span-1 md:row-span-1 block h-[300px] md:h-full cursor-pointer active-touch premium-card reveal"
+                style="transition-delay: 0.1s;"
+                onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20cotizar%20cerdo%20orgánico', '_blank')">
+                <div class="absolute inset-0 bg-black/40 z-10 group-hover:bg-black/20 transition-all"></div>
+                <img alt="Cerdo Orgánico"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]"
+                    src="https://res.cloudinary.com/dpcm85ots/image/upload/v1778554915/CHULETA-DE-CERDO-RAL-070400-5-scaled_xqdnsd.jpg" />
+                <div class="absolute top-6 left-6 z-20">
+                    <span
+                        class="bg-[#25D366]/20 backdrop-blur-md border border-[#25D366]/50 text-[#25D366] text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Orgánico</span>
+                </div>
+                <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                    <h3 class="text-white font-bold text-2xl leading-none">Cerdo</h3>
+                    <p class="text-on-surface-variant text-[10px] mt-1">Sabor de rancho, 100% natural.</p>
+                </div>
+            </div>
+
+            <!-- Secundaria: Pollo Orgánico (1x1) -->
+            <div class="group relative overflow-hidden rounded-[40px] md:col-span-1 md:row-span-1 block h-[300px] md:h-full cursor-pointer active-touch premium-card reveal"
+                style="transition-delay: 0.2s;"
+                onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20cotizar%20pollo%20orgánico', '_blank')">
+                <div class="absolute inset-0 bg-black/40 z-10 group-hover:bg-black/20 transition-all"></div>
+                <img alt="Pollo Orgánico"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]"
+                    src="https://res.cloudinary.com/dpcm85ots/image/upload/v1778555220/01_Pollo-fresco-entero_uuuljx.jpg" />
+                <div class="absolute top-6 left-6 z-20">
+                    <span
+                        class="bg-[#25D366]/20 backdrop-blur-md border border-[#25D366]/50 text-[#25D366] text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">Orgánico</span>
+                </div>
+                <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                    <h3 class="text-white font-bold text-2xl leading-none">Pollo</h3>
+                    <p class="text-on-surface-variant text-[10px] mt-1">Frescura y nutrición de origen.</p>
+                </div>
+            </div>
+
+            <!-- Artesanales de la Casa (2x1) -->
+            <div class="group relative overflow-hidden rounded-[40px] md:col-span-2 md:row-span-1 block h-[350px] md:h-full cursor-pointer active-touch premium-card shadow-xl reveal"
+                style="transition-delay: 0.3s;"
+                onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20cotizar%20productos%20artesanales%20(machaca,%20chorizo,%20etc)', '_blank')">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent z-10"></div>
+                <img alt="Productos Artesanales"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]"
+                    src="https://res.cloudinary.com/dpcm85ots/image/upload/v1778555351/no_foto_c3ncrj.webp" />
+                <div class="absolute top-6 right-6 z-20">
+                    <span
+                        class="bg-primary/20 backdrop-blur-md border border-primary/50 text-primary text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full">Sin
+                        Conservadores</span>
+                </div>
+                <div class="absolute bottom-0 left-0 p-8 z-20 w-full">
+                    <h3 class="text-headline-lg text-white font-headline-lg text-3xl">Hecho en <span
+                            class="text-primary italic">Casa</span></h3>
+                    <p class="text-on-surface-variant text-sm mt-1">Machaca, Chicharrones y Chorizo artesanal.</p>
+                </div>
+            </div>
+
+            <!-- Quesos (1x1) -->
+            <div class="group relative overflow-hidden rounded-[40px] md:col-span-1 md:row-span-1 block h-[300px] md:h-full cursor-pointer active-touch premium-card reveal"
+                style="transition-delay: 0.4s;"
+                onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20cotizar%20quesos%20regionales', '_blank')">
+                <div class="absolute inset-0 bg-black/40 z-10"></div>
+                <img alt="Quesos"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]"
+                    src="https://res.cloudinary.com/dpcm85ots/image/upload/v1778554713/Queso-Panela_d4trbp.jpg" />
+                <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                    <h3 class="text-white font-bold text-2xl">Quesos</h3>
+                    <p class="text-on-surface-variant text-xs">Frescos regionales.</p>
+                </div>
+            </div>
+
+            <!-- Abarrotes (1x1) -->
+            <div class="group relative overflow-hidden rounded-[40px] md:col-span-1 md:row-span-1 block h-[300px] md:h-full cursor-pointer active-touch premium-card shadow-lg reveal"
+                style="transition-delay: 0.5s;"
+                onclick="window.open('https://wa.me/526121234567?text=Hola,%20quisiera%20cotizar%20abarrotes%20y%20complementos', '_blank')">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                </div>
+                <img alt="Abarrotes"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]"
+                    src="https://res.cloudinary.com/dpcm85ots/image/upload/v1778555783/como-acomodar-una-tienda-de-abarrotes_480x480_qzpmko.webp" />
+                <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                    <h3 class="text-white font-bold text-2xl leading-none">Abarrotes</h3>
+                    <p class="text-on-surface-variant text-[10px] mt-1">Canasta básica y verduras.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- B2B & Retail Section: Atención Personalizada -->
+    <section class="py-32 px-margin-mobile md:px-margin-desktop w-full relative overflow-hidden bg-black reveal" id="servicios">
+        <!-- Decoración de fondo -->
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div class="max-w-container-max mx-auto relative z-10">
+            <div class="text-center mb-20">
+                <span class="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Atención y Servicio</span>
+                <h2 class="text-display-lg md:text-[72px] font-display-lg text-white leading-[0.9] mb-8">Estamos para <span class="italic text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-red-400">servirte.</span></h2>
+                <p class="text-body-lg text-on-surface-variant/80 text-xl max-w-3xl mx-auto leading-relaxed">
+                    Ya sea un kilo para la comida de hoy o el banquete para tu evento más importante, nuestro compromiso es el mismo: **Calidad total y trato de amigos.**
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Card: Hogar -->
+                <div class="group relative bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-[40px] hover:bg-white/10 transition-all duration-700 cursor-pointer premium-card overflow-hidden"
+                    onclick="window.open('https://wa.me/526121234567?text=Hola,%20me%20gustaría%20hacer%20un%20pedido%20para%20mi%20casa', '_blank')">
+                    <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-20 transition-opacity duration-700">
+                        <span class="material-symbols-outlined text-[200px] text-white">home</span>
+                    </div>
+                    <div class="flex flex-col gap-6 relative z-10">
+                        <div class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-4xl">shopping_cart</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white text-3xl font-bold mb-3">Para tu Hogar</h3>
+                            <p class="text-on-surface-variant leading-relaxed">Surtimos tu despensa semanal con productos frescos y cortes a tu medida. **Pregunta sin compromiso**, ¡nos encanta atenderte!</p>
+                        </div>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-white/70 text-sm">
+                                <span class="material-symbols-outlined text-primary text-sm">check_circle</span> Sin mínimo de compra
+                            </li>
+                            <li class="flex items-center gap-3 text-white/70 text-sm">
+                                <span class="material-symbols-outlined text-primary text-sm">check_circle</span> Servicio a domicilio
+                            </li>
+                        </ul>
+                        <div class="mt-4 flex items-center gap-3 text-primary font-bold uppercase tracking-widest text-xs">
+                            Hacer pedido <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card: Eventos y Negocios -->
+                <div class="group relative bg-primary/10 backdrop-blur-md border border-primary/20 p-10 rounded-[40px] hover:bg-primary/20 transition-all duration-700 cursor-pointer premium-card overflow-hidden shadow-[0_20px_50px_rgba(180,50,56,0.1)]"
+                    onclick="window.open('https://wa.me/526121234567?text=Hola,%20me%20gustaría%20solicitar%20un%20presupuesto%20para%20un%20evento%20o%20negocio', '_blank')">
+                    <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-20 transition-opacity duration-700">
+                        <span class="material-symbols-outlined text-[200px] text-white">restaurant</span>
+                    </div>
+                    <div class="flex flex-col gap-6 relative z-10">
+                        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-4xl">celebration</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white text-3xl font-bold mb-3">Eventos y Mayoreo</h3>
+                            <p class="text-white/80 leading-relaxed">¿Tienes una carne asada, boda o restaurante? Ofrecemos **presupuestos personalizados** y descuentos por volumen.</p>
+                        </div>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-white/70 text-sm">
+                                <span class="material-symbols-outlined text-white text-sm">check_circle</span> Precios especiales por mayoreo
+                            </li>
+                            <li class="flex items-center gap-3 text-white/70 text-sm">
+                                <span class="material-symbols-outlined text-white text-sm">check_circle</span> Cotización inmediata sin costo
+                            </li>
+                        </ul>
+                        <div class="mt-4 flex items-center gap-3 text-white font-bold uppercase tracking-widest text-xs">
+                            Solicitar Presupuesto <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-[#050505] pt-32 pb-20 px-margin-mobile md:px-margin-desktop border-t border-white/5 relative overflow-hidden">
+        <!-- Glow decorativo -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/10 blur-[150px] rounded-full opacity-30"></div>
+        
+        <div class="max-w-container-max mx-auto relative z-10 flex flex-col items-center">
+            <!-- Logo Footer con Reflejo -->
+            <div class="flex flex-col items-center mb-24 group">
+                <img alt="Logo Footer" id="footerLogo" class="w-48 md:w-64 opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+                    src="https://umiuhyrntzjdqiuftpch.supabase.co/storage/v1/object/public/logos-comercios/logos/logo-18bc159e-f565-4cbb-87bb-c3b65139bdda_1778550756959.png" />
+                <div class="w-48 md:w-64 h-12 bg-gradient-to-b from-white/10 to-transparent opacity-20 scale-y-[-1] blur-[2px] transition-all group-hover:opacity-40"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 w-full text-center md:text-left">
+                <!-- Columna 1: Horarios -->
+                <div class="flex flex-col items-center md:items-start gap-6">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">schedule</span>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm">Horarios de Atención</h4>
+                    </div>
+                    <ul id="footerSchedule" class="text-white/80 space-y-3 w-full max-w-[280px] font-medium">
+                        <!-- Fallback si la API no trae horarios -->
+                        <li class="flex justify-between border-b border-white/10 pb-2 text-sm">Lunes - Sábado: <span class="text-white">7:00 AM - 5:00 PM</span></li>
+                        <li class="flex justify-between border-b border-white/10 pb-2 text-sm">Domingo: <span class="text-white">7:00 AM - 4:00 PM</span></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 2: Ubicación -->
+                <div class="flex flex-col items-center md:items-start gap-6">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">location_on</span>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm">Visítanos</h4>
+                    </div>
+                    <div class="w-full">
+                        <p id="footerAddress" class="mb-4 text-white/90 text-sm font-medium">De la Fuente 113, La Fuente, La Paz, B.C.S.</p>
+                        
+                        <!-- Contenedor del Mapa -->
+                        <div id="map" class="w-full h-48 rounded-2xl border border-white/10 mb-6 z-0 overflow-hidden shadow-lg grayscale-[0.5] invert-[0.9] hue-rotate-[180deg]"></div>
+
+                        <a id="googleMapsLink" href="https://maps.app.goo.gl/Yy7p7hP8LqX6pGvP7" target="_blank" 
+                            class="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-2 rounded-full text-white text-xs hover:bg-primary transition-all duration-500 group">
+                            Ver en Google Maps
+                            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">open_in_new</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Columna 3: Contacto Rápido -->
+                <div class="flex flex-col items-center md:items-start gap-6 lg:pl-12">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">support_agent</span>
+                        <h4 class="text-white font-bold uppercase tracking-widest text-sm">Atención Directa</h4>
+                    </div>
+                    <div class="flex flex-col items-center md:items-start gap-4">
+                        <p class="text-white/80 text-sm font-medium leading-relaxed">¿Tienes dudas? Escríbenos por WhatsApp y te atendemos de inmediato.</p>
+                        <div class="flex justify-center md:justify-start gap-4 mt-2 w-full">
+                            <a href="#" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10 hover:bg-[#25D366] hover:border-[#25D366] transition-all duration-500 hover:-translate-y-2">
+                                <span class="material-symbols-outlined text-white">chat</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="w-full mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] text-on-surface-variant/40 uppercase tracking-[0.2em] font-bold">
+                <p>© <span id="currentYear"></span> Carnicería Talamantes. Tradición en cada corte.</p>
+                <div class="flex gap-8">
+                    <a href="#" class="hover:text-primary transition-colors">Privacidad</a>
+                    <a href="#" class="hover:text-primary transition-colors">Términos</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- WhatsApp Dynamic Island -->
+    <div class="fixed bottom-4 right-4 z-[100] whatsapp-island cursor-pointer flex items-center justify-center bg-surface-variant/90 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-full text-white px-4 py-4 md:px-6 md:py-4 hover:bg-[#1B523E]/90 transition-all duration-300 group"
+        id="wa-island" onclick="window.open('https://wa.me/526121234567', '_blank')">
+        <div class="flex items-center gap-3">
+            <span class="relative flex h-3 w-3">
+                <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-[#25D366]"></span>
+            </span>
+            <span
+                class="text-label-sm font-label-sm tracking-wide whitespace-nowrap overflow-hidden transition-all duration-500 max-w-[300px] hidden md:block"
+                id="wa-text">WhatsApp</span>
+        </div>
     </div>
-
     <script>
-        feather.replace();
-
-        // Efecto del Navbar al hacer scroll
+        // Simple Parallax Effect
         window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                nav.classList.add('bg-white', 'shadow-md');
-                nav.classList.remove('bg-gradient-to-b', 'from-stone-900/80', 'to-transparent');
-                // Cambiar color de iconos
-                nav.querySelectorAll('a, button').forEach(el => {
-                    el.classList.remove('bg-white/20', 'text-white', 'border-white/30');
-                    el.classList.add('bg-stone-100', 'text-stone-800', 'border-stone-200');
-                });
+            const scrolled = window.scrollY;
+            const parallaxBg = document.getElementById('parallax-bg');
+            if (parallaxBg && scrolled < window.innerHeight) {
+                parallaxBg.style.transform = `translateY(${scrolled * 0.4}px)`;
+            }
+
+            // WhatsApp Island behavior
+            const waIsland = document.getElementById('wa-island');
+            const waText = document.getElementById('wa-text');
+
+            if (scrolled > 100) {
+                waText.textContent = "WhatsApp";
+                waIsland.classList.remove('px-6');
+                waIsland.classList.add('px-4');
             } else {
-                nav.classList.remove('bg-white', 'shadow-md');
-                nav.classList.add('bg-gradient-to-b', 'from-stone-900/80', 'to-transparent');
-                // Restaurar color de iconos
-                nav.querySelectorAll('a, button').forEach(el => {
-                    el.classList.add('bg-white/20', 'text-white', 'border-white/30');
-                    el.classList.remove('bg-stone-100', 'text-stone-800', 'border-stone-200');
-                });
+                waText.textContent = "WhatsApp";
+                waIsland.classList.add('px-6');
+                waIsland.classList.remove('px-4');
+            }
+        });
+
+        // Scroll Reveal Animation
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => {
+            const triggerBottom = window.innerHeight * 0.85;
+            revealElements.forEach(el => {
+                const elTop = el.getBoundingClientRect().top;
+                if (elTop < triggerBottom) {
+                    el.classList.add('active');
+                }
+            });
+        };
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Dynamic Data Loading
+        document.addEventListener('DOMContentLoaded', async () => {
+            const negocioSlug = 'carniceria-talamantes';
+            try {
+                const response = await fetch(`/api/negocio/${negocioSlug}`);
+                if (!response.ok) throw new Error('Error al conectar con la API');
+                
+                let rawResponse = await response.json();
+                // Manejar si los datos vienen envueltos en una propiedad 'data'
+                const data = rawResponse.data ? rawResponse.data : rawResponse;
+
+                console.log("Datos cargados:", data); // Para depuración en consola
+
+                // Update Logo
+                if (data.logo_url) {
+                    document.getElementById('navLogo').src = data.logo_url;
+                    document.getElementById('footerLogo').src = data.logo_url;
+                }
+
+                // Update SplashArt
+                if (data.splash_url) {
+                    document.getElementById('heroSplash').src = data.splash_url;
+                }
+
+                // Update Name
+                if (data.nombre_comercial) {
+                    const navName = document.getElementById('navBusinessName');
+                    if (navName) navName.innerText = data.nombre_comercial;
+                    document.title = `${data.nombre_comercial} | Cortes Premium`;
+                }
+
+                // Update Address and Maps Link
+                const addressEl = document.getElementById('footerAddress');
+                if (data.address_text && addressEl) {
+                    addressEl.innerText = data.address_text;
+                    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address_text + " " + (data.nombre_comercial || ""))}`;
+                    const mapsBtn = document.getElementById('googleMapsLink');
+                    if (mapsBtn) mapsBtn.href = mapsLink;
+                }
+
+                // Initialize Leaflet Map
+                if (data.lat && data.lng) {
+                    try {
+                        const map = L.map('map', {
+                            center: [data.lat, data.lng],
+                            zoom: 15,
+                            zoomControl: false,
+                            attributionControl: false
+                        });
+
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                            maxZoom: 19
+                        }).addTo(map);
+
+                        const customIcon = L.divIcon({
+                            className: 'custom-div-icon',
+                            html: `<div style='background-color:#B43238; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow: 0 0 15px #B43238;'></div>`,
+                            iconSize: [14, 14],
+                            iconAnchor: [7, 7]
+                        });
+
+                        const marker = L.marker([data.lat, data.lng], { icon: customIcon }).addTo(map);
+                        
+                        // Popup Personalizado
+                        const popupContent = `
+                            <div style="text-align: center; font-family: 'Outfit', sans-serif; padding: 5px;">
+                                <strong style="color: #B43238; display: block; margin-bottom: 5px; font-size: 14px;">${data.nombre_comercial}</strong>
+                                <p style="font-size: 12px; margin: 0 0 12px 0; color: white; font-weight: 500;">¡Te esperamos con los mejores cortes!</p>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}" target="_blank" 
+                                   style="background: #B43238; color: white; padding: 6px 16px; border-radius: 20px; font-size: 11px; text-decoration: none; font-weight: 800; letter-spacing: 1px; display: inline-block;">
+                                   INDICACIONES
+                                </a>
+                            </div>
+                        `;
+                        
+                        marker.bindPopup(popupContent, {
+                            closeButton: false,
+                            offset: [0, -5]
+                        }).openPopup();
+                    } catch (e) {
+                        console.error("Error al inicializar el mapa:", e);
+                    }
+                }
+
+                // Update Schedule (Mapping from horarios_negocio table)
+                const scheduleContainer = document.getElementById('footerSchedule');
+                if (scheduleContainer) {
+                    if (data.horarios && Array.isArray(data.horarios) && data.horarios.length > 0) {
+                        scheduleContainer.innerHTML = '';
+                        const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                        
+                        data.horarios.sort((a, b) => a.day_of_week - b.day_of_week);
+                        
+                        data.horarios.forEach(h => {
+                            const li = document.createElement('li');
+                            li.className = 'flex justify-between border-b border-white/5 pb-2 text-sm';
+                            const dayName = dayNames[h.day_of_week] || 'Día';
+                            let timeText = h.esta_cerrado ? 
+                                '<span class="text-primary font-bold uppercase text-[10px]">Cerrado</span>' : 
+                                `<span class="text-white font-bold">${h.open_time.split(':').slice(0,2).join(':')} - ${h.close_time.split(':').slice(0,2).join(':')}</span>`;
+                            
+                            li.innerHTML = `<span>${dayName}</span> ${timeText}`;
+                            scheduleContainer.appendChild(li);
+                        });
+                    } else if (data.horario) {
+                        // Fallback para formato string
+                        scheduleContainer.innerHTML = '';
+                        data.horario.split('\n').forEach(line => {
+                            if (line.trim() === "") return;
+                            const [days, hours] = line.includes(':') ? line.split(':') : [line, ''];
+                            const li = document.createElement('li');
+                            li.className = 'flex justify-between border-b border-white/5 pb-2 text-sm';
+                            li.innerHTML = `<span>${days.trim()}</span> <span class="text-white font-bold">${hours.trim()}</span>`;
+                            scheduleContainer.appendChild(li);
+                        });
+                    }
+                    // Si no hay datos, NO HACEMOS NADA para preservar los horarios manuales del HTML
+                }
+
+                // Update Year
+                const yearEl = document.getElementById('currentYear');
+                if (yearEl) yearEl.innerText = new Date().getFullYear();
+
+                // Update WhatsApp Links
+                if (data.whatsapp) {
+                    const cleanWa = data.whatsapp.replace(/[^0-9]/g, '');
+                    document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
+                        const originalUrl = new URL(link.href);
+                        const text = originalUrl.searchParams.get('text');
+                        link.href = `https://wa.me/${cleanWa}${text ? '?text=' + encodeURIComponent(text) : ''}`;
+                    });
+
+                    document.querySelectorAll('[onclick*="wa.me"]').forEach(box => {
+                        const originalOnclick = box.getAttribute('onclick');
+                        const textMatch = originalOnclick.match(/text=([^',]+)/);
+                        box.setAttribute('onclick', `window.open('https://wa.me/${cleanWa}?text=${textMatch ? textMatch[1] : ''}', '_blank')`);
+                    });
+
+                    const island = document.getElementById('wa-island');
+                    if (island) island.onclick = () => window.open(`https://wa.me/${cleanWa}`, '_blank');
+                }
+
+            } catch (error) {
+                console.error("Error cargando datos del negocio:", error);
+                const scheduleContainer = document.getElementById('footerSchedule');
+                if (scheduleContainer) scheduleContainer.innerHTML = '<li class="text-sm italic opacity-70">Horarios no disponibles temporalmente.</li>';
             }
         });
     </script>

@@ -83,26 +83,31 @@ function parsearCoordenadas(ubicacion) {
  * @param {string} bucket - Nombre del bucket en Supabase Storage
  * @returns {Promise<string|null>} URL pública o null si falla
  */
-async function subirImagenBase64(base64Data, prefix = 'img', bucket = 'fotos-pedidos') {
+async function subirImagenBase64(base64Data, prefix = 'img', bucket = 'logos-comercios', folder = '') {
     if (!base64Data || !base64Data.startsWith('data:image')) return null;
 
     const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     if (!matches || matches.length !== 3) return null;
 
-    const contentType = matches[1];
+    const contentType = matches[1]; // ej: image/png
+    const extension = contentType.split('/')[1] || 'jpg';
     const buffer = Buffer.from(matches[2], 'base64');
-    const fileName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 1000)}.jpg`;
+    
+    // Ruta del archivo: carpeta/nombre_archivo.extension
+    const pathName = folder 
+        ? `${folder}/${prefix}_${Date.now()}.${extension}`
+        : `${prefix}_${Date.now()}.${extension}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(fileName, buffer, { contentType, upsert: true });
+        .upload(pathName, buffer, { contentType, upsert: true });
 
     if (uploadError) {
-        console.error(`Error al subir imagen a ${bucket}:`, uploadError);
+        console.error(`Error al subir imagen a ${bucket}/${folder}:`, uploadError);
         return null;
     }
 
-    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(pathName);
     return urlData?.publicUrl || null;
 }
 
@@ -316,6 +321,246 @@ app.get('/api/negocio/:id/stats', async (req, res) => {
     }
 });
 
+// Obtener rendimiento detallado de productos
+app.get('/api/negocio/:id/product-performance', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { range = '7', start, end } = req.query;
+        
+        let fechaInicio, fechaFin;
+
+        if (start && end) {
+            fechaInicio = new Date(start);
+            fechaFin = new Date(end);
+            fechaFin.setHours(23, 59, 59, 999);
+        } else {
+            fechaInicio = new Date();
+            fechaInicio.setDate(fechaInicio.getDate() - parseInt(range));
+            fechaFin = new Date();
+        }
+
+        // 1. Obtener eventos de tipo 'cart' para este negocio en el rango
+        const { data: eventos, error } = await supabase
+            .from('metricas_eventos')
+            .select('detalles')
+            .eq('negocio_id', id)
+            .eq('tipo_evento', 'cart')
+            .gte('created_at', fechaInicio.toISOString())
+            .lte('created_at', fechaFin.toISOString());
+
+        if (error) throw error;
+
+        // 2. Contar ocurrencias por producto_id
+        const conteo = {};
+        eventos.forEach(e => {
+            const pid = e.detalles?.producto_id;
+            if (pid) conteo[pid] = (conteo[pid] || 0) + 1;
+        });
+
+        // 3. Obtener nombres e imágenes de los productos involucrados
+        const ids = Object.keys(conteo);
+        if (ids.length === 0) return res.json([]);
+
+        const { data: productos } = await supabase
+            .from('productos')
+            .select('id, nombre, imagen_url')
+            .in('id', ids);
+
+        // 4. Mapear y ordenar
+        const result = productos.map(p => ({
+            ...p,
+            count: conteo[p.id]
+        })).sort((a, b) => b.count - a.count);
+
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al cargar rendimiento' });
+    }
+});
+
+// Obtener rendimiento de promociones (Historias)
+app.get('/api/negocio/:id/promo-performance', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { range = '7', start, end } = req.query;
+
+        let fechaInicio, fechaFin;
+        if (start && end) {
+            fechaInicio = new Date(start);
+            fechaFin = new Date(end);
+            fechaFin.setHours(23, 59, 59, 999);
+        } else {
+            fechaInicio = new Date();
+            fechaInicio.setDate(fechaInicio.getDate() - parseInt(range));
+            fechaFin = new Date();
+        }
+
+        // 1. Obtener eventos de tipo 'view_story'
+        const { data: eventos, error: errEventos } = await supabase
+            .from('metricas_eventos')
+            .select('detalles')
+            .eq('negocio_id', id)
+            .eq('tipo_evento', 'view_story')
+            .gte('created_at', fechaInicio.toISOString())
+            .lte('created_at', fechaFin.toISOString());
+
+        if (errEventos) throw errEventos;
+
+        // 2. Contar vistas por promo_id
+        const conteo = {};
+        eventos.forEach(ev => {
+            const promoId = ev.detalles?.promo_id;
+            if (promoId) {
+                conteo[promoId] = (conteo[promoId] || 0) + 1;
+            }
+        });
+
+        // 3. Obtener detalles de las promos
+        const { data: promos, error: errPromos } = await supabase
+            .from('ofertas')
+            .select('id, titulo, imagen_url')
+            .eq('negocio_id', id);
+
+        if (errPromos) throw errPromos;
+
+        const result = promos.map(p => ({
+            ...p,
+            count: conteo[p.id] || 0
+        })).sort((a, b) => b.count - a.count);
+
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al cargar rendimiento de promos' });
+    }
+});
+
+// Obtener analíticas detalladas (por tiempo) para gráficas
+app.get('/api/negocio/:id/analytics', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { range = '7', start, end } = req.query; // Días hacia atrás
+        
+        let fechaInicio, fechaFin;
+
+        if (start && end) {
+            fechaInicio = new Date(start);
+            fechaFin = new Date(end);
+            fechaFin.setHours(23, 59, 59, 999);
+        } else {
+            fechaInicio = new Date();
+            fechaInicio.setDate(fechaInicio.getDate() - parseInt(range));
+            fechaFin = new Date();
+        }
+
+        const { data: eventos, error } = await supabase
+            .from('metricas_eventos')
+            .select('tipo_evento, created_at')
+            .eq('negocio_id', id)
+            .gte('created_at', fechaInicio.toISOString())
+            .lte('created_at', fechaFin.toISOString());
+
+        if (error) throw error;
+
+        // Procesar datos para gráficas
+        const stats = {
+            visitasPorDia: {},
+            totalPorTipo: {
+                view: 0,
+                cart: 0,
+                click_top: 0,
+                click_negocio_grid: 0,
+                view_story: 0
+            }
+        };
+
+        eventos.forEach(ev => {
+            // Agrupar por día (YYYY-MM-DD)
+            const fecha = ev.created_at.split('T')[0];
+            if (ev.tipo_evento === 'view') {
+                stats.visitasPorDia[fecha] = (stats.visitasPorDia[fecha] || 0) + 1;
+            }
+            
+            // Contar totales por tipo
+            if (stats.totalPorTipo[ev.tipo_evento] !== undefined) {
+                stats.totalPorTipo[ev.tipo_evento]++;
+            }
+        });
+
+        res.json(stats);
+    } catch (err) {
+        console.error("Error al cargar analíticas:", err);
+        res.status(500).json({ error: 'Error al cargar analíticas' });
+    }
+});
+
+// Registrar un evento (visita, clic, etc)
+app.post('/api/eventos', async (req, res) => {
+    try {
+        const { negocio_id, producto_id, tipo_evento, detalles } = req.body;
+        
+        if (!tipo_evento) {
+            return res.status(400).json({ error: 'El tipo de evento es obligatorio' });
+        }
+
+        const { error } = await supabase
+            .from('metricas_eventos')
+            .insert([{
+                negocio_id: negocio_id || null, // Si el schema lo permite null, o manejarlo según lógica
+                producto_id: producto_id || null,
+                tipo_evento,
+                detalles: detalles || {}
+            }]);
+
+        if (error) {
+            console.error("Error de Supabase al guardar evento:", error);
+            // No bloqueamos al usuario si falla la métrica
+            return res.status(200).json({ status: 'ignored' });
+        }
+
+        res.status(201).json({ status: 'ok' });
+    } catch (err) {
+        console.error("Error al registrar evento:", err);
+        res.status(200).json({ status: 'ignored' }); // Respondemos OK para no romper el front
+    }
+});
+
+// Obtener negocio por slug (público — para el formulario de pedido)
+// Nota: Se coloca antes que :id para que los slugs no sean interpretados como IDs inválidos
+app.get('/api/negocio/:slug', async (req, res, next) => {
+    const slug = req.params.slug;
+    
+    // Si el slug parece un UUID, dejamos que lo maneje la ruta de :id
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+    if (isUUID) return next();
+
+    try {
+        const { data: negocio, error } = await supabase
+            .from('negocios')
+            .select('id, nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan, splash_url, description, description_long, address_text')
+            .eq('slug', slug)
+            .single();
+
+        if (error || !negocio) return res.status(404).json({ error: 'Negocio no encontrado' });
+
+        // --- NUEVO: Obtener los horarios del negocio ---
+        const { data: horarios } = await supabase
+            .from('horarios_negocio')
+            .select('day_of_week, open_time, close_time, esta_cerrado')
+            .eq('negocio_id', negocio.id)
+            .order('day_of_week', { ascending: true });
+
+        const { lat, lng } = parsearCoordenadas(negocio.ubicacion_origen);
+        
+        // Enviamos todo junto
+        res.json({ ...negocio, lat, lng, horarios: horarios || [] });
+    } catch (err) {
+        console.error("Error al buscar negocio por slug:", err);
+        res.status(500).json({ error: 'Error interno' });
+    }
+});
+
 // Actualizar perfil por negocio (Partner)
 app.get('/api/negocio/:id', async (req, res) => {
     try {
@@ -326,8 +571,18 @@ app.get('/api/negocio/:id', async (req, res) => {
             .single();
 
         if (error || !data) return res.status(404).json({ error: 'Negocio no encontrado' });
-        res.json(data);
+
+        // Parsear ubicación si existe
+        const { lat, lng } = parsearCoordenadas(data.ubicacion_origen);
+        
+        // Devolvemos el objeto original pero con lat y lng inyectados para facilitar al frontend
+        res.json({
+            ...data,
+            lat,
+            lng
+        });
     } catch (err) {
+        console.error("Error al cargar perfil:", err);
         res.status(500).json({ error: 'Error al cargar perfil' });
     }
 });
@@ -359,12 +614,14 @@ app.put('/api/negocio/:id', async (req, res) => {
             updateData.ubicacion_origen = `POINT(${lng} ${lat})`;
         }
 
-        // Procesar imágenes si vienen
+        // Procesar imágenes si vienen (Organizamos en carpetas dentro de logos-comercios)
         if (logo_base64) {
-            updateData.logo_url = await subirImagenBase64(logo_base64, `logo-${id}`, 'logos-comercios');
+            const url = await subirImagenBase64(logo_base64, `logo-${id}`, 'logos-comercios', 'logos');
+            if (url) updateData.logo_url = url;
         }
         if (splash_base64) {
-            updateData.splash_url = await subirImagenBase64(splash_base64, `splash-${id}`, 'logos-comercios');
+            const url = await subirImagenBase64(splash_base64, `splash-${id}`, 'logos-comercios', 'splash');
+            if (url) updateData.splash_url = url;
         }
 
         const { data, error } = await supabase
@@ -439,7 +696,7 @@ app.get('/api/negocio/:id/productos', async (req, res) => {
 // Crear producto
 app.post('/api/productos', async (req, res) => {
     try {
-        const { negocio_id, nombre, precio, unidad, categoria, descripcion, disponible, imagen_base64 } = req.body;
+        const { negocio_id, nombre, precio, unidad, categoria_id, descripcion, disponible, imagen_base64, variaciones } = req.body;
 
         if (!negocio_id || !nombre || !precio) {
             return res.status(400).json({ error: 'Faltan campos obligatorios' });
@@ -458,9 +715,11 @@ app.post('/api/productos', async (req, res) => {
                 nombre,
                 precio,
                 precio_medida_unit: unidad,
+                categoria_id,
                 descripcion,
                 esta_disponible: disponible !== undefined ? disponible : true,
-                imagen_url
+                imagen_url,
+                variaciones: variaciones || []
             }])
             .select()
             .single();
@@ -626,35 +885,20 @@ app.delete('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
     }
 });
 
-// Obtener negocio por slug (público — para el formulario de pedido)
-app.get('/api/negocio/:slug', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('negocios')
-            .select('nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan')
-            .eq('slug', req.params.slug)
-            .single();
-
-        if (error || !data) return res.status(404).json({ error: 'Negocio no encontrado' });
-        res.json(data);
-    } catch (err) {
-        console.error("Error al buscar negocio:", err);
-        res.status(500).json({ error: 'Error interno' });
-    }
-});
 
 // Listar todos los negocios (público — landing page)
 app.get('/api/negocios', async (req, res) => {
     try {
         const { data: negocios, error } = await supabase
             .from('negocios')
-            .select('nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin');
+            .select('id, nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin, splash_url, description');
 
         if (error) throw error;
 
         const negociosProcesados = negocios.map(n => {
             const { lat, lng } = parsearCoordenadas(n.ubicacion_origen);
             return { 
+                id: n.id,
                 nombre_comercial: n.nombre_comercial, 
                 slug: n.slug, 
                 lat, 
@@ -663,13 +907,53 @@ app.get('/api/negocios', async (req, res) => {
                 plan: n.plan || 'basico',
                 whatsapp: n.whatsapp,
                 usuario: n.usuario,
-                pin: n.pin
+                pin: n.pin,
+                splash_url: n.splash_url,
+                description: n.description
             };
         });
 
         res.json(negociosProcesados);
     } catch (err) {
         console.error("Error al obtener negocios:", err);
+        res.status(500).json({ error: 'Error interno' });
+    }
+});
+
+// Listar todas las ofertas (agrupadas por negocio para Historias)
+app.get('/api/ofertas', async (req, res) => {
+    try {
+        const { data: ofertas, error } = await supabase
+            .from('ofertas')
+            .select(`
+                *,
+                negocio:negocios (
+                    id,
+                    nombre_comercial,
+                    slug,
+                    logo_url
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Agrupar por negocio para el visualizador de historias
+        const agrupadas = ofertas.reduce((acc, curr) => {
+            const negocioId = curr.negocio_id;
+            if (!acc[negocioId]) {
+                acc[negocioId] = {
+                    negocio: curr.negocio,
+                    promos: []
+                };
+            }
+            acc[negocioId].promos.push(curr);
+            return acc;
+        }, {});
+
+        res.json(Object.values(agrupadas));
+    } catch (err) {
+        console.error("Error al obtener ofertas:", err);
         res.status(500).json({ error: 'Error interno' });
     }
 });

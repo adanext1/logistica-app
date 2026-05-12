@@ -59,16 +59,13 @@ async function cargarPerfil(id) {
         document.getElementById('store_description_long').value = data.description_long || '';
         document.getElementById('store_address').value = data.address_text || '';
 
-        // Procesar ubicación GPS (POINT format: POINT(lng lat))
-        if (data.ubicacion_origen) {
-            const match = data.ubicacion_origen.match(/POINT\((.+) (.+)\)/);
-            if (match) {
-                const lng = parseFloat(match[1]);
-                const lat = parseFloat(match[2]);
-                marker.setLatLng([lat, lng]);
-                map.setView([lat, lng], 16);
-                updateCoords(lat, lng);
-            }
+        // Procesar ubicación GPS
+        if (data.lat && data.lng) {
+            const lat = parseFloat(data.lat);
+            const lng = parseFloat(data.lng);
+            marker.setLatLng([lat, lng]);
+            map.setView([lat, lng], 16);
+            updateCoords(lat, lng);
         }
 
         // Header dynamic info
@@ -133,14 +130,14 @@ async function guardarPerfil(e, id) {
         });
 
         if (response.ok) {
-            alert("Perfil actualizado correctamente");
-            location.reload();
+            showToast("¡Perfil actualizado con éxito!", "success");
+            setTimeout(() => location.reload(), 2000);
         } else {
-            alert("Error al guardar los cambios");
+            showToast("Error al guardar los cambios", "error");
         }
     } catch (error) {
         console.error(error);
-        alert("Error de conexión");
+        showToast("Error de conexión con el servidor", "error");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -166,3 +163,31 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result);
     reader.onerror = error => reject(error);
 });
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    
+    const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+    const icon = type === 'success' ? 'check_circle' : 'error';
+    
+    toast.className = `${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform translate-x-full transition-all duration-300 opacity-0 pointer-events-auto`;
+    
+    toast.innerHTML = `
+        <span class="material-symbols-outlined">${icon}</span>
+        <span class="font-medium">${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Animación de entrada
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+    
+    // Auto-eliminar
+    setTimeout(() => {
+        toast.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}

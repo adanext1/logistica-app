@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Analíticas - Camino Real</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#9d4300",
+                        "on-primary": "#ffffff",
+                        "surface": "#fff8f6",
+                        "on-surface": "#251913",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#e0c0b1",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#fff8f6] text-[#251913] min-h-screen pb-24">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 flex items-center gap-4 px-6 h-20 bg-white/80 backdrop-blur-xl border-b border-[#e0c0b1]/30">
+        <a href="dashboard.html" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-50 transition-colors">
+            <span class="material-symbols-outlined text-primary">arrow_back</span>
+        </a>
+        <h1 class="text-xl font-bold text-primary">Estadísticas Detalladas</h1>
+    </header>
+
+    <main class="pt-24 px-6 max-w-4xl mx-auto flex flex-col gap-6">
+        <!-- Filtros -->
+        <div class="space-y-4">
+            <div class="flex flex-wrap justify-center gap-2 p-1 bg-orange-50 rounded-2xl mx-auto border border-orange-100 w-full max-w-full">
+                <button onclick="cargarDatos(7)" class="filter-btn active bg-primary text-white px-6 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap">7 DÍAS</button>
+                <button onclick="cargarDatos(15)" class="filter-btn bg-white border border-[#e0c0b1] px-6 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap">15 DÍAS</button>
+                <button onclick="cargarDatos(30)" class="filter-btn bg-white border border-[#e0c0b1] px-6 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap">MES</button>
+                <button onclick="toggleCustomRange()" class="filter-btn bg-white border border-[#e0c0b1] px-6 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">calendar_month</span>
+                    PERSONALIZADO
+                </button>
+            </div>
+
+            <!-- Panel de Rango Personalizado -->
+            <div id="custom-range-panel" class="hidden animate-in fade-in slide-in-from-top-2 duration-300 max-w-sm mx-auto bg-white p-4 rounded-3xl border border-orange-100 shadow-sm space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Desde</label>
+                        <input type="date" id="start-date" class="w-full bg-orange-50 border-none rounded-xl text-sm p-2 outline-none focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Hasta</label>
+                        <input type="date" id="end-date" class="w-full bg-orange-50 border-none rounded-xl text-sm p-2 outline-none focus:ring-2 focus:ring-primary/20">
+                    </div>
+                </div>
+                <button onclick="aplicarRangoPersonalizado()" class="w-full bg-primary text-white py-2 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                    Aplicar Filtro
+                </button>
+            </div>
+        </div>
+
+        <!-- Gráfica de Visitas -->
+        <section class="bg-white p-6 rounded-3xl shadow-sm border border-[#e0c0b1]/50">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-orange-500">trending_up</span>
+                Visitas Diarias
+            </h2>
+            <div class="h-64 w-full">
+                <canvas id="chartVisitas"></canvas>
+            </div>
+        </section>
+
+        <!-- Embudo de Conversión -->
+        <section class="bg-white p-6 rounded-3xl shadow-sm border border-[#e0c0b1]/50">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-green-600">filter_alt</span>
+                Embudo de Ventas
+            </h2>
+            <div class="space-y-6 py-4">
+                <!-- Paso 1: Visitas -->
+                <div class="relative">
+                    <div class="flex justify-between mb-1 items-end">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Visitas a la Tienda</span>
+                        <span id="funnel-view-val" class="text-sm font-black text-blue-600">0</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-8 rounded-lg overflow-hidden">
+                        <div id="funnel-view-bar" class="bg-blue-500 h-full transition-all duration-1000" style="width: 100%"></div>
+                    </div>
+                </div>
+                <!-- Paso 2: Interés (Carrito) -->
+                <div class="relative">
+                    <div class="flex justify-between mb-1 items-end">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Añadieron al Carrito</span>
+                        <div class="flex gap-2 items-center">
+                            <span id="funnel-cart-pct" class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">0%</span>
+                            <span id="funnel-cart-val" class="text-sm font-black text-green-600">0</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-100 h-8 rounded-lg overflow-hidden">
+                        <div id="funnel-cart-bar" class="bg-green-500 h-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+                <!-- Paso 3: Conversión (WhatsApp) -->
+                <div class="relative">
+                    <div class="flex justify-between mb-1 items-end">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Clic en "Pedir" (WA)</span>
+                        <div class="flex gap-2 items-center">
+                            <span id="funnel-order-pct" class="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold">0%</span>
+                            <span id="funnel-order-val" class="text-sm font-black text-orange-600">0</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-100 h-8 rounded-lg overflow-hidden">
+                        <div id="funnel-order-bar" class="bg-orange-500 h-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2 italic text-center">*Porcentaje basado en el total de visitas de la tienda.</p>
+        </section>
+
+        <!-- Distribución de Interacciones -->
+        <section class="bg-white p-6 rounded-3xl shadow-sm border border-[#e0c0b1]/50">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-orange-500">pie_chart</span>
+                ¿Qué hacen tus clientes?
+            </h2>
+            <div class="h-64 w-full flex justify-center relative">
+                <canvas id="chartTipos"></canvas>
+            </div>
+
+            <!-- Leyenda Interactiva (HTML Custom) -->
+            <div id="htmlLegend" class="flex flex-wrap justify-center gap-2 mt-4 px-2">
+                <!-- Se llena dinámicamente con chips -->
+            </div>
+            
+            <!-- Caja de Descripción Dinámica -->
+            <div id="descBox" class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 hidden animate-pulse-once">
+                <h3 id="descTitle" class="font-bold text-sm text-slate-800 uppercase tracking-wider mb-1">Visitas</h3>
+                <p id="descText" class="text-sm text-slate-600">Tráfico total que entra a tu tienda. Incluye links directos, redes sociales y clics externos.</p>
+            </div>
+            <p class="text-[10px] text-center text-slate-400 mt-4 uppercase font-bold tracking-widest">Haz clic en una sección para más detalle</p>
+        </section>
+
+        <!-- Tabla de Resumen -->
+        <section class="bg-white rounded-3xl shadow-sm border border-[#e0c0b1]/50 overflow-hidden">
+            <div class="p-6 border-b border-[#e0c0b1]/30">
+                <h2 class="text-lg font-bold">Resumen de Impacto</h2>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-orange-50 rounded-2xl">
+                        <span class="text-xs uppercase font-bold text-orange-700 opacity-70">Total Visitas</span>
+                        <p id="totalVisitas" class="text-2xl font-bold text-orange-900">0</p>
+                    </div>
+                    <div class="p-4 bg-orange-50 rounded-2xl">
+                        <span class="text-xs uppercase font-bold text-orange-700 opacity-70">Interés en Menú</span>
+                        <p id="totalMenu" class="text-2xl font-bold text-orange-900">0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        let chartVisitas = null;
+        let chartTipos = null;
+
+        function toggleCustomRange() {
+            const panel = document.getElementById('custom-range-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        async function aplicarRangoPersonalizado() {
+            const start = document.getElementById('start-date').value;
+            const end = document.getElementById('end-date').value;
+            if (!start || !end) return alert("Selecciona ambas fechas");
+            
+            cargarDatos(null, start, end);
+            toggleCustomRange();
+        }
+
+        async function cargarDatos(range, start = null, end = null) {
+            // Actualizar botones UI
+            if (window.event && window.event.target && window.event.target.classList && window.event.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-primary', 'text-white');
+                    btn.classList.add('bg-white', 'border', 'border-[#e0c0b1]');
+                });
+                window.event.target.classList.add('bg-primary', 'text-white');
+                window.event.target.classList.remove('bg-white', 'border', '#e0c0b1');
+            }
+
+            const negocioId = localStorage.getItem('negocio_id');
+            if (!negocioId) return window.location.href = '../login-negocio.html';
+
+            try {
+                let url = `/api/negocio/${negocioId}/analytics?`;
+                if (start && end) {
+                    url += `start=${start}&end=${end}`;
+                } else {
+                    url += `range=${range || 7}`;
+                }
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                renderVisitas(data.visitasPorDia);
+                renderTipos(data.totalPorTipo);
+                
+                document.getElementById('totalVisitas').innerText = data.totalPorTipo.view || 0;
+                document.getElementById('totalMenu').innerText = (data.totalPorTipo.click_negocio_grid || 0) + (data.totalPorTipo.click_top || 0);
+
+                // Actualizar Embudo de Conversión
+                const views = data.totalPorTipo.view || 0;
+                const carts = data.totalPorTipo.cart || 0;
+                const orders = data.totalPorTipo.order_init || 0;
+
+                document.getElementById('funnel-view-val').innerText = views;
+                document.getElementById('funnel-cart-val').innerText = carts;
+                document.getElementById('funnel-order-val').innerText = orders;
+
+                const cartPct = views > 0 ? ((carts / views) * 100).toFixed(1) : 0;
+                const orderPct = views > 0 ? ((orders / views) * 100).toFixed(1) : 0;
+
+                document.getElementById('funnel-cart-pct').innerText = `${cartPct}%`;
+                document.getElementById('funnel-order-pct').innerText = `${orderPct}%`;
+
+                document.getElementById('funnel-cart-bar').style.width = `${cartPct}%`;
+                document.getElementById('funnel-order-bar').style.width = `${orderPct}%`;
+                
+            } catch (error) {
+                console.error("Error al cargar analíticas:", error);
+            }
+        }
+
+        function renderVisitas(visitasPorDia) {
+            const ctx = document.getElementById('chartVisitas').getContext('2d');
+            
+            // Ordenar fechas
+            const labels = Object.keys(visitasPorDia).sort();
+            const values = labels.map(l => visitasPorDia[l]);
+
+            if (chartVisitas) chartVisitas.destroy();
+
+            chartVisitas = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.map(l => l.split('-').slice(1).reverse().join('/')),
+                    datasets: [{
+                        label: 'Visitas',
+                        data: values,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#3b82f6',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderTipos(totalPorTipo) {
+            const ctx = document.getElementById('chartTipos').getContext('2d');
+            
+            const dataValues = [
+                totalPorTipo.view || 0,
+                totalPorTipo.cart || 0,
+                (totalPorTipo.click_top || 0) + (totalPorTipo.click_negocio_grid || 0),
+                totalPorTipo.view_story || 0
+            ];
+            const total = dataValues.reduce((a, b) => a + b, 0);
+
+            if (chartTipos) chartTipos.destroy();
+
+            chartTipos = new Chart(ctx, {
+                type: 'doughnut',
+                plugins: [ChartDataLabels],
+                data: {
+                    labels: ['Visitas', 'Carrito', 'Clics Directorio', 'Historias'],
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: [
+                            '#3b82f6', // Visitas
+                            '#10b981', // Carrito
+                            '#8b5cf6', // Clics
+                            '#f43f5e'  // Historias
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#fff',
+                            font: { weight: 'bold', family: 'Outfit' },
+                            formatter: (value) => {
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
+                                return percentage > 5 ? `${percentage}%` : '';
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                    onClick: (evt, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            updateDescription(index);
+                        }
+                    }
+                }
+            });
+
+            // Crear Leyenda HTML
+            const legendContainer = document.getElementById('htmlLegend');
+            legendContainer.innerHTML = chartTipos.data.labels.map((label, i) => `
+                <button onclick="toggleMetric(${i}, this)" 
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-xs font-bold"
+                    style="border-color: ${chartTipos.data.datasets[0].backgroundColor[i]}; background-color: ${chartTipos.data.datasets[0].backgroundColor[i]}15; color: ${chartTipos.data.datasets[0].backgroundColor[i]}">
+                    <span class="w-2 h-2 rounded-full" style="background-color: ${chartTipos.data.datasets[0].backgroundColor[i]}"></span>
+                    ${label}
+                </button>
+            `).join('');
+        }
+
+        function toggleMetric(index, btn) {
+            chartTipos.toggleDataVisibility(index);
+            chartTipos.update();
+            const isVisible = chartTipos.getDataVisibility(index);
+            btn.style.opacity = isVisible ? '1' : '0.4';
+            btn.style.filter = isVisible ? 'none' : 'grayscale(1)';
+            updateDescription(index);
+        }
+
+        function updateDescription(index) {
+            const label = chartTipos.data.labels[index];
+            const value = chartTipos.data.datasets[0].data[index];
+            const total = chartTipos.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+
+            const descripciones = {
+                'Visitas': 'Tráfico total que entra a tu tienda. Incluye links directos, redes sociales y clics externos.',
+                'Carrito': 'Clientes que mostraron intención de compra agregando al menos un producto al carrito.',
+                'Clics Directorio': 'Clientes que te encontraron navegando en el Directorio Principal o en el Top Ventas.',
+                'Historias': 'Interacciones generadas a través de tus promociones visuales estilo Story.'
+            };
+            
+            const box = document.getElementById('descBox');
+            box.classList.remove('hidden');
+            document.getElementById('descTitle').innerText = `${label} (${percentage}%)`;
+            document.getElementById('descTitle').style.color = chartTipos.data.datasets[0].backgroundColor[index];
+            document.getElementById('descText').innerText = descripciones[label];
+            box.style.borderLeft = `4px solid ${chartTipos.data.datasets[0].backgroundColor[index]}`;
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        cargarDatos(7);
+    </script>
+</body>
+</html>
