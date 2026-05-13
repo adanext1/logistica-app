@@ -297,23 +297,28 @@ app.get('/api/negocio/:id/stats', async (req, res) => {
             .eq('negocio_id', negocioId)
             .eq('tipo_evento', 'cart');
 
-        // 4. Calcular progreso (lógica simple basada en si tiene logo y descripción)
+        // 4. Calcular progreso (basado en campos completados)
         const { data: negocio } = await supabase
             .from('negocios')
-            .select('nombre_comercial, logo_url, description')
+            .select('nombre_comercial, logo_url, description, whatsapp, address_text, ubicacion_origen')
             .eq('id', negocioId)
             .single();
 
-        let progreso = 50;
-        if (negocio?.logo_url) progreso += 25;
-        if (negocio?.description) progreso += 25;
+        let pasos = 1; // Registro inicial
+        if (negocio?.logo_url) pasos++;
+        if (negocio?.description) pasos++;
+        if (negocio?.whatsapp) pasos++;
+        if (negocio?.address_text || negocio?.ubicacion_origen) pasos++;
+
+        const porcentaje = (pasos / 5) * 100;
 
         res.json({
             nombre: negocio?.nombre_comercial || 'Socio',
             visitas: totalVisitas || 0,
             productos: totalProductos || 0,
             carritos: totalCarritos || 0,
-            progreso: progreso
+            progreso: porcentaje,
+            pasos: pasos
         });
     } catch (err) {
         console.error("Error al cargar estadísticas:", err);

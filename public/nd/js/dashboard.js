@@ -29,18 +29,23 @@ async function cargarTopProductos(id) {
     if (!container) return;
 
     try {
-        // En un caso real, haríamos un join con metricas_eventos. 
-        // Por ahora listamos los últimos 5 productos.
-        const response = await fetch(`/api/negocio/${id}/productos`);
-        const productos = await response.json();
+        // Usar el endpoint de rendimiento real
+        const response = await fetch(`/api/negocio/${id}/product-performance?range=30`);
+        let productos = await response.json();
+
+        if (productos.length === 0) {
+            // Fallback: si no hay métricas, mostrar los últimos productos
+            const resFallback = await fetch(`/api/negocio/${id}/productos`);
+            productos = await resFallback.json();
+        }
 
         container.innerHTML = productos.slice(0, 5).map(p => `
-            <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+            <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
                 <div class="flex items-center gap-3">
                     <img src="${p.imagen_url || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover">
                     <div>
                         <p class="font-bold text-on-surface">${p.nombre}</p>
-                        <p class="text-xs text-on-surface-variant">Popular este mes</p>
+                        <p class="text-[10px] text-on-surface-variant">${p.count ? `${p.count} interesados` : 'Recién agregado'}</p>
                     </div>
                 </div>
                 <div class="text-right">
@@ -76,15 +81,15 @@ async function cargarEstadisticas(id) {
         // Inyectar en el HTML (IDs definidos en dashboard.html)
         const statVisitas = document.getElementById('stat-visitas');
         const statProductos = document.getElementById('stat-productos');
-        const progressValue = document.getElementById('progress-value');
-        const progressBar = document.getElementById('progress-bar');
-        const statCarts = document.getElementById('stat-carts'); 
+        const statCarts = document.getElementById('stat-carts');
+        const progressText = document.getElementById('progresoTexto');
+        const progressBar = document.getElementById('progresoBarra');
 
         if (statVisitas) statVisitas.innerText = data.visitas;
         if (statProductos) statProductos.innerText = data.productos;
         if (statCarts) statCarts.innerText = data.carritos || 0;
         
-        if (progressValue) progressValue.innerText = `${data.progreso}%`;
+        if (progressText) progressText.innerText = `${data.pasos}/5 pasos`;
         if (progressBar) progressBar.style.width = `${data.progreso}%`;
 
     } catch (error) {
