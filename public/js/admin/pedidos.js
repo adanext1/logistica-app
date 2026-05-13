@@ -1,14 +1,67 @@
 import { state } from './state.js';
 import { fetchConAuth } from './auth.js';
 
+let filtroEstadoRadar = 'todos';
+let busquedaRadar = '';
+
+export function setupPedidosRadar() {
+    const input = document.getElementById('buscadorPedidos');
+    if (input) {
+        input.addEventListener('input', (e) => {
+            busquedaRadar = e.target.value.toLowerCase();
+            aplicarFiltrosRadar();
+        });
+    }
+
+    // Exponer función de filtrado al objeto window
+    window.filtrarPedidosRadar = (estado, btn) => {
+        filtroEstadoRadar = estado;
+        
+        // Actualizar UI de botones
+        document.querySelectorAll('.btn-filter-radar').forEach(b => {
+            b.classList.remove('bg-brand-600', 'text-white', 'shadow-md');
+            b.classList.add('text-slate-500', 'hover:bg-slate-50');
+        });
+        
+        btn.classList.remove('text-slate-500', 'hover:bg-slate-50');
+        btn.classList.add('bg-brand-600', 'text-white', 'shadow-md');
+        
+        aplicarFiltrosRadar();
+    };
+}
+
+function aplicarFiltrosRadar() {
+    let pedidos = state.pedidosGlobales;
+    
+    // Filtro de estado
+    if (filtroEstadoRadar !== 'todos') {
+        pedidos = pedidos.filter(p => (p.estado || 'pendiente') === filtroEstadoRadar);
+    }
+    
+    // Filtro de búsqueda
+    if (busquedaRadar) {
+        pedidos = pedidos.filter(p => 
+            (p.nombre_cliente && p.nombre_cliente.toLowerCase().includes(busquedaRadar)) ||
+            (p.negocio_slug && p.negocio_slug.toLowerCase().includes(busquedaRadar))
+        );
+    }
+    
+    renderizarPedidosRadar(pedidos);
+}
+
 export async function cargarPedidosRadar() {
     try {
         const response = await fetchConAuth('/api/pedidos');
         if (!response) return;
 
-        const pedidos = await response.json();
+        const SLUG_PLATAFORMA = 'plataforma-rcr';
+        const rawPedidos = await response.json();
+        
+        // Filtrar pedidos que no sean del sistema base
+        const pedidos = rawPedidos.filter(p => p.negocio_slug !== SLUG_PLATAFORMA);
+        
         state.pedidosGlobales = pedidos;
-        renderizarPedidosRadar(state.pedidosGlobales);
+        aplicarFiltrosRadar(); // Usar la función de filtrado para renderizar inicialmente
     } catch (err) {
         console.error("Error al cargar pedidos del radar", err);
     }
@@ -90,6 +143,17 @@ export function abrirDetallePedido(id) {
     document.getElementById('pedidoDireccion').innerText = p.direccion_detalles || 'Sin detalles adicionales';
     document.getElementById('pedidoCosto').innerText = p.costo_envio || '0';
 
+    // Mostrar mensaje de WhatsApp si existe
+    const contMensaje = document.getElementById('pedidoContenedorMensaje');
+    const txtMensaje = document.getElementById('pedidoMensajeWhatsApp');
+    if (p.whatsapp_message) {
+        contMensaje.classList.remove('hidden');
+        txtMensaje.innerText = p.whatsapp_message;
+    } else {
+        contMensaje.classList.add('hidden');
+        txtMensaje.innerText = '';
+    }
+
     const contenedorFotos = document.getElementById('pedidoContenedorFotos');
     const galeria = document.getElementById('pedidoGaleria');
     if (p.fotos && p.fotos.length > 0) {
@@ -166,7 +230,7 @@ export async function toggleEstadoPedido(id) {
         if (!res) return;
         if (res.ok) {
             p.estado = nuevoEstado;
-            renderizarPedidosRadar(state.pedidosGlobales);
+            aplicarFiltrosRadar();
             cerrarModalPedido();
         } else {
             alert('Error al cambiar el estado del pedido.');

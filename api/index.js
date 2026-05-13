@@ -747,6 +747,48 @@ app.delete('/api/productos/:id', async (req, res) => {
     }
 });
 
+// --- OFERTAS Y EVENTOS ---
+
+// Listar ofertas activas de un negocio
+app.get('/api/negocio/:id/ofertas', async (req, res) => {
+    try {
+        const hoy = new Date().toISOString();
+        const { data, error } = await supabase
+            .from('ofertas')
+            .select('id, titulo, descripcion, imagen_url, fecha_inicio, fecha_fin, producto_id')
+            .eq('negocio_id', req.params.id)
+            .lte('fecha_inicio', hoy)
+            .or(`fecha_fin.is.null,fecha_fin.gte.${hoy}`)
+            .order('fecha_inicio', { ascending: false });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error("Error al cargar ofertas:", err);
+        res.status(500).json({ error: 'Error al cargar ofertas' });
+    }
+});
+
+// Listar próximos eventos de un negocio
+app.get('/api/negocio/:id/eventos', async (req, res) => {
+    try {
+        // En un caso real, podríamos filtrar por fecha_evento >= hoy. Por simplicidad, traemos todos (o los más recientes).
+        const hoy = new Date().toISOString();
+        const { data, error } = await supabase
+            .from('eventos')
+            .select('id, titulo, descripcion, imagen_url, fecha_evento')
+            .eq('negocio_id', req.params.id)
+            .gte('fecha_evento', hoy)
+            .order('fecha_evento', { ascending: true });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error("Error al cargar eventos:", err);
+        res.status(500).json({ error: 'Error al cargar eventos' });
+    }
+});
+
 // --- HORARIOS ---
 
 app.get('/api/negocio/:id/horario', async (req, res) => {
@@ -1027,7 +1069,7 @@ app.post('/api/calcular-envio', async (req, res) => {
 // Crear pedido (público)
 app.post('/api/pedidos', async (req, res) => {
     try {
-        const { negocio_slug, nombre_cliente, telefono, direccion_detalles, costo_envio, latDestino, lngDestino, fotos } = req.body;
+        const { negocio_slug, nombre_cliente, telefono, direccion_detalles, costo_envio, latDestino, lngDestino, fotos, whatsapp_message } = req.body;
 
         if (!negocio_slug || !nombre_cliente || !telefono || !latDestino || !lngDestino) {
             return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -1046,7 +1088,8 @@ app.post('/api/pedidos', async (req, res) => {
                 costo_envio,
                 ubicacion_cliente,
                 estado: 'pendiente',
-                fotos: fotosUrls.length > 0 ? fotosUrls : null
+                fotos: fotosUrls.length > 0 ? fotosUrls : null,
+                whatsapp_message: whatsapp_message || null
             }]);
 
         if (error) {

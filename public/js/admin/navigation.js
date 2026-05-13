@@ -10,7 +10,7 @@ import { cargarPedidosRadar } from './pedidos.js';
  */
 export function cambiarVista(vistaId) {
     // 1. Ocultar todas las pantallas y limpiar estilos de botones
-    ['resumen', 'negocios', 'radar', 'clientes', 'formulario-negocio', 'repartidores'].forEach(id => {
+    ['resumen', 'negocios', 'radar', 'clientes', 'formulario-negocio', 'repartidores', 'mapa-completo'].forEach(id => {
         const vista = document.getElementById('vista-' + id);
         if (vista) vista.classList.add('hidden');
         
@@ -64,5 +64,7 @@ export function cambiarVista(vistaId) {
         cargarRepartidores();
     } else if (vistaId === 'radar') {
         cargarPedidosRadar();
+    } else if (vistaId === 'mapa-completo') {
+        import('./mapa-avanzado.js').then(m => m.inicializarMapaAvanzado());
     }
 }

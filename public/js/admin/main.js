@@ -4,7 +4,7 @@ import { cambiarVista } from './navigation.js';
 import { cargarDatosDashboard } from './dashboard.js';
 import { setupNegocios, abrirFormularioNegocio, eliminarNegocio } from './negocios.js';
 import { setupClientes, cargarClientes, abrirPerfilCliente, cerrarPerfilCliente, abrirModalCliente, cerrarModalCliente, abrirModalNuevoCliente, eliminarCliente } from './clientes.js';
-import { abrirDetallePedido, cerrarModalPedido, toggleEstadoPedido } from './pedidos.js';
+import { setupPedidosRadar, abrirDetallePedido, cerrarModalPedido, toggleEstadoPedido } from './pedidos.js';
 import { setupRepartidores, cargarRepartidores, abrirModalRepartidor, cerrarModalRepartidor, eliminarRepartidor } from './repartidores.js';
 
 // --- Exponer funciones al objeto window para compatibilidad con inline onclick en admin.html ---
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNegocios();
     setupClientes();
     setupRepartidores();
+    setupPedidosRadar();
 
     // Event Listener para Input Modal Borrar
     const inputConfirmar = document.getElementById('inputConfirmarBorrar');
