@@ -548,7 +548,7 @@ export function toggleHeatmap() {
             .map(p => [parseFloat(p.lat), parseFloat(p.lng), 0.5]); // [lat, lng, intensidad]
 
         if (puntos.length === 0) {
-            alert("No hay suficientes datos de ubicación en los pedidos para generar el mapa de calor.");
+            notificar("No hay suficientes datos de ubicación en los pedidos para generar el mapa de calor.", 'info');
             return;
         }
 

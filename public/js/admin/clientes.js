@@ -457,7 +457,7 @@ export function setupClientes() {
                 cargarDatosDashboard();
             }
         } catch (err) {
-            alert(err.message);
+            notificar(err.message, 'error');
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;

@@ -232,10 +232,12 @@ export async function toggleEstadoPedido(id) {
             p.estado = nuevoEstado;
             aplicarFiltrosRadar();
             cerrarModalPedido();
+            notificar(`Pedido marcado como ${nuevoEstado}`);
         } else {
-            alert('Error al cambiar el estado del pedido.');
+            notificar('Error al cambiar el estado del pedido.', 'error');
         }
     } catch (err) {
         console.error('Error al cambiar estado:', err);
+        notificar('Error de conexión con el servidor.', 'error');
     }
 }

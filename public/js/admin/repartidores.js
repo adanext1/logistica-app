@@ -179,7 +179,7 @@ export function setupRepartidores() {
             cerrarModalRepartidor();
             cargarRepartidores();
         } catch (err) {
-            alert(err.message);
+            notificar(err.message, 'error');
         } finally {
             btn.innerHTML = originalHtml;
             btn.disabled = false;

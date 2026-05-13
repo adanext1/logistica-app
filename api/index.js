@@ -838,7 +838,7 @@ app.post('/api/negocio/:id/horario', async (req, res) => {
 // Crear negocio
 app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
     try {
-        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin, categoria } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -854,7 +854,7 @@ app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
 
         const { data, error } = await supabase
             .from('negocios')
-            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan, usuario, pin }])
+            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan, usuario, pin, categoria }])
             .select();
 
         if (error) {
@@ -879,7 +879,7 @@ app.post('/api/negocios', protegerRutaAdmin, async (req, res) => {
 app.put('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
     try {
         const { slug } = req.params;
-        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin, categoria } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos' });
@@ -891,7 +891,8 @@ app.put('/api/negocios/:slug', protegerRutaAdmin, async (req, res) => {
             plan,
             ubicacion_origen: `POINT(${lng} ${lat})`,
             usuario,
-            pin
+            pin,
+            categoria
         };
 
         const nuevaUrl = await subirImagenBase64(logo_base64, slug, 'logos-comercios');
@@ -938,7 +939,7 @@ app.get('/api/negocios', async (req, res) => {
     try {
         const { data: negocios, error } = await supabase
             .from('negocios')
-            .select('id, nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin, splash_url, description');
+            .select('id, nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin, splash_url, description, categoria');
 
         if (error) throw error;
 
@@ -956,7 +957,8 @@ app.get('/api/negocios', async (req, res) => {
                 usuario: n.usuario,
                 pin: n.pin,
                 splash_url: n.splash_url,
-                description: n.description
+                description: n.description,
+                categoria: n.categoria
             };
         });
 

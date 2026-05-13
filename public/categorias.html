@@ -65,24 +65,6 @@
                 </div>
             </a>
 
-            <!-- Desktop -->
-            <div class="hidden md:flex items-center">
-                <a href="/login-cliente.html"
-                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 px-4 py-2 rounded-xl font-bold transition-colors shadow-sm">Ingresar
-                    / Registro</a>
-            </div>
-
-            <!-- Mobile Hamburger -->
-            <button id="btnMenuCat" class="md:hidden p-2 text-orange-600 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors">
-                <i data-feather="menu" class="w-5 h-5"></i>
-            </button>
-        </div>
-
-        <!-- Mobile Dropdown -->
-        <div id="menuDropCat" class="md:hidden absolute top-full left-3 right-3 mt-2 rounded-2xl shadow-xl p-4 transition-all duration-300 origin-top opacity-0 scale-95 pointer-events-none" style="background: rgba(255, 248, 238, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(249,115,22,0.15);">
-            <a href="/login-cliente.html" class="block bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all">
-                <i data-feather="user" class="w-4 h-4 inline-block mr-1 -mt-0.5"></i> Ingresar / Registro
-            </a>
         </div>
     </nav>
 
@@ -103,128 +85,10 @@
                 </a>
             </div>
 
-            <!-- Grid de Categorías (2 Columnas estrictas) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 auto-rows-[180px] sm:auto-rows-[220px]">
-
-                <!-- 1. Tacos y Antojitos -->
-                <a href="/directorio.html?cat=tacos"
-                    class="col-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=800&auto=format&fit=crop"
-                        alt="Tacos"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">Tacos y
-                            Antojitos</h2>
-                        <div
-                            class="bg-orange-500 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 15 locales
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 2. Carnes y Asados -->
-                <a href="/directorio.html?cat=carnes"
-                    class="col-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=800&auto=format&fit=crop"
-                        alt="Carnes"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">Carnes
-                            y Asados</h2>
-                        <div
-                            class="bg-red-500 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 8 locales
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 3. Pizzas y Pastas -->
-                <a href="/directorio.html?cat=pizzas"
-                    class="col-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop"
-                        alt="Pizzas"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">Pizzas
-                            y Pastas</h2>
-                        <div
-                            class="bg-amber-500 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 12 locales
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 4. Sushi y Mariscos -->
-                <a href="/directorio.html?cat=sushi"
-                    class="col-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=800&auto=format&fit=crop"
-                        alt="Sushi"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">Sushi y
-                            Mariscos</h2>
-                        <div
-                            class="bg-cyan-600 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 10 locales
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 5. Hamburguesas -->
-                <a href="/directorio.html?cat=hamburguesas"
-                    class="col-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop"
-                        alt="Hamburguesas"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">
-                            Hamburguesas</h2>
-                        <div
-                            class="bg-orange-600 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 20 locales
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 6. Postres y Café -->
-                <a href="/directorio.html?cat=postres"
-                    class="col-span-1 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=800&auto=format&fit=crop"
-                        alt="Postres"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">Postres
-                            y Café</h2>
-                        <div
-                            class="bg-pink-500 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 9 locales
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 7. Abarrotes y Farmacias (Ocupa 2 columnas para cerrar simétricamente) -->
-                <a href="/directorio.html?cat=abarrotes"
-                    class="col-span-1 sm:col-span-2 relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
-                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop"
-                        alt="Abarrotes"
-                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                        <h2 class="text-2xl sm:text-4xl font-black text-white tracking-wide drop-shadow-lg mb-2">
-                            Abarrotes y Farmacias</h2>
-                        <div
-                            class="bg-green-600 text-white font-bold px-4 py-1.5 rounded-full text-xs opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                            Ver 14 locales <i data-feather="arrow-right" class="w-3 h-3 inline-block ml-1"></i>
-                        </div>
-                    </div>
-                </a>
-
+            <!-- Grid de Categorías Dinámico -->
+            <div id="gridCategorias"
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 auto-rows-[180px] sm:auto-rows-[220px]">
+                <!-- Las categorías se cargarán aquí dinámicamente -->
             </div>
         </div>
     </main>
@@ -239,22 +103,56 @@
     <script>
         feather.replace();
 
-        // --- Menú Hamburguesa ---
-        const btnMenuCat = document.getElementById('btnMenuCat');
-        const menuDropCat = document.getElementById('menuDropCat');
-        let menuOpenCat = false;
+        const CATEGORIAS_CONFIG = [
+            { id: 'restaurante', nombre: 'Restaurantes y Comida', icon: '🍔', img: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=800&auto=format&fit=crop', color: 'bg-orange-500' },
+            { id: 'carniceria', nombre: 'Carnicería y Pollería', icon: '🥩', img: 'https://images.unsplash.com/photo-1558030006-450675393462?q=80&w=800&auto=format&fit=crop', color: 'bg-red-500' },
+            { id: 'abarrotes', nombre: 'Abarrotes y Tiendas', icon: '🛒', img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop', color: 'bg-green-600' },
+            { id: 'farmacia', nombre: 'Farmacia y Salud', icon: '💊', img: 'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=800&auto=format&fit=crop', color: 'bg-blue-500' },
+            { id: 'boutique', nombre: 'Boutique y Ropa', icon: '👗', img: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop', color: 'bg-pink-500' },
+            { id: 'reposteria', nombre: 'Repostería y Panadería', icon: '🧁', img: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=800&auto=format&fit=crop', color: 'bg-amber-500' },
+            { id: 'tecnologia', nombre: 'Tecnología y Celulares', icon: '💻', img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop', color: 'bg-slate-700' },
+            { id: 'servicios', nombre: 'Servicios y Otros', icon: '🛠️', img: 'https://images.unsplash.com/photo-1581578731522-7b7547c6a21f?q=80&w=800&auto=format&fit=crop', color: 'bg-indigo-500' }
+        ];
 
-        btnMenuCat.addEventListener('click', () => {
-            menuOpenCat = !menuOpenCat;
-            if (menuOpenCat) {
-                menuDropCat.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-                btnMenuCat.innerHTML = '<i data-feather="x" class="w-5 h-5"></i>';
-            } else {
-                menuDropCat.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                btnMenuCat.innerHTML = '<i data-feather="menu" class="w-5 h-5"></i>';
+        async function cargarCategoriasReales() {
+            try {
+                const response = await fetch('/api/negocios');
+                const negocios = await response.json();
+
+                const conteo = negocios.reduce((acc, n) => {
+                    if (n.categoria) acc[n.categoria] = (acc[n.categoria] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const grid = document.getElementById('gridCategorias');
+                grid.innerHTML = CATEGORIAS_CONFIG.map(cat => {
+                    const total = conteo[cat.id] || 0;
+                    const btnText = total > 0 ? `Ver ${total} locales` : 'Próximamente';
+                    const link = total > 0 ? `/directorio.html?cat=${cat.id}` : '#';
+
+                    return `
+                    <a href="${link}" class="relative rounded-[2rem] overflow-hidden group shadow-sm border border-white hover:shadow-lg transition-all">
+                        <img src="${cat.img}" alt="${cat.nombre}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                        <div class="absolute inset-0 card-gradient"></div>
+                        <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
+                            <span class="text-4xl mb-2 transform group-hover:scale-110 transition-transform">${cat.icon}</span>
+                            <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide drop-shadow-lg mb-2">${cat.nombre}</h2>
+                            <div class="${cat.color} text-white font-bold px-5 py-2 rounded-full text-xs shadow-lg transform translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                ${btnText}
+                            </div>
+                        </div>
+                    </a>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error("Error cargando categorías:", error);
             }
-            feather.replace();
-        });
+        }
+
+        cargarCategoriasReales();
+
+        cargarCategoriasReales();
     </script>
 </body>
 

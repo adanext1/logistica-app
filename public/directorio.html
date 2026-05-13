@@ -60,7 +60,7 @@
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         @media (min-width: 640px) {
@@ -117,7 +117,7 @@
         .story-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.4) 100%);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 40%, transparent 60%, rgba(0, 0, 0, 0.4) 100%);
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -141,7 +141,7 @@
 
         .progress-bar {
             height: 3px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             flex: 1;
             border-radius: 2px;
             overflow: hidden;
@@ -172,24 +172,6 @@
                 </div>
             </a>
 
-            <!-- Desktop -->
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="/login-cliente.html"
-                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 px-4 py-2 rounded-xl font-bold transition-colors shadow-sm">Ingresar
-                    / Registro</a>
-            </div>
-
-            <!-- Mobile Hamburger -->
-            <button id="btnMenuDir" class="md:hidden p-2 text-orange-600 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors">
-                <i data-feather="menu" class="w-5 h-5"></i>
-            </button>
-        </div>
-
-        <!-- Mobile Dropdown -->
-        <div id="menuDropDir" class="md:hidden absolute top-full left-3 right-3 mt-2 rounded-2xl shadow-xl p-4 transition-all duration-300 origin-top opacity-0 scale-95 pointer-events-none" style="background: rgba(255, 248, 238, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(249,115,22,0.15);">
-            <a href="/login-cliente.html" class="block bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all">
-                <i data-feather="user" class="w-4 h-4 inline-block mr-1 -mt-0.5"></i> Ingresar / Registro
-            </a>
         </div>
     </nav>
 
@@ -209,6 +191,39 @@
                         class="w-full md:w-80 pl-11 pr-4 py-3 sm:py-4 rounded-xl border border-orange-200 shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-50/50 text-sm font-medium transition-all">
                     <i data-feather="search" class="w-5 h-5 text-orange-400 absolute left-4 top-3.5 sm:top-4"></i>
                 </div>
+            </div>
+        </div>
+
+        <!-- FILTROS DE CATEGORÍA -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mb-8 overflow-x-auto hide-scrollbar">
+            <div class="flex gap-3 pb-2" id="filtroCategorias">
+                <button onclick="filtrarPorCategoria('todos', this)"
+                    class="cat-pill active bg-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-md transition-all">🛍️
+                    Todos</button>
+                <button onclick="filtrarPorCategoria('restaurante', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🍔
+                    Comida</button>
+                <button onclick="filtrarPorCategoria('carniceria', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🥩
+                    Carnes</button>
+                <button onclick="filtrarPorCategoria('abarrotes', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🛒
+                    Abarrotes</button>
+                <button onclick="filtrarPorCategoria('farmacia', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">💊
+                    Farmacia</button>
+                <button onclick="filtrarPorCategoria('boutique', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">👗
+                    Boutique</button>
+                <button onclick="filtrarPorCategoria('reposteria', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🧁
+                    Repostería</button>
+                <button onclick="filtrarPorCategoria('tecnologia', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">💻
+                    Tecnología</button>
+                <button onclick="filtrarPorCategoria('servicios', this)"
+                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🛠️
+                    Servicios</button>
             </div>
         </div>
 
@@ -241,10 +256,18 @@
 
             <div id="gridTop" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Skeletons Top -->
-                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
-                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
-                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
-                <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                <div
+                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
+                </div>
+                <div
+                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
+                </div>
+                <div
+                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
+                </div>
+                <div
+                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
+                </div>
             </div>
         </div>
 
@@ -272,18 +295,23 @@
         <div id="seccionMapa" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
             <a href="/mapa.html"
                 class="block w-full bg-slate-900 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all">
-                <div class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                <div
+                    class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity">
+                </div>
                 <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
+                        <div
+                            class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
                             <i data-feather="map" class="w-7 h-7 text-white"></i>
                         </div>
                         <div>
                             <h3 class="text-xl sm:text-2xl font-black">Explorar Negocios Cercanos</h3>
-                            <p class="text-slate-400 text-sm font-medium">Busca en el mapa interactivo de La Paz, B.C.S.</p>
+                            <p class="text-slate-400 text-sm font-medium">Busca en el mapa interactivo de La Paz, B.C.S.
+                            </p>
                         </div>
                     </div>
-                    <div class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 whitespace-nowrap transition-colors">
+                    <div
+                        class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 whitespace-nowrap transition-colors">
                         Abrir Mapa <i data-feather="arrow-right" class="w-4 h-4"></i>
                     </div>
                 </div>
@@ -294,24 +322,30 @@
         <div id="seccionGrid" class="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
             <div class="flex items-center justify-between mb-6">
                 <h2 id="tituloGrid" class="text-2xl font-extrabold text-slate-900">Todos los Comercios</h2>
-                <span id="contadorResultados" class="text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-lg shadow-sm border border-orange-100">Cargando...</span>
+                <span id="contadorResultados"
+                    class="text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-lg shadow-sm border border-orange-100">Cargando...</span>
             </div>
 
-            <div id="gridNegocios" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px]">
+            <div id="gridNegocios"
+                class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px]">
                 <!-- Skeletons bento -->
-                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 row-span-2"></div>
+                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 row-span-2">
+                </div>
                 <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
                 <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
                 <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
-                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 hidden sm:block"></div>
+                <div
+                    class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 hidden sm:block">
+                </div>
             </div>
         </div>
 
         <!-- VIEWER STORIES (TIKTOK STYLE) -->
         <div id="viewerStories">
             <div class="progress-bar-container" id="progressBarContainer"></div>
-            
-            <button onclick="cerrarViewer()" class="absolute top-10 right-6 z-50 text-white p-2 bg-black/20 rounded-full backdrop-blur-md">
+
+            <button onclick="cerrarViewer()"
+                class="absolute top-10 right-6 z-50 text-white p-2 bg-black/20 rounded-full backdrop-blur-md">
                 <i data-feather="x" class="w-6 h-6"></i>
             </button>
 
@@ -321,7 +355,8 @@
 
             <!-- Botón de Acción Fijo en el Viewer -->
             <div class="absolute bottom-10 left-0 right-0 px-10 z-50 pointer-events-none">
-                <a id="btnStoryAction" href="#" class="pointer-events-auto block w-full bg-orange-600 text-white text-center font-bold py-4 rounded-2xl shadow-2xl transform active:scale-95 transition-all">
+                <a id="btnStoryAction" href="#"
+                    class="pointer-events-auto block w-full bg-orange-600 text-white text-center font-bold py-4 rounded-2xl shadow-2xl transform active:scale-95 transition-all">
                     PEDIR AHORA
                 </a>
             </div>
@@ -331,23 +366,6 @@
 
     <script>
         feather.replace();
-
-        // --- Menú Hamburguesa ---
-        const btnMenuDir = document.getElementById('btnMenuDir');
-        const menuDropDir = document.getElementById('menuDropDir');
-        let menuOpen = false;
-
-        btnMenuDir.addEventListener('click', () => {
-            menuOpen = !menuOpen;
-            if (menuOpen) {
-                menuDropDir.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-                btnMenuDir.innerHTML = '<i data-feather="x" class="w-5 h-5"></i>';
-            } else {
-                menuDropDir.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                btnMenuDir.innerHTML = '<i data-feather="menu" class="w-5 h-5"></i>';
-            }
-            feather.replace();
-        });
 
         const fotosPlaceholders = [
             'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80',
@@ -451,14 +469,14 @@
             currentGroupIndex = groupIndex;
             currentPromoIndex = 0;
             const grupo = ofertasAgrupadas[currentGroupIndex];
-            
+
             const viewer = document.getElementById('viewerStories');
             const track = document.getElementById('storyTrack');
             const progressContainer = document.getElementById('progressBarContainer');
-            
+
             viewer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
+
             // Render slides
             track.innerHTML = grupo.promos.map((p, i) => `
                 <div class="story-slide" id="slide-${i}">
@@ -486,25 +504,25 @@
             `).join('');
 
             document.getElementById('btnStoryAction').href = `/${grupo.negocio.slug}`;
-            
+
             startStoryTimer();
             feather.replace();
         }
 
         function startStoryTimer() {
             if (storyInterval) clearInterval(storyInterval);
-            
+
             let progress = 0;
             const duration = 5000; // 5 segundos por historia
             const step = 50; // actualizar cada 50ms
             const increment = (step / duration) * 100;
-            
+
             const fill = document.getElementById(`fill-${currentPromoIndex}`);
-            
+
             storyInterval = setInterval(() => {
                 progress += increment;
                 if (fill) fill.style.width = `${progress}%`;
-                
+
                 if (progress >= 100) {
                     siguientePromo();
                 }
@@ -514,7 +532,7 @@
         function siguientePromo() {
             clearInterval(storyInterval);
             const grupo = ofertasAgrupadas[currentGroupIndex];
-            
+
             if (currentPromoIndex < grupo.promos.length - 1) {
                 currentPromoIndex++;
                 const slide = document.getElementById(`slide-${currentPromoIndex}`);
@@ -535,7 +553,7 @@
             try {
                 const res = await fetch('/api/ofertas');
                 ofertasAgrupadas = await res.json();
-                
+
                 const grid = document.getElementById('gridPromos');
                 if (ofertasAgrupadas.length === 0) {
                     document.getElementById('seccionPromos').style.display = 'none';
@@ -567,18 +585,18 @@
             try {
                 const res = await fetch('/api/negocios');
                 const negocios = await res.json();
-                
+
                 // Filtrar premium o simplemente los primeros 4 para el bento
                 // Filtrar sistema y tomar 4 premium
                 const top = negocios
                     .filter(n => n.plan === 'premium' && n.slug !== 'plataforma-rcr')
                     .slice(0, 4);
-                
+
                 // Si no hay 4 premium, rellenar con genéricos
                 if (top.length < 4) {
-                    const otros = negocios.filter(n => 
-                        n.plan !== 'premium' && 
-                        n.slug !== 'plataforma-rcr' && 
+                    const otros = negocios.filter(n =>
+                        n.plan !== 'premium' &&
+                        n.slug !== 'plataforma-rcr' &&
                         !top.find(t => t.id === n.id)
                     );
                     top.push(...otros.slice(0, 4 - top.length));
@@ -591,9 +609,9 @@
                     const card = document.createElement('a');
                     card.href = `/${n.slug}`;
                     card.className = `relative rounded-[2rem] overflow-hidden group shadow-md border-2 border-white transition-all duration-500 hover:shadow-xl aspect-video sm:aspect-square lg:aspect-[4/5]`;
-                    
+
                     const fotoFondo = n.splash_url || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800';
-                    
+
                     card.innerHTML = `
                         <img src="${fotoFondo}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-90"></div>
@@ -676,20 +694,48 @@
             titulo.textContent = mostrar ? 'Todos los Comercios' : 'Resultados de búsqueda';
         }
 
+        // Buscador y Filtros
+        let categoriaActual = 'todos';
+        let terminoBusqueda = '';
+
+        function filtrarPorCategoria(cat, btn) {
+            categoriaActual = cat;
+
+            // UI Update
+            document.querySelectorAll('.cat-pill').forEach(b => {
+                b.classList.remove('bg-orange-500', 'text-white', 'shadow-md');
+                b.classList.add('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-orange-100');
+            });
+            btn.classList.remove('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-orange-100');
+            btn.classList.add('bg-orange-500', 'text-white', 'shadow-md');
+
+            aplicarFiltros();
+        }
+
+        function aplicarFiltros() {
+            let filtrados = todosLosNegocios;
+
+            // Filtrar por categoría
+            if (categoriaActual !== 'todos') {
+                filtrados = filtrados.filter(n => n.categoria === categoriaActual);
+            }
+
+            // Filtrar por término
+            if (terminoBusqueda !== '') {
+                filtrados = filtrados.filter(n => n.nombre_comercial.toLowerCase().includes(terminoBusqueda));
+            }
+
+            // Mostrar/Ocultar secciones decorativas si hay filtros activos
+            const hayFiltros = categoriaActual !== 'todos' || terminoBusqueda !== '';
+            toggleSecciones(!hayFiltros);
+
+            renderizarNegocios(filtrados);
+        }
+
         // Buscador en tiempo real
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-
-            if (term === '') {
-                // Sin búsqueda → mostrar todo
-                toggleSecciones(true);
-                renderizarNegocios(todosLosNegocios);
-            } else {
-                // Con búsqueda → ocultar secciones y filtrar grid
-                toggleSecciones(false);
-                const filtrados = todosLosNegocios.filter(n => n.nombre_comercial.toLowerCase().includes(term));
-                renderizarNegocios(filtrados);
-            }
+            terminoBusqueda = e.target.value.toLowerCase().trim();
+            aplicarFiltros();
         });
 
         const PLATAFORMA_ID = '02174c9f-7fc7-4ad1-9c1c-5a2d7500a5b9';
@@ -699,6 +745,15 @@
             await cargarNegocios();
             await cargarOfertas();
             registrarEvento(PLATAFORMA_ID, 'view_directory');
+
+            // Detectar si venimos de categorías
+            const urlParams = new URLSearchParams(window.location.search);
+            const catParam = urlParams.get('cat');
+            if (catParam) {
+                const btn = Array.from(document.querySelectorAll('.cat-pill'))
+                    .find(b => b.getAttribute('onclick').includes(`'${catParam}'`));
+                if (btn) filtrarPorCategoria(catParam, btn);
+            }
         }
         iniciar();
     </script>

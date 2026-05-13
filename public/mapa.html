@@ -225,7 +225,8 @@
         async function cargarNegocios() {
             try {
                 const response = await fetch('/api/negocios');
-                todosLosNegocios = await response.json();
+                const negociosRaw = await response.json();
+                todosLosNegocios = negociosRaw.filter(n => n.slug !== 'plataforma-rcr');
 
                 const bounds = L.latLngBounds();
 
@@ -240,7 +241,7 @@
                         html: `
                             <div class="relative flex flex-col items-center group cursor-pointer" style="filter: drop-shadow(0 4px 12px rgba(0,0,0,0.35));">
                                 <div class="bg-slate-900 rounded-2xl px-3 py-2 flex items-center gap-2.5 transition-transform group-hover:scale-110 border border-slate-700">
-                                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-white flex items-center justify-center font-black text-xs overflow-hidden shadow-inner flex-shrink-0">
+                                    <div class="w-8 h-8 rounded-xl ${n.logo_url ? 'bg-white' : 'bg-gradient-to-br from-orange-400 to-orange-600'} text-white flex items-center justify-center font-black text-xs overflow-hidden shadow-inner flex-shrink-0">
                                         ${logoElement}
                                     </div>
                                     <span class="font-bold text-white text-xs whitespace-nowrap tracking-tight">${n.nombre_comercial}</span>

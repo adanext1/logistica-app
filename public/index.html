@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repartidores Camino Real | Pedidos y Envíos en La Paz, B.C.S.</title>
-    <meta name="description" content="El centro comercial digital de La Paz, B.C.S. Pide comida y productos de tus negocios locales favoritos por WhatsApp, sin descargar aplicaciones.">
+    <meta name="description"
+        content="El centro comercial digital de La Paz, B.C.S. Pide comida y productos de tus negocios locales favoritos por WhatsApp, sin descargar aplicaciones.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +31,7 @@
     <!-- Leaflet CSS y JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+
     <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
 
@@ -41,12 +42,25 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(249, 115, 22, 0.15);
         }
-        body { background: #fff3e0; }
-        ::selection { background: #f97316; color: #fff; }
-        
+
+        body {
+            background: #fff3e0;
+        }
+
+        ::selection {
+            background: #f97316;
+            color: #fff;
+        }
+
         /* Ocultar barra de desplazamiento en contenedores horizontales */
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -54,80 +68,85 @@
 
     <!-- Navbar Mobile First -->
     <nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center glass-panel rounded-full mt-3 sm:mt-4 mx-3 sm:mx-auto shadow-sm">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center glass-panel rounded-full mt-3 sm:mt-4 mx-3 sm:mx-auto shadow-sm">
             <div class="flex items-center gap-2">
-                <img src="/img/logo.png" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-contain" onerror="this.style.display='none'">
-                <div class="text-[11px] sm:text-xl font-extrabold tracking-tight text-orange-600 uppercase leading-none">
+                <img src="/img/logo.png" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-contain"
+                    onerror="this.style.display='none'">
+                <div
+                    class="text-[11px] sm:text-xl font-extrabold tracking-tight text-orange-600 uppercase leading-none">
                     REPARTIDORES <span class="text-slate-900 block sm:inline text-[9px] sm:text-xl">CAMINO REAL</span>
                 </div>
             </div>
-            
+
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-6">
-                <a href="#ventajas" class="text-slate-600 hover:text-orange-600 font-semibold transition-colors">Ventajas</a>
-                <a href="/directorio.html" class="text-slate-600 hover:text-orange-600 font-semibold transition-colors">Comercios</a>
-                <a href="#unete" class="text-slate-600 hover:text-orange-600 font-semibold transition-colors">Únete a la Red</a>
-                <a href="/login-cliente.html" class="bg-orange-100 hover:bg-orange-200 text-orange-700 px-4 py-2 rounded-xl font-bold transition-colors shadow-sm">Ingresar / Registro</a>
+                <a href="#ventajas"
+                    class="text-slate-600 hover:text-orange-600 font-semibold transition-colors">Ventajas</a>
+                <a href="/directorio.html"
+                    class="text-slate-600 hover:text-orange-600 font-semibold transition-colors">Comercios</a>
+                <a href="#unete" class="text-slate-600 hover:text-orange-600 font-semibold transition-colors">Únete a la
+                    Red</a>
             </div>
 
-            <!-- Mobile Menu Button -->
-            <button id="btnMobileMenu" class="md:hidden p-2 text-orange-600 focus:outline-none bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors">
-                <i data-feather="menu"></i>
-            </button>
-        </div>
-
-        <!-- Mobile Dropdown Menu -->
-        <div id="mobileMenu" class="md:hidden absolute top-full left-3 right-3 mt-2 glass-panel rounded-3xl shadow-xl p-4 flex flex-col gap-3 transition-all duration-300 transform origin-top opacity-0 scale-95 pointer-events-none">
-            <a href="#ventajas" class="mobile-link text-slate-700 font-bold p-3 hover:bg-orange-50 rounded-xl flex items-center gap-3"><i data-feather="star" class="w-5 h-5 text-orange-500"></i> Ventajas</a>
-            <a href="/directorio.html" class="mobile-link text-slate-700 font-bold p-3 hover:bg-orange-50 rounded-xl flex items-center gap-3"><i data-feather="shopping-bag" class="w-5 h-5 text-orange-500"></i> Comercios Aliados</a>
-            <a href="#como-funciona" class="mobile-link text-slate-700 font-bold p-3 hover:bg-orange-50 rounded-xl flex items-center gap-3"><i data-feather="help-circle" class="w-5 h-5 text-orange-500"></i> ¿Cómo funciona?</a>
-            <a href="#tarifas" class="mobile-link text-slate-700 font-bold p-3 hover:bg-orange-50 rounded-xl flex items-center gap-3"><i data-feather="dollar-sign" class="w-5 h-5 text-orange-500"></i> Tarifas Transparentes</a>
-            <a href="#unete" class="mobile-link text-slate-700 font-bold p-3 hover:bg-orange-50 rounded-xl flex items-center gap-3"><i data-feather="users" class="w-5 h-5 text-orange-500"></i> Únete a la Red</a>
-            <hr class="border-orange-200/50 my-1">
-            <a href="/login-cliente.html" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center font-bold p-3 rounded-xl shadow-md">Ingresar / Registro</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="relative pt-28 pb-16 lg:pt-40 lg:pb-32 overflow-hidden flex flex-col justify-center min-h-[90vh]">
         <!-- Decorative blobs -->
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div
+            class="absolute top-0 right-0 -mr-20 -mt-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 -ml-20 -mb-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20">
+        </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             <!-- Text Content -->
             <div class="w-full lg:w-1/2 text-center lg:text-left mt-4 lg:mt-0 order-2 lg:order-1">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-100 text-orange-700 font-bold rounded-full mb-6 border border-orange-200 shadow-sm text-xs sm:text-sm">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-100 text-orange-700 font-bold rounded-full mb-6 border border-orange-200 shadow-sm text-xs sm:text-sm">
                     <i data-feather="map-pin" class="w-4 h-4"></i> Exclusivo en La Paz, B.C.S.
                 </div>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-5">
+                <h1
+                    class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-5">
                     Tus negocios locales,<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">directo a tu puerta.</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">directo a tu
+                        puerta.</span>
                 </h1>
                 <p class="text-base sm:text-lg text-slate-600 mb-8 max-w-md mx-auto lg:mx-0">
-                    El centro comercial digital de tu ciudad. Pide comida o productos desde tu celular, arma tu carrito y trata directo por WhatsApp sin instalar nada.
+                    El centro comercial digital de tu ciudad. Pide comida o productos desde tu celular, arma tu carrito
+                    y trata directo por WhatsApp sin instalar nada.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                    <a href="/directorio.html" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-orange-500/30 transition-all transform hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-2">
+                    <a href="/directorio.html"
+                        class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-orange-500/30 transition-all transform hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-2">
                         <i data-feather="shopping-bag" class="w-5 h-5"></i> Ver Tiendas
                     </a>
-                    <a href="#como-funciona" class="bg-white hover:bg-orange-50 text-orange-600 border-2 border-orange-200 px-8 py-4 rounded-2xl font-bold text-lg transition-all w-full sm:w-auto flex items-center justify-center">
+                    <a href="#como-funciona"
+                        class="bg-white hover:bg-orange-50 text-orange-600 border-2 border-orange-200 px-8 py-4 rounded-2xl font-bold text-lg transition-all w-full sm:w-auto flex items-center justify-center">
                         ¿Cómo pedir?
                     </a>
                 </div>
             </div>
-            
+
             <!-- Hero Map (Mobile First optimized) -->
             <div class="w-full lg:w-1/2 relative order-1 lg:order-2 px-2 sm:px-0">
-                <div class="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-orange-500/20 border-[6px] border-white/50 bg-white">
+                <div
+                    class="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-orange-500/20 border-[6px] border-white/50 bg-white">
                     <!-- Mapa -->
                     <div id="mapaHero" class="w-full h-[300px] sm:h-[400px] lg:h-[450px] z-10"></div>
-                    
+
                     <!-- Overlay Decorativo (Degradado inferior) -->
-                    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none z-20"></div>
-                    
+                    <div
+                        class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none z-20">
+                    </div>
+
                     <!-- Floating Badge -->
-                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-full shadow-xl z-30 flex items-center gap-2 text-sm font-bold whitespace-nowrap animate-bounce" style="animation-duration: 3s;">
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-full shadow-xl z-30 flex items-center gap-2 text-sm font-bold whitespace-nowrap animate-bounce"
+                        style="animation-duration: 3s;">
                         <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                         Cubriendo todo La Paz
                     </div>
@@ -141,33 +160,43 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12">
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">Cero Descargas. Cero Estrés.</h2>
-                <p class="text-lg text-slate-500 max-w-xl mx-auto">No necesitas otra aplicación pesada que llene tu memoria. Hemos creado la experiencia más rápida y ligera.</p>
+                <p class="text-lg text-slate-500 max-w-xl mx-auto">No necesitas otra aplicación pesada que llene tu
+                    memoria. Hemos creado la experiencia más rápida y ligera.</p>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Ventaja 1 -->
-                <div class="bg-orange-50 rounded-3xl p-6 md:p-8 text-center border border-orange-100 hover:-translate-y-1 transition-transform">
-                    <div class="w-14 h-14 bg-white text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm border border-orange-100">
+                <div
+                    class="bg-orange-50 rounded-3xl p-6 md:p-8 text-center border border-orange-100 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="w-14 h-14 bg-white text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm border border-orange-100">
                         <i data-feather="smartphone" class="w-7 h-7"></i>
                     </div>
                     <h3 class="font-bold text-xl text-slate-900 mb-2">Pide desde tu Navegador</h3>
-                    <p class="text-slate-500 text-sm">Entras, eliges y pides. Sin registros obligatorios, sin contraseñas que olvidar y sin instalar absolutamente nada en tu teléfono.</p>
+                    <p class="text-slate-500 text-sm">Entras, eliges y pides. Sin registros obligatorios, sin
+                        contraseñas que olvidar y sin instalar absolutamente nada en tu teléfono.</p>
                 </div>
                 <!-- Ventaja 2 -->
-                <div class="bg-amber-50 rounded-3xl p-6 md:p-8 text-center border border-amber-100 hover:-translate-y-1 transition-transform">
-                    <div class="w-14 h-14 bg-white text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm border border-amber-100">
+                <div
+                    class="bg-amber-50 rounded-3xl p-6 md:p-8 text-center border border-amber-100 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="w-14 h-14 bg-white text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm border border-amber-100">
                         <i data-feather="shopping-cart" class="w-7 h-7"></i>
                     </div>
                     <h3 class="font-bold text-xl text-slate-900 mb-2">Tienda y Carrito Integrado</h3>
-                    <p class="text-slate-500 text-sm">Explora el menú digital del negocio, arma tu pedido con fotos y conoce los precios reales y promociones antes de confirmar.</p>
+                    <p class="text-slate-500 text-sm">Explora el menú digital del negocio, arma tu pedido con fotos y
+                        conoce los precios reales y promociones antes de confirmar.</p>
                 </div>
                 <!-- Ventaja 3 -->
-                <div class="bg-green-50 rounded-3xl p-6 md:p-8 text-center border border-green-100 hover:-translate-y-1 transition-transform">
-                    <div class="w-14 h-14 bg-white text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm border border-green-100">
+                <div
+                    class="bg-green-50 rounded-3xl p-6 md:p-8 text-center border border-green-100 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="w-14 h-14 bg-white text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm border border-green-100">
                         <i data-feather="message-circle" class="w-7 h-7"></i>
                     </div>
                     <h3 class="font-bold text-xl text-slate-900 mb-2">Checkout por WhatsApp</h3>
-                    <p class="text-slate-500 text-sm">Tu carrito y tu ubicación GPS viajan directo al WhatsApp del local. Trato humano, rápido y sin bots intermediarios.</p>
+                    <p class="text-slate-500 text-sm">Tu carrito y tu ubicación GPS viajan directo al WhatsApp del
+                        local. Trato humano, rápido y sin bots intermediarios.</p>
                 </div>
             </div>
         </div>
@@ -178,19 +207,35 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-10">
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3">Comercios Destacados</h2>
-                <p class="text-slate-600 max-w-lg mx-auto">Algunos de los negocios locales que ya forman parte de nuestra red en La Paz.</p>
+                <p class="text-slate-600 max-w-lg mx-auto">Algunos de los negocios locales que ya forman parte de
+                    nuestra red en La Paz.</p>
             </div>
 
             <!-- Grid de Negocios Destacados (máximo 4) -->
             <div id="gridNegocios" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Skeleton Loaders -->
-                <div class="animate-pulse flex flex-col bg-white rounded-[2rem] overflow-hidden border border-orange-100"><div class="h-40 bg-orange-50"></div><div class="p-5"><div class="h-5 bg-orange-100 rounded w-2/3 mb-3"></div><div class="h-8 bg-orange-50 rounded-lg w-full mt-4"></div></div></div>
-                <div class="animate-pulse flex flex-col bg-white rounded-[2rem] overflow-hidden border border-orange-100 hidden sm:flex"><div class="h-40 bg-orange-50"></div><div class="p-5"><div class="h-5 bg-orange-100 rounded w-1/2 mb-3"></div><div class="h-8 bg-orange-50 rounded-lg w-full mt-4"></div></div></div>
+                <div
+                    class="animate-pulse flex flex-col bg-white rounded-[2rem] overflow-hidden border border-orange-100">
+                    <div class="h-40 bg-orange-50"></div>
+                    <div class="p-5">
+                        <div class="h-5 bg-orange-100 rounded w-2/3 mb-3"></div>
+                        <div class="h-8 bg-orange-50 rounded-lg w-full mt-4"></div>
+                    </div>
+                </div>
+                <div
+                    class="animate-pulse flex flex-col bg-white rounded-[2rem] overflow-hidden border border-orange-100 hidden sm:flex">
+                    <div class="h-40 bg-orange-50"></div>
+                    <div class="p-5">
+                        <div class="h-5 bg-orange-100 rounded w-1/2 mb-3"></div>
+                        <div class="h-8 bg-orange-50 rounded-lg w-full mt-4"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Botón Ver Todos -->
             <div class="text-center mt-10">
-                <a href="/directorio.html" class="inline-flex items-center gap-2 bg-white hover:bg-orange-50 text-orange-600 border-2 border-orange-200 px-8 py-4 rounded-2xl font-bold text-lg transition-all transform hover:-translate-y-1 shadow-sm hover:shadow-md">
+                <a href="/directorio.html"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-orange-50 text-orange-600 border-2 border-orange-200 px-8 py-4 rounded-2xl font-bold text-lg transition-all transform hover:-translate-y-1 shadow-sm hover:shadow-md">
                     <i data-feather="grid" class="w-5 h-5"></i> Ver todos los comercios
                 </a>
             </div>
@@ -201,9 +246,12 @@
     <section id="como-funciona" class="py-20 bg-white relative border-b border-orange-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-16">
-                <div class="inline-block px-3 py-1 bg-orange-100 text-orange-600 font-bold rounded-full mb-4 text-xs tracking-wider uppercase">Proceso de Pedido</div>
+                <div
+                    class="inline-block px-3 py-1 bg-orange-100 text-orange-600 font-bold rounded-full mb-4 text-xs tracking-wider uppercase">
+                    Proceso de Pedido</div>
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">Pide desde cualquier lugar</h2>
-                <p class="text-lg text-slate-500 max-w-2xl mx-auto">Desde tu celular en el trabajo o la tablet en casa, el proceso es idéntico y muy sencillo.</p>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">Desde tu celular en el trabajo o la tablet en casa,
+                    el proceso es idéntico y muy sencillo.</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
@@ -211,28 +259,44 @@
                 <div class="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-orange-100 z-0"></div>
 
                 <!-- Paso 1 -->
-                <div class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-orange-100">1</div>
+                <div
+                    class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-orange-100">
+                        1</div>
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Visita la Tienda</h3>
-                    <p class="text-slate-500 text-sm">Abre el enlace mágico de tu negocio favorito desde cualquier dispositivo.</p>
+                    <p class="text-slate-500 text-sm">Abre el enlace mágico de tu negocio favorito desde cualquier
+                        dispositivo.</p>
                 </div>
                 <!-- Paso 2 -->
-                <div class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-orange-100">2</div>
+                <div
+                    class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-orange-100">
+                        2</div>
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Arma tu Carrito</h3>
-                    <p class="text-slate-500 text-sm">Explora el menú digital, añade lo que se te antoje y revisa tu subtotal.</p>
+                    <p class="text-slate-500 text-sm">Explora el menú digital, añade lo que se te antoje y revisa tu
+                        subtotal.</p>
                 </div>
                 <!-- Paso 3 -->
-                <div class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-orange-100">3</div>
+                <div
+                    class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-orange-100">
+                        3</div>
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Confirma Ubicación</h3>
-                    <p class="text-slate-500 text-sm">Indica en el mapa dónde estás para calcular una tarifa de envío justa por GPS.</p>
+                    <p class="text-slate-500 text-sm">Indica en el mapa dónde estás para calcular una tarifa de envío
+                        justa por GPS.</p>
                 </div>
                 <!-- Paso 4 -->
-                <div class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-green-100">4</div>
+                <div
+                    class="relative z-10 bg-white p-6 rounded-3xl border border-orange-50 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-5 text-2xl font-black shadow-sm border border-green-100">
+                        4</div>
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Envía por WhatsApp</h3>
-                    <p class="text-slate-500 text-sm">El sistema genera el pedido detallado. ¡Solo dale a enviar y un repartidor irá en camino!</p>
+                    <p class="text-slate-500 text-sm">El sistema genera el pedido detallado. ¡Solo dale a enviar y un
+                        repartidor irá en camino!</p>
                 </div>
             </div>
         </div>
@@ -241,28 +305,42 @@
     <!-- Tarifas Transparentes -->
     <section id="tarifas" class="py-20 bg-[#fff3e0] relative">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
-            <div class="bg-white rounded-[2rem] border border-orange-200 shadow-xl overflow-hidden flex flex-col lg:flex-row items-center">
-                <div class="w-full lg:w-1/2 bg-gradient-to-br from-orange-500 to-red-600 p-8 sm:p-12 text-center lg:text-left text-white flex-1 h-full">
-                    <div class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold tracking-widest mb-4">COBRO POR GPS REAL</div>
+            <div
+                class="bg-white rounded-[2rem] border border-orange-200 shadow-xl overflow-hidden flex flex-col lg:flex-row items-center">
+                <div
+                    class="w-full lg:w-1/2 bg-gradient-to-br from-orange-500 to-red-600 p-8 sm:p-12 text-center lg:text-left text-white flex-1 h-full">
+                    <div class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold tracking-widest mb-4">
+                        COBRO POR GPS REAL</div>
                     <h2 class="text-3xl font-extrabold mb-3">Tarifas Transparentes</h2>
-                    <p class="text-orange-100 mb-8">Sabes cuánto vas a pagar por el envío antes de confirmar tu carrito. Sin letras chiquitas.</p>
+                    <p class="text-orange-100 mb-8">Sabes cuánto vas a pagar por el envío antes de confirmar tu carrito.
+                        Sin letras chiquitas.</p>
                     <div class="bg-black/20 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/10">
                         <p class="text-sm font-bold text-orange-200 uppercase mb-1">Tarifa Base</p>
-                        <p class="text-6xl font-black tracking-tight">$35<span class="text-2xl text-orange-200 font-bold">MXN</span></p>
+                        <p class="text-6xl font-black tracking-tight">$35<span
+                                class="text-2xl text-orange-200 font-bold">MXN</span></p>
                         <p class="text-xs text-orange-100 mt-2">Cubre los primeros 2 kilómetros</p>
                     </div>
                 </div>
                 <div class="w-full lg:w-1/2 p-8 sm:p-12 text-center flex-1 h-full flex flex-col justify-center">
-                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div
+                        class="w-14 h-14 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i data-feather="plus" class="w-6 h-6"></i>
                     </div>
-                    <p class="text-4xl font-extrabold text-slate-900 mb-2">$10 <span class="text-xl text-slate-500">MXN</span></p>
-                    <p class="font-bold text-orange-600 uppercase tracking-widest text-sm mb-4">Por kilómetro adicional</p>
+                    <p class="text-4xl font-extrabold text-slate-900 mb-2">$10 <span
+                            class="text-xl text-slate-500">MXN</span></p>
+                    <p class="font-bold text-orange-600 uppercase tracking-widest text-sm mb-4">Por kilómetro adicional
+                    </p>
                     <hr class="border-orange-100 my-6 w-1/2 mx-auto">
                     <div class="text-sm text-slate-500 text-left space-y-3">
-                        <p class="flex items-start gap-2"><i data-feather="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i> <span>Calculado usando tecnología OSRM de alta precisión.</span></p>
-                        <p class="flex items-start gap-2"><i data-feather="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i> <span>El sistema siempre busca la ruta de manejo más corta.</span></p>
-                        <p class="flex items-start gap-2"><i data-feather="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i> <span>El costo se suma a tu total en el carrito automáticamente.</span></p>
+                        <p class="flex items-start gap-2"><i data-feather="check-circle"
+                                class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i> <span>Calculado usando
+                                tecnología OSRM de alta precisión.</span></p>
+                        <p class="flex items-start gap-2"><i data-feather="check-circle"
+                                class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i> <span>El sistema siempre busca
+                                la ruta de manejo más corta.</span></p>
+                        <p class="flex items-start gap-2"><i data-feather="check-circle"
+                                class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i> <span>El costo se suma a tu
+                                total en el carrito automáticamente.</span></p>
                     </div>
                 </div>
             </div>
@@ -272,39 +350,57 @@
     <!-- Únete a la Red (B2B y Reclutamiento) -->
     <section id="unete" class="py-20 bg-slate-900 text-white relative overflow-hidden">
         <!-- Overlay Map Image o Texture -->
-        <div class="absolute top-0 right-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
+        <div
+            class="absolute top-0 right-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay">
+        </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <div class="text-center mb-14">
-                <div class="inline-block px-3 py-1 bg-white/10 text-orange-400 font-bold rounded-full mb-4 text-xs tracking-wider uppercase border border-white/20">Haz crecer tus ingresos</div>
+                <div
+                    class="inline-block px-3 py-1 bg-white/10 text-orange-400 font-bold rounded-full mb-4 text-xs tracking-wider uppercase border border-white/20">
+                    Haz crecer tus ingresos</div>
                 <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Únete a nuestra Red Local</h2>
-                <p class="text-lg text-slate-400 max-w-2xl mx-auto">Apoyamos el comercio y el trabajo en La Paz, B.C.S. Sé parte de la evolución logística.</p>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto">Apoyamos el comercio y el trabajo en La Paz, B.C.S.
+                    Sé parte de la evolución logística.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                 <!-- Card Negocio -->
-                <div class="bg-white/10 backdrop-blur-md rounded-[2rem] p-8 sm:p-10 border border-white/20 hover:bg-white/15 transition-all flex flex-col justify-between">
+                <div
+                    class="bg-white/10 backdrop-blur-md rounded-[2rem] p-8 sm:p-10 border border-white/20 hover:bg-white/15 transition-all flex flex-col justify-between">
                     <div>
-                        <div class="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-orange-500/30">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-orange-500/30">
                             <i data-feather="briefcase" class="w-7 h-7"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3">Registra tu Negocio</h3>
-                        <p class="text-slate-300 mb-8 leading-relaxed text-sm sm:text-base">¿Tienes un restaurante o tienda en La Paz? Te brindamos un <strong>menú digital interactivo</strong> y logística integral. Tus clientes armarán su carrito y tú recibirás el pedido estructurado por WhatsApp.</p>
+                        <p class="text-slate-300 mb-8 leading-relaxed text-sm sm:text-base">¿Tienes un restaurante o
+                            tienda en La Paz? Te brindamos un <strong>menú digital interactivo</strong> y logística
+                            integral. Tus clientes armarán su carrito y tú recibirás el pedido estructurado por
+                            WhatsApp.</p>
                     </div>
-                    <a href="https://wa.me/526121234567?text=Hola,%20me%20interesa%20registrar%20mi%20negocio%20en%20Camino%20Real" target="_blank" class="block text-center w-full bg-white text-slate-900 font-bold py-4 rounded-xl hover:bg-orange-50 transition-colors shadow-md flex items-center justify-center gap-2">
+                    <a href="https://wa.me/526121234567?text=Hola,%20me%20interesa%20registrar%20mi%20negocio%20en%20Camino%20Real"
+                        target="_blank"
+                        class="block text-center w-full bg-white text-slate-900 font-bold py-4 rounded-xl hover:bg-orange-50 transition-colors shadow-md flex items-center justify-center gap-2">
                         Ofrecer mis productos <i data-feather="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>
-                
+
                 <!-- Card Repartidor -->
-                <div class="bg-white/10 backdrop-blur-md rounded-[2rem] p-8 sm:p-10 border border-white/20 hover:bg-white/15 transition-all flex flex-col justify-between">
+                <div
+                    class="bg-white/10 backdrop-blur-md rounded-[2rem] p-8 sm:p-10 border border-white/20 hover:bg-white/15 transition-all flex flex-col justify-between">
                     <div>
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
                             <i data-feather="navigation" class="w-7 h-7"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3">Trabaja como Repartidor</h3>
-                        <p class="text-slate-300 mb-8 leading-relaxed text-sm sm:text-base">¿Tienes moto o auto? Genera ingresos extra en tus tiempos libres recorriendo La Paz. Usa nuestra plataforma para gestionar tus entregas, ver rutas GPS y manejar tu disponibilidad.</p>
+                        <p class="text-slate-300 mb-8 leading-relaxed text-sm sm:text-base">¿Tienes moto o auto? Genera
+                            ingresos extra en tus tiempos libres recorriendo La Paz. Usa nuestra plataforma para
+                            gestionar tus entregas, ver rutas GPS y manejar tu disponibilidad.</p>
                     </div>
-                    <a href="https://wa.me/526121234567?text=Hola,%20me%20interesa%20trabajar%20como%20repartidor%20en%20Camino%20Real" target="_blank" class="block text-center w-full bg-blue-500 text-white font-bold py-4 rounded-xl hover:bg-blue-600 transition-colors shadow-md flex items-center justify-center gap-2">
+                    <a href="https://wa.me/526121234567?text=Hola,%20me%20interesa%20trabajar%20como%20repartidor%20en%20Camino%20Real"
+                        target="_blank"
+                        class="block text-center w-full bg-blue-500 text-white font-bold py-4 rounded-xl hover:bg-blue-600 transition-colors shadow-md flex items-center justify-center gap-2">
                         Aplicar como Repartidor <i data-feather="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>
@@ -318,18 +414,27 @@
             <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
                 <!-- Brand -->
                 <div class="flex flex-col sm:flex-row items-center gap-4">
-                    <img src="/img/logo.png" alt="Logo" class="w-12 h-12 rounded-xl object-contain bg-orange-50 p-1" onerror="this.style.display='none'">
+                    <img src="/img/logo.png" alt="Logo" class="w-12 h-12 rounded-xl object-contain bg-orange-50 p-1"
+                        onerror="this.style.display='none'">
                     <div>
-                        <div class="text-lg font-extrabold text-orange-600 uppercase leading-tight">REPARTIDORES <span class="text-slate-900">CAMINO REAL</span></div>
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Orgullosamente en La Paz, B.C.S.</div>
+                        <div class="text-lg font-extrabold text-orange-600 uppercase leading-tight">REPARTIDORES <span
+                                class="text-slate-900">CAMINO REAL</span></div>
+                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Orgullosamente en
+                            La Paz, B.C.S.</div>
                     </div>
                 </div>
-                
+
                 <!-- Links (Social) -->
                 <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-orange-100 hover:text-orange-600 transition-colors"><i data-feather="facebook" class="w-5 h-5"></i></a>
-                    <a href="#" class="w-10 h-10 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-orange-100 hover:text-orange-600 transition-colors"><i data-feather="instagram" class="w-5 h-5"></i></a>
-                    <a href="#" class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center hover:bg-green-100 hover:text-green-700 transition-colors"><i data-feather="message-circle" class="w-5 h-5"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-orange-100 hover:text-orange-600 transition-colors"><i
+                            data-feather="facebook" class="w-5 h-5"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-orange-100 hover:text-orange-600 transition-colors"><i
+                            data-feather="instagram" class="w-5 h-5"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center hover:bg-green-100 hover:text-green-700 transition-colors"><i
+                            data-feather="message-circle" class="w-5 h-5"></i></a>
                 </div>
             </div>
             <div class="border-t border-slate-100 mt-8 pt-8 text-center text-sm text-slate-400 font-medium">
@@ -341,27 +446,6 @@
     <script>
         // Inicializar iconos Feather
         feather.replace();
-
-        // --- 1. Mobile Menu Logic ---
-        const btnMobileMenu = document.getElementById('btnMobileMenu');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-        let isMenuOpen = false;
-
-        function toggleMenu() {
-            isMenuOpen = !isMenuOpen;
-            if (isMenuOpen) {
-                mobileMenu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-                btnMobileMenu.innerHTML = '<i data-feather="x"></i>';
-            } else {
-                mobileMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                btnMobileMenu.innerHTML = '<i data-feather="menu"></i>';
-            }
-            feather.replace();
-        }
-
-        btnMobileMenu.addEventListener('click', toggleMenu);
-        mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
 
         // --- Navbar Scroll Effect ---
         window.addEventListener('scroll', () => {
@@ -384,7 +468,7 @@
             scrollWheelZoom: false,
             dragging: !L.Browser.mobile, // Desactivar drag en móvil por defecto
             tap: false // Evita interferencias en móviles
-        }).setView([24.1426, -110.3127], 13); 
+        }).setView([24.1426, -110.3127], 13);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap'
@@ -392,8 +476,8 @@
 
         // Habilitar drag al interactuar explícitamente en móviles
         if (L.Browser.mobile) {
-            map.on('focus', function() { map.dragging.enable(); });
-            map.on('blur', function() { map.dragging.disable(); });
+            map.on('focus', function () { map.dragging.enable(); });
+            map.on('blur', function () { map.dragging.disable(); });
         }
 
         // --- Placeholder Array (Fallbacks para fotos) ---
@@ -408,7 +492,8 @@
         async function cargarNegocios() {
             try {
                 const response = await fetch('/api/negocios');
-                const negocios = await response.json();
+                const negociosRaw = await response.json();
+                const negocios = negociosRaw.filter(n => n.slug !== 'plataforma-rcr');
 
                 const grid = document.getElementById('gridNegocios');
                 grid.innerHTML = ''; // Limpiar skeletons
@@ -434,7 +519,7 @@
                     const card = document.createElement('a');
                     card.href = `/${n.slug}`;
                     card.className = "group flex flex-col bg-white rounded-[2rem] overflow-hidden border border-orange-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300";
-                    
+
                     card.innerHTML = `
                         <div class="relative h-44 sm:h-48 overflow-hidden bg-slate-100">
                             <img src="${foto}" alt="${n.nombre_comercial}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
@@ -448,7 +533,7 @@
                             </div>
                             
                             <!-- Logo del Negocio -->
-                            ${n.logo_url ? `<img src="${n.logo_url}" class="absolute bottom-4 left-4 w-14 h-14 rounded-2xl object-cover border-2 border-white shadow-md bg-white">` : 
+                            ${n.logo_url ? `<img src="${n.logo_url}" class="absolute bottom-4 left-4 w-14 h-14 rounded-2xl object-cover border-2 border-white shadow-md bg-white">` :
                             `<div class="absolute bottom-4 left-4 w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 font-extrabold flex items-center justify-center text-2xl border-2 border-white shadow-md">${n.nombre_comercial.charAt(0)}</div>`}
                         </div>
                         <div class="p-5 flex-1 flex flex-col justify-between">
@@ -477,7 +562,7 @@
                             html: `
                                 <div class="relative flex flex-col items-center group cursor-pointer z-50" style="filter: drop-shadow(0 4px 12px rgba(0,0,0,0.35));">
                                     <div class="bg-slate-900 rounded-2xl px-3 py-2 flex items-center gap-2.5 transition-transform duration-300 group-hover:scale-110 border border-slate-700">
-                                        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-white flex items-center justify-center font-black text-xs overflow-hidden shadow-inner flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-xl ${n.logo_url ? 'bg-white' : 'bg-gradient-to-br from-orange-400 to-orange-600'} text-white flex items-center justify-center font-black text-xs overflow-hidden shadow-inner flex-shrink-0">
                                             ${logoElement}
                                         </div>
                                         <span class="font-bold text-white text-xs whitespace-nowrap tracking-tight leading-none">${n.nombre_comercial}</span>
@@ -491,7 +576,7 @@
                         });
 
                         const marker = L.marker([n.lat, n.lng], { icon: customIcon }).addTo(map);
-                        
+
                         const popupContent = `
                             <div class="text-center pb-1">
                                 <strong class="block text-slate-900 mb-2 border-b border-slate-100 pb-1 text-sm font-bold">${n.nombre_comercial}</strong>
@@ -531,4 +616,5 @@
         cargarNegocios();
     </script>
 </body>
+
 </html>

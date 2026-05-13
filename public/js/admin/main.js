@@ -11,6 +11,52 @@ import { setupRepartidores, cargarRepartidores, abrirModalRepartidor, cerrarModa
 window.cerrarSesion = cerrarSesion;
 window.cambiarVista = cambiarVista;
 
+// --- Sistema de Notificaciones Premium (Toasts) ---
+window.notificar = function(mensaje, tipo = 'exito') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md transform translate-y-10 opacity-0 transition-all duration-500 pointer-events-auto min-w-[300px]`;
+    
+    let icon = 'check-circle';
+    let colorClass = 'bg-white/90 border-green-100 text-green-700';
+    
+    if (tipo === 'error') {
+        icon = 'alert-circle';
+        colorClass = 'bg-white/90 border-red-100 text-red-600';
+    } else if (tipo === 'info') {
+        icon = 'info';
+        colorClass = 'bg-white/90 border-blue-100 text-blue-600';
+    } else if (tipo === 'advertencia') {
+        icon = 'alert-triangle';
+        colorClass = 'bg-white/90 border-amber-100 text-amber-600';
+    }
+
+    toast.classList.add(...colorClass.split(' '));
+    
+    toast.innerHTML = `
+        <div class="flex-shrink-0"><i data-feather="${icon}" class="w-6 h-6"></i></div>
+        <p class="font-bold text-sm tracking-tight">${mensaje}</p>
+    `;
+
+    container.appendChild(toast);
+    feather.replace();
+
+    // Animación de entrada
+    setTimeout(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+    }, 10);
+
+    // Auto-eliminar
+    setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('-translate-y-10', 'opacity-0');
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
+};
+
 window.abrirFormularioNegocio = abrirFormularioNegocio;
 window.eliminarNegocio = eliminarNegocio;
 
@@ -113,7 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 300);
                 
             } catch (err) {
-                alert(err.message);
+                notificar(err.message, 'error');
+            } finally {
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             }

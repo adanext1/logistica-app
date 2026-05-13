@@ -103,7 +103,7 @@ export function renderizarNegocios(negociosAMostrar) {
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="navigator.clipboard.writeText('${linkM}'); alert('¡Enlace copiado exitosamente!');" class="flex-1 sm:flex-none text-center px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                <button onclick="navigator.clipboard.writeText('${linkM}'); notificar('¡Enlace copiado exitosamente!');" class="flex-1 sm:flex-none text-center px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
                     <i data-feather="copy" class="w-4 h-4"></i> <span class="sm:hidden">Copiar</span>
                 </button>
                 <div class="relative group">
@@ -149,6 +149,7 @@ export function abrirFormularioNegocio(slug = null) {
             document.getElementById('pin').value = n.pin || '';
             document.getElementById('lat').value = n.lat || '';
             document.getElementById('lng').value = n.lng || '';
+            document.getElementById('categoria').value = n.categoria || '';
             
             document.getElementById('tituloFormularioNegocio').innerText = 'Editar Negocio';
             document.getElementById('btnSubmitNegocio').innerHTML = '<span>Guardar Cambios</span> <i data-feather="save" class="w-5 h-5"></i>';
@@ -168,6 +169,7 @@ export function abrirFormularioNegocio(slug = null) {
         document.getElementById('pin').value = '';
         document.getElementById('lat').value = '';
         document.getElementById('lng').value = '';
+        document.getElementById('categoria').value = '';
         
         document.getElementById('tituloFormularioNegocio').innerText = 'Alta de Negocio';
         document.getElementById('btnSubmitNegocio').innerHTML = '<span>Guardar Negocio</span> <i data-feather="check-circle" class="w-5 h-5"></i>';
@@ -340,11 +342,12 @@ export function setupNegocios() {
             const plan = document.getElementById('plan').value;
             const usuario = document.getElementById('usuario').value;
             const pin = document.getElementById('pin').value;
+            const categoria = document.getElementById('categoria').value;
             const lat = document.getElementById('lat').value;
             const lng = document.getElementById('lng').value;
 
             if (!lat || !lng) {
-                alert("Debes tocar el mapa para indicar la ubicación.");
+                notificar("Debes tocar el mapa para indicar la ubicación.", 'advertencia');
                 btn.innerHTML = originalHtml; btn.disabled = false;
                 if(btnM) { btnM.innerHTML = originalHtmlM; btnM.disabled = false; }
                 return;
@@ -360,11 +363,11 @@ export function setupNegocios() {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${tokenAdmin}`
                     },
-                    body: JSON.stringify({ nombre, whatsapp, plan, usuario, pin, lat, lng, logo_base64: state.logoBase64 })
+                    body: JSON.stringify({ nombre, whatsapp, plan, usuario, pin, lat, lng, categoria, logo_base64: state.logoBase64 })
                 });
 
                 if (response.status === 401) {
-                    alert("Tu sesión expiró. Inicia sesión de nuevo.");
+                    notificar("Tu sesión expiró. Inicia sesión de nuevo.", 'error');
                     cerrarSesion();
                     return;
                 }
@@ -383,10 +386,10 @@ export function setupNegocios() {
                 
                 cargarDatosDashboard(); 
                 cambiarVista('negocios');
-                setTimeout(() => alert(state.negocioEditandoSlug ? "¡Negocio actualizado!" : "¡Negocio registrado y en línea!"), 350);
+                setTimeout(() => notificar(state.negocioEditandoSlug ? "¡Negocio actualizado!" : "¡Negocio registrado y en línea!"), 350);
 
             } catch (error) {
-                alert(error.message);
+                notificar(error.message, 'error');
             } finally {
                 btn.innerHTML = originalHtml; btn.disabled = false;
                 if(btnM) { btnM.innerHTML = originalHtmlM; btnM.disabled = false; }
