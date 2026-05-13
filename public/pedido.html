@@ -510,7 +510,7 @@
 
                 // Registrar Evento de Conversión para Analíticas
                 if (orderRes.ok) {
-                    await registrarEventoGlobal(slug, 'order_init');
+                    await registrarEventoGlobal(slug, 'order_complete');
                 }
             } catch (error) {
                 console.error("El pedido no se guardó en la DB, pero redirigimos a WA de todos modos.");

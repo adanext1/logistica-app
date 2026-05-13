@@ -709,8 +709,9 @@ app.post('/api/productos', async (req, res) => {
 
         let imagen_url = null;
         if (imagen_base64) {
-            const fileName = `${negocio_id}-${Date.now()}`;
-            imagen_url = await subirImagenBase64(imagen_base64, fileName, 'productos');
+            const fileName = `prod`;
+            // Se sube al bucket 'productos-negocio', dentro de la carpeta con el ID del negocio
+            imagen_url = await subirImagenBase64(imagen_base64, fileName, 'productos-negocio', negocio_id);
         }
 
         const { data, error } = await supabase
@@ -734,6 +735,64 @@ app.post('/api/productos', async (req, res) => {
     } catch (err) {
         console.error("Error al crear producto:", err);
         res.status(500).json({ error: 'Error al crear producto' });
+    }
+});
+
+// Obtener un solo producto
+app.get('/api/productos/:id', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('productos')
+            .select('*')
+            .eq('id', req.params.id)
+            .single();
+
+        if (error) console.error("Supabase error GET /api/productos/:id:", error);
+        if (error || !data) return res.status(404).json({ error: 'Producto no encontrado' });
+        res.json(data);
+    } catch (err) {
+        console.error("Error al cargar producto:", err);
+        res.status(500).json({ error: 'Error al cargar producto' });
+    }
+});
+
+// Actualizar producto
+app.put('/api/productos/:id', async (req, res) => {
+    try {
+        const { negocio_id, nombre, precio, unidad, categoria_id, descripcion, disponible, imagen_base64, variaciones } = req.body;
+
+        if (!nombre || !precio) {
+            return res.status(400).json({ error: 'Faltan campos obligatorios' });
+        }
+
+        let updateData = {
+            nombre,
+            precio,
+            precio_medida_unit: unidad,
+            categoria_id,
+            descripcion,
+            esta_disponible: disponible !== undefined ? disponible : true,
+            variaciones: variaciones || null
+        };
+
+        if (imagen_base64) {
+            const fileName = `prod`;
+            const url = await subirImagenBase64(imagen_base64, fileName, 'productos-negocio', negocio_id);
+            if (url) updateData.imagen_url = url;
+        }
+
+        const { data, error } = await supabase
+            .from('productos')
+            .update(updateData)
+            .eq('id', req.params.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error("Error al actualizar producto:", err);
+        res.status(500).json({ error: 'Error al actualizar producto' });
     }
 });
 
@@ -1411,6 +1470,86 @@ app.delete('/api/repartidores/:id', protegerRutaAdmin, async (req, res) => {
     } catch (err) {
         console.error("Error al eliminar repartidor:", err);
         res.status(500).json({ error: 'Error interno al eliminar repartidor' });
+    }
+});
+
+// =============================================================================
+// METRICAS Y ESTADISTICAS PARA DASHBOARD
+// =============================================================================
+
+app.get('/api/negocio/:id/stats', async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        // Consultar eventos de los últimos 30 días
+        const { data: eventos, error } = await supabase
+            .from('eventos')
+            .select('tipo_evento')
+            .eq('negocio_id', id);
+
+        if (error) throw error;
+
+        // Contar tipos de eventos
+        const stats = {
+            visitas: eventos.filter(e => e.tipo_evento === 'view').length,
+            carritos: eventos.filter(e => e.tipo_evento === 'cart').length,
+            checkout: eventos.filter(e => e.tipo_evento === 'checkout_start').length,
+            pedidos: eventos.filter(e => e.tipo_evento === 'order_complete').length,
+            productos: 0,
+            progreso: 60, // Simulado por ahora
+            pasos: 3
+        };
+
+        // Obtener conteo real de productos
+        const { count: prodCount } = await supabase
+            .from('productos')
+            .select('*', { count: 'exact', head: true })
+            .eq('negocio_id', id);
+        
+        stats.productos = prodCount || 0;
+
+        res.json(stats);
+    } catch (err) {
+        console.error("Error en stats:", err);
+        res.status(500).json({ error: 'Error al obtener estadísticas' });
+    }
+});
+
+app.get('/api/negocio/:id/product-performance', async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        // Obtener eventos tipo 'cart' agrupados por producto_id
+        const { data: eventos, error } = await supabase
+            .from('eventos')
+            .select('detalles')
+            .eq('negocio_id', id)
+            .eq('tipo_evento', 'cart');
+
+        if (error) throw error;
+
+        // Contar frecuencia de cada producto_id
+        const counts = {};
+        eventos.forEach(e => {
+            const pid = e.detalles?.producto_id;
+            if (pid) counts[pid] = (counts[pid] || 0) + 1;
+        });
+
+        // Obtener nombres de productos
+        const { data: productos } = await supabase
+            .from('productos')
+            .select('id, nombre, imagen_url')
+            .in('id', Object.keys(counts));
+
+        const result = (productos || []).map(p => ({
+            ...p,
+            count: counts[p.id]
+        })).sort((a, b) => b.count - a.count);
+
+        res.json(result);
+    } catch (err) {
+        console.error("Error en performance:", err);
+        res.status(500).json({ error: 'Error al obtener rendimiento' });
     }
 });
 

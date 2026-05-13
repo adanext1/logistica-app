@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Operaciones | Camino Real</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74',
+                            400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c',
+                            800: '#9a3412', 900: '#7c2d12'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .nav-link.active {
+            background-color: #f97316;
+            color: white;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fdba74;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-x-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 glass-card border-b border-orange-100 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
+                <span class="material-symbols-outlined text-white">menu_book</span>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold text-slate-900 leading-none tracking-tight">MANUAL DE OPERACIONES</h1>
+                <p class="text-[10px] font-bold text-brand-600 uppercase tracking-widest mt-0.5">Centro de Control Administrativo</p>
+            </div>
+        </div>
+        <button onclick="window.close()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-xs transition-all">
+            <span class="material-symbols-outlined text-sm">close</span> Cerrar
+        </button>
+    </header>
+
+    <div class="flex pt-24 min-h-screen max-w-[1400px] mx-auto">
+        <!-- Sidebar Navigation -->
+        <aside class="hidden lg:flex flex-col w-72 h-[calc(100vh-120px)] fixed left-[max(0px,calc(50%-700px))] top-24 px-6 gap-2 overflow-y-auto">
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">Navegación</p>
+            <a href="#introduccion" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">info</span> Introducción
+            </a>
+            <a href="#dashboard" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">grid_view</span> Dashboard General
+            </a>
+            <a href="#comercios" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">storefront</span> Gestión de Comercios
+            </a>
+            <a href="#radar" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">radar</span> El Radar de Pedidos
+            </a>
+            <a href="#mapa" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">query_stats</span> Mapa de Inteligencia
+            </a>
+            <a href="#clientes" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">group</span> Directorio de Clientes
+            </a>
+            <a href="#repartidores" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">local_shipping</span> Flota de Repartidores
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-80 px-6 lg:px-12 pb-24 max-w-4xl">
+            
+            <!-- Hero Section -->
+            <section id="introduccion" class="mb-20">
+                <div class="bg-gradient-to-br from-brand-500 to-red-600 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-brand-500/20 mb-10">
+                    <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <span class="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md mb-4 inline-block">Guía Maestra 2026</span>
+                        <h2 class="text-4xl lg:text-5xl font-black tracking-tighter mb-4 leading-tight">Bienvenido al Centro de Control de Camino Real</h2>
+                        <p class="text-brand-50 text-lg leading-relaxed max-w-2xl">
+                            Este manual ha sido diseñado para que domines todas las herramientas administrativas de la plataforma. Aprenderás a gestionar pedidos, analizar el rendimiento de tus socios y optimizar la logística de última milla.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm flex flex-col gap-4 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 bg-orange-50 text-brand-600 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined">target</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Objetivo de Uso</h3>
+                        <p class="text-slate-500 leading-relaxed text-sm">
+                            Utiliza este panel para garantizar que cada pedido llegue a su destino y para identificar nuevas oportunidades de negocio mediante el análisis de datos geoespaciales.
+                        </p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm flex flex-col gap-4 hover:shadow-md transition-all">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined">security</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Privacidad y Seguridad</h3>
+                        <p class="text-slate-500 leading-relaxed text-sm">
+                            El acceso al panel está protegido por JWT. Recuerda cerrar sesión siempre que termines tu jornada para proteger la información de clientes y repartidores.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Dashboard -->
+            <section id="dashboard" class="mb-24 scroll-mt-28">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Dashboard General</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-8 leading-relaxed">
+                    Es la primera pantalla que verás al entrar. Su propósito es darte una visión de "pájaro" sobre el estado actual de la empresa sin entrar en detalles técnicos complejos.
+                </p>
+
+                <div class="space-y-12">
+                    <div class="flex flex-col md:flex-row gap-8 items-start">
+                        <div class="w-full md:w-1/2 bg-slate-200 aspect-video rounded-3xl border border-slate-300 flex items-center justify-center overflow-hidden relative group">
+                             <div class="absolute inset-0 bg-gradient-to-tr from-brand-600/20 to-transparent"></div>
+                             <span class="material-symbols-outlined text-brand-600 text-6xl group-hover:scale-110 transition-transform">insights</span>
+                        </div>
+                        <div class="w-full md:w-1/2 space-y-4">
+                            <h4 class="text-xl font-bold text-slate-900">Métricas Principales</h4>
+                            <ul class="space-y-3">
+                                <li class="flex gap-3 text-sm text-slate-600">
+                                    <span class="text-brand-600 font-bold">•</span>
+                                    <span><b>Ingresos de Hoy:</b> El total acumulado por cargos de envío generados en el día actual.</span>
+                                </li>
+                                <li class="flex gap-3 text-sm text-slate-600">
+                                    <span class="text-brand-600 font-bold">•</span>
+                                    <span><b>Comercios Activos:</b> Total de socios registrados que tienen su tienda disponible.</span>
+                                </li>
+                                <li class="flex gap-3 text-sm text-slate-600">
+                                    <span class="text-brand-600 font-bold">•</span>
+                                    <span><b>Tendencia:</b> Gráfico lineal que muestra si el volumen de pedidos está subiendo o bajando en la última semana.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Comercios -->
+            <section id="comercios" class="mb-24 scroll-mt-28">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Gestión de Comercios</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-8 leading-relaxed">
+                    Aquí controlas quién puede vender en la plataforma. Es crucial configurar bien cada negocio para que los clientes puedan localizarlos fácilmente.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-orange-50 p-6 rounded-[2rem] border border-orange-100">
+                        <h4 class="font-bold text-brand-700 mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">star</span> Tipos de Planes
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-orange-200">
+                                <p class="font-bold text-sm">Básico</p>
+                                <p class="text-xs text-slate-500">Solo redirige a WhatsApp. Sin catálogo digital.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-orange-200">
+                                <p class="font-bold text-sm">Genérico</p>
+                                <p class="text-xs text-slate-500">Tienda estándar dentro del directorio de Camino Real.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-orange-200">
+                                <p class="font-bold text-sm">Premium</p>
+                                <p class="text-xs text-slate-500">Diseño personalizado y Landing Page propia.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <h4 class="text-lg font-bold text-slate-900">¿Cómo dar de alta un negocio?</h4>
+                        <ol class="space-y-4 counter-reset">
+                            <li class="flex gap-4 items-start">
+                                <div class="w-6 h-6 bg-brand-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">1</div>
+                                <p class="text-sm text-slate-600 leading-relaxed">Haz clic en <b>"Nuevo Negocio"</b>. Sube el logo y llena los datos comerciales.</p>
+                            </li>
+                            <li class="flex gap-4 items-start">
+                                <div class="w-6 h-6 bg-brand-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">2</div>
+                                <p class="text-sm text-slate-600 leading-relaxed"><b>GPS:</b> Es vital. Toca el mapa para fijar dónde está el negocio. Sin esto, los cálculos de distancia fallarán.</p>
+                            </li>
+                            <li class="flex gap-4 items-start">
+                                <div class="w-6 h-6 bg-brand-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">3</div>
+                                <p class="text-sm text-slate-600 leading-relaxed"><b>Credenciales:</b> Define un Usuario y un PIN. Dale estos datos al dueño del negocio para que entre a su propio dashboard.</p>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: El Radar -->
+            <section id="radar" class="mb-24 scroll-mt-28">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">El Radar de Pedidos</h2>
+                </div>
+                
+                <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white mb-10 border border-white/10 shadow-2xl">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center animate-pulse">
+                            <span class="material-symbols-outlined">radar</span>
+                        </div>
+                        <h4 class="text-xl font-bold tracking-tight">Centro de Despacho en Tiempo Real</h4>
+                    </div>
+                    <p class="text-slate-300 mb-8 leading-relaxed">
+                        El Radar es tu herramienta principal para el día a día. Aquí verás cada pedido en cuanto el cliente lo envía por WhatsApp.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                        <div class="bg-white/5 p-5 rounded-2xl border border-white/10">
+                            <p class="font-bold text-brand-400 mb-2 uppercase tracking-widest text-[10px]">Filtrado Inteligente</p>
+                            <p class="text-slate-400">Puedes separar pedidos <b>"Pendientes"</b> de <b>"Entregados"</b> para que no se te pase ninguno.</p>
+                        </div>
+                        <div class="bg-white/5 p-5 rounded-2xl border border-white/10">
+                            <p class="font-bold text-brand-400 mb-2 uppercase tracking-widest text-[10px]">Detalle Crítico</p>
+                            <p class="text-slate-400">Cada tarjeta muestra: Nombre del cliente, qué pidió, cuánto pagó y a qué negocio le compró.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Mapa -->
+            <section id="mapa" class="mb-24 scroll-mt-28">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Mapa de Inteligencia</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-10 leading-relaxed">
+                    No es solo un mapa de Google. Es una herramienta de análisis espacial que usa <b>capas de datos</b> para ayudarte a tomar decisiones.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="flex gap-6 items-start p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                        <div class="w-14 h-14 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined">local_fire_department</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-1">Mapa de Calor (Heatmap)</h4>
+                            <p class="text-sm text-slate-500">Muestra nubes rojas donde hay más actividad. Si ves una nube roja lejos de tus negocios actuales, ¡ahí es donde deberías buscar nuevos socios!</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 items-start p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined">radar</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-1">Radios de Cobertura</h4>
+                            <p class="text-sm text-slate-500">Visualiza hasta dónde están llegando tus entregas. Ayuda a calcular si los repartidores están haciendo viajes demasiado largos.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 items-start p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                        <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined">share_location</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-1">Rutas Araña</h4>
+                            <p class="text-sm text-slate-500">Líneas directas de negocio a cliente. Te permiten ver de un vistazo qué comercios dominan qué zonas de la ciudad.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Clientes -->
+            <section id="clientes" class="mb-24 scroll-mt-28">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Directorio de Clientes</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-8 leading-relaxed">
+                    Tu base de datos de clientes es tu activo más valioso. Mantenerla limpia y bien ubicada facilita el trabajo de los repartidores.
+                </p>
+
+                <div class="bg-blue-50 p-8 rounded-[2.5rem] border border-blue-100">
+                    <h4 class="font-bold text-blue-900 mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xl">camera_alt</span> El Secreto de la Entrega Perfecta
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="text-sm text-blue-800 leading-relaxed mb-4">
+                                En el directorio de clientes, puedes subir <b>fotos de la fachada</b> de las casas.
+                            </p>
+                            <p class="text-sm text-blue-700 leading-relaxed">
+                                Esto ahorra minutos valiosos al repartidor, ya que sabrá exactamente frente a qué casa detenerse sin tener que adivinar números borrosos.
+                            </p>
+                        </div>
+                        <div class="bg-white/50 backdrop-blur-sm p-5 rounded-2xl border border-white/50 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-blue-600">check_circle</span>
+                                <span class="text-xs font-bold text-blue-900 uppercase">GPS Verificado</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-blue-600">check_circle</span>
+                                <span class="text-xs font-bold text-blue-900 uppercase">Instrucciones de Texto</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-blue-600">check_circle</span>
+                                <span class="text-xs font-bold text-blue-900 uppercase">Historial de Compras</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Repartidores -->
+            <section id="repartidores" class="mb-24 scroll-mt-28">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Flota de Repartidores</h2>
+                </div>
+                
+                <p class="text-slate-600 mb-10 leading-relaxed">
+                    Gestión de los conductores que ejecutan las entregas. Aquí controlas su acceso a la aplicación móvil.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-4">
+                        <h4 class="font-bold text-slate-900">Seguridad por PIN</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Cada repartidor tiene un PIN único. Es su contraseña para entrar al <b>Panel de Driver</b>. Nunca lo compartas con otros repartidores.
+                        </p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-4">
+                        <h4 class="font-bold text-slate-900">Estado de Cuenta</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Puedes poner a un repartidor en <b>"Inactivo"</b> de forma instantánea si ya no trabaja contigo, bloqueando su acceso de inmediato.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer Section -->
+            <footer class="mt-20 pt-12 border-t border-slate-200 text-center">
+                <p class="text-slate-400 text-sm mb-4">¿Tienes dudas adicionales o necesitas soporte técnico?</p>
+                <a href="https://wa.me/5211234567890" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold shadow-lg shadow-green-500/20 transition-all active:scale-95">
+                    <span class="material-symbols-outlined">support_agent</span> Contactar a Soporte
+                </a>
+                <p class="mt-12 text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Repartidores Camino Real &copy; 2026</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Mobile Navigation Toggle (Bottom Right) -->
+    <button id="mobileNavBtn" class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-brand-600 text-white rounded-full shadow-2xl z-50 flex items-center justify-center active:scale-90 transition-transform">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <!-- Mobile Nav Menu (Hidden) -->
+    <div id="mobileMenu" class="fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-[60] flex flex-col items-center justify-center gap-6 text-white transition-all opacity-0 pointer-events-none">
+        <button id="closeMobileMenu" class="absolute top-8 right-8 text-white/60 hover:text-white">
+            <span class="material-symbols-outlined text-4xl">close</span>
+        </button>
+        <a href="#introduccion" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Introducción</a>
+        <a href="#dashboard" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Dashboard</a>
+        <a href="#comercios" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Comercios</a>
+        <a href="#radar" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">El Radar</a>
+        <a href="#mapa" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Mapa Inteligencia</a>
+        <a href="#clientes" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Clientes</a>
+        <a href="#repartidores" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Repartidores</a>
+    </div>
+
+    <script>
+        // Smooth highlighting for nav links
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Mobile Menu Logic
+        const mobileNavBtn = document.getElementById('mobileNavBtn');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('opacity-0');
+            mobileMenu.classList.toggle('pointer-events-none');
+        }
+
+        mobileNavBtn.addEventListener('click', toggleMobileMenu);
+        closeMobileMenu.addEventListener('click', toggleMobileMenu);
+    </script>
+</body>
+
+</html>

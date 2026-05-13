@@ -139,8 +139,8 @@
                 <span class="material-symbols-outlined">arrow_back</span>
             </a>
             <div>
-                <h2 class="font-h2 text-h2 text-on-surface">Agregar Nuevo Producto</h2>
-                <p class="font-body-md text-body-md text-on-surface-variant">Completa los detalles para publicar en tu catálogo.</p>
+                <h2 id="page_title" class="font-h2 text-h2 text-on-surface">Agregar Nuevo Producto</h2>
+                <p id="page_subtitle" class="font-body-md text-body-md text-on-surface-variant">Completa los detalles para publicar en tu catálogo.</p>
             </div>
         </div>
 
@@ -171,7 +171,7 @@
 
                 <!-- Price -->
                 <div>
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_price">Precio</label>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_price">Precio Base / Desde</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-on-surface-variant">$</span>
                         <input class="w-full bg-surface-container-low border-outline-variant rounded-lg pl-8 pr-4 py-3 font-body-md" id="product_price" placeholder="0.00" type="number" />
@@ -202,19 +202,43 @@
                     <textarea class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md resize-none" id="product_description" rows="3" placeholder="Agrega detalles sobre el producto..."></textarea>
                 </div>
 
-                <!-- Variations (Flavors, Options) -->
-                <div class="md:col-span-2 space-y-3">
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Variaciones / Sabores (Opcional)</label>
-                    <div class="flex gap-2">
-                        <input class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="variation_input" placeholder="Ej. BBQ, Mango, Picante..." type="text" onkeypress="if(event.key === 'Enter') addVariation()"/>
-                        <button onclick="addVariation()" type="button" class="bg-primary-container text-on-primary-container px-6 rounded-lg font-bold hover:bg-primary-container/80 transition-colors">
+                <!-- Opciones de Precio (Tamaños/Porciones) -->
+                <div class="md:col-span-2 border-t border-outline-variant/30 pt-6 mt-2">
+                    <div class="mb-4">
+                        <h3 class="font-h3 text-[18px] font-bold text-on-surface mb-1">Opciones con Precio Personalizado (Opcional)</h3>
+                        <p class="text-[13px] text-on-surface-variant">Usa esto si tu producto tiene tamaños o cantidades con precios distintos (ej. 12 piezas $180, 18 piezas $250).</p>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row gap-2 mb-4">
+                        <input class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="tamano_nombre" placeholder="Nombre (ej. 12 piezas)" type="text" />
+                        <div class="relative w-full md:w-32">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant">$</span>
+                            <input class="w-full bg-surface-container-low border-outline-variant rounded-lg pl-8 pr-4 py-3 font-body-md" id="tamano_precio" placeholder="180.00" type="number" />
+                        </div>
+                        <button onclick="addTamano()" type="button" class="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-bold hover:bg-primary-container/80 transition-colors w-full md:w-auto">
                             Añadir
                         </button>
                     </div>
-                    <div id="variations_container" class="flex flex-wrap gap-2 pt-2">
+                    <div id="tamanos_container" class="space-y-2">
+                        <!-- Lista de opciones agregadas -->
+                    </div>
+                </div>
+
+                <!-- Sabores (Sin costo extra) -->
+                <div class="md:col-span-2 border-t border-outline-variant/30 pt-6 mt-2">
+                    <div class="mb-4">
+                        <h3 class="font-h3 text-[18px] font-bold text-on-surface mb-1">Sabores / Variaciones Gratuitas (Opcional)</h3>
+                        <p class="text-[13px] text-on-surface-variant">Complementos o sabores que el cliente puede elegir sin costo extra (ej. BBQ, Mango Habanero).</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="sabor_input" placeholder="Ej. BBQ, Mango, Picante..." type="text" onkeypress="if(event.key === 'Enter') addSabor(event)"/>
+                        <button onclick="addSabor(event)" type="button" class="bg-surface-variant text-on-surface-variant px-6 py-3 rounded-lg font-bold hover:bg-surface-variant/80 transition-colors">
+                            Añadir
+                        </button>
+                    </div>
+                    <div id="sabores_container" class="flex flex-wrap gap-2 pt-3">
                         <!-- Chips will appear here -->
                     </div>
-                    <p class="text-[11px] text-on-surface-variant italic">Ingresa el sabor y presiona Añadir. Ej: BBQ, Buffalo, Lemon Pepper.</p>
                 </div>
             </div>
 

@@ -62,7 +62,10 @@
                 <i data-feather="truck" class="w-5 h-5"></i> Repartidores
             </button>
         </nav>
-        <div class="p-4 border-t border-slate-800">
+        <div class="p-4 border-t border-slate-800 space-y-2">
+            <a href="/manual-admin.html" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-amber-400 bg-amber-400/10 hover:bg-amber-400 hover:text-slate-900 rounded-xl font-bold transition-all">
+                <i data-feather="book-open" class="w-4 h-4"></i> Manual de Uso
+            </a>
             <button onclick="cerrarSesion()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-400 bg-red-400/10 hover:bg-red-400 hover:text-white rounded-xl font-bold transition-all">
                 <i data-feather="log-out" class="w-4 h-4"></i> Salir
             </button>
@@ -80,9 +83,14 @@
                 </div>
                 <h1 class="text-sm font-extrabold text-slate-900 tracking-tight uppercase">REPARTIDORES CAMINO REAL</h1>
             </div>
-            <button onclick="cerrarSesion()" class="text-slate-400 hover:text-red-500 bg-slate-100 p-2 rounded-full transition-colors">
-                <i data-feather="log-out" class="w-4 h-4"></i>
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="/manual-admin.html" target="_blank" class="text-slate-400 hover:text-brand-600 bg-slate-100 p-2 rounded-full transition-colors">
+                    <i data-feather="book-open" class="w-4 h-4"></i>
+                </a>
+                <button onclick="cerrarSesion()" class="text-slate-400 hover:text-red-500 bg-slate-100 p-2 rounded-full transition-colors">
+                    <i data-feather="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
         </header>
 
         <!-- CONTENEDOR DE LAS VISTAS -->

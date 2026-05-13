@@ -105,30 +105,33 @@ async function cargarProductos(id, catId = null, query = "") {
             return;
         }
 
-        container.innerHTML = productos.map(p => `
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden group hover:shadow-lg transition-all duration-300">
-                <div class="aspect-square relative overflow-hidden bg-surface-container-high">
-                    <img src="${p.imagen_url || 'https://via.placeholder.com/300'}" alt="${p.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-2 right-2 flex gap-2">
-                        <button onclick="eliminarProducto('${p.id}')" class="w-8 h-8 rounded-full bg-white/90 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-sm">delete</span>
-                        </button>
-                    </div>
+        container.innerHTML = productos.map(p => {
+            const imgHtml = p.imagen_url 
+                ? `<img src="${p.imagen_url}" alt="${p.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">`
+                : `<div class="w-full h-full bg-surface-container-highest flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-500">🛍️</div>`;
+                
+            return `
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-3 flex gap-4 items-center group hover:shadow-md transition-all duration-300">
+                <div class="w-20 h-20 shrink-0 rounded-lg overflow-hidden relative bg-surface-container-high">
+                    ${imgHtml}
                 </div>
-                <div class="p-4">
-                    <h3 class="font-h3 text-body-lg font-bold text-on-surface mb-1">${p.nombre}</h3>
-                    <p class="text-body-md text-primary font-bold mb-2">$${p.precio} <span class="text-xs text-on-surface-variant font-normal">/ ${p.precio_medida_unit || 'unid'}</span></p>
-                    <div class="flex items-center justify-between mt-4">
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${p.esta_disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                            ${p.esta_disponible ? 'DISPONIBLE' : 'AGOTADO'}
-                        </span>
-                        <a href="nuevo-producto.html?edit=${p.id}" class="text-on-surface-variant hover:text-primary transition-colors">
-                            <span class="material-symbols-outlined">edit</span>
-                        </a>
-                    </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-h3 text-body-lg font-bold text-on-surface mb-0.5 truncate">${p.nombre}</h3>
+                    <p class="text-body-md text-primary font-bold mb-2 leading-none">$${p.precio} <span class="text-[10px] text-on-surface-variant font-normal">/ ${p.precio_medida_unit || 'unid'}</span></p>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block ${p.esta_disponible ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                        ${p.esta_disponible ? 'DISPONIBLE' : 'AGOTADO'}
+                    </span>
+                </div>
+                <div class="flex flex-col gap-2 shrink-0">
+                    <a href="nuevo-producto.html?edit=${p.id}" class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                    </a>
+                    <button onclick="eliminarProducto('${p.id}')" class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
 
     } catch (error) {
         console.error("Error al cargar productos:", error);

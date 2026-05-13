@@ -186,8 +186,43 @@
         </div>
     </div>
 
+    <!-- Modal de Configuración de Producto (Uber Eats Style) -->
+    <div id="modalConfigProducto" class="fixed inset-0 z-[60] flex items-end justify-center pointer-events-none transition-opacity duration-300 opacity-0 hidden">
+        <!-- Overlay oscuro -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="cerrarConfigProducto()"></div>
+        
+        <!-- Contenido del modal -->
+        <div class="bg-white w-full max-w-lg rounded-t-3xl shadow-2xl relative z-10 pointer-events-auto transform transition-transform duration-300 translate-y-full flex flex-col max-h-[90vh]">
+            <!-- Header con info del producto -->
+            <div class="p-6 border-b border-slate-100 flex gap-4 relative">
+                <button onclick="cerrarConfigProducto()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 text-slate-500 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors">
+                    <i data-feather="x" class="w-4 h-4"></i>
+                </button>
+                <div id="configProdImg" class="w-20 h-20 rounded-xl overflow-hidden border border-slate-100 flex-shrink-0 bg-slate-50"></div>
+                <div>
+                    <h3 id="configProdName" class="font-bold text-slate-900 text-lg leading-tight mb-1">Nombre</h3>
+                    <p id="configProdDesc" class="text-sm text-slate-500 line-clamp-2">Descripción</p>
+                    <p id="configProdPrice" class="font-black text-brand-600 mt-1">$0.00</p>
+                </div>
+            </div>
+
+            <!-- Opciones -->
+            <div class="p-6 overflow-y-auto flex-1 space-y-6" id="configProdOptions">
+                <!-- Se inyectan dinámicamente -->
+            </div>
+
+            <!-- Footer / Botón Agregar -->
+            <div class="p-6 border-t border-slate-100 bg-white rounded-b-3xl flex-shrink-0">
+                <button id="btnConfirmConfig" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 flex justify-between items-center text-lg">
+                    <span>Añadir 1 al carrito</span>
+                    <span id="configBtnTotal">$0.00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal del Carrito -->
-    <div id="modalCarrito" class="fixed inset-0 z-50 flex items-end justify-center pointer-events-none transition-opacity duration-300 opacity-0">
+    <div id="modalCarrito" class="fixed inset-0 z-50 flex items-end justify-center pointer-events-none transition-opacity duration-300 opacity-0 hidden">
         <!-- Overlay oscuro -->
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="cerrarModalCarrito()"></div>
         
@@ -272,13 +307,30 @@
                     placeholder.textContent = negocio.nombre_comercial.charAt(0);
                 }
 
+                // Splash Art (Banner)
+                const heroBanner = document.getElementById('heroBanner');
+                if (negocio.splash_url) {
+                    heroBanner.style.backgroundImage = `url('${negocio.splash_url}')`;
+                    heroBanner.style.backgroundSize = 'cover';
+                    heroBanner.style.backgroundPosition = 'center';
+                    heroBanner.innerHTML = ''; // Limpiar el "Cargando..."
+                } else {
+                    heroBanner.innerHTML = `
+                        <div class="text-center text-white p-6">
+                            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-sm border border-white/30">
+                                <i data-feather="shopping-bag" class="w-8 h-8"></i>
+                            </div>
+                            <p class="text-brand-100 text-[10px] font-black uppercase tracking-[0.2em] opacity-80">${negocio.categoria || 'Comercio Local'}</p>
+                        </div>
+                    `;
+                }
+                feather.replace();
+
                 // WhatsApp
                 if (negocio.whatsapp) {
                     const btnWa = document.getElementById('btnWhatsapp');
                     btnWa.href = `https://wa.me/52${negocio.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola! Quiero hacer un pedido en ${negocio.nombre_comercial}`)}`;
                     btnWa.target = '_blank';
-
-                    // El botón ahora abre el modal, ya está asignado en el HTML
                 }
 
                 // Obtener datos adicionales
@@ -292,6 +344,9 @@
                 console.error('Error cargando negocio:', err);
                 document.getElementById('nombreNegocio').textContent = 'Negocio no encontrado';
                 document.getElementById('gridProductos').innerHTML = '<p class="col-span-2 text-center text-slate-500 py-10">No pudimos cargar la información de esta tienda.</p>';
+            } finally {
+                // Asegurar que el body sea interactivo
+                document.body.classList.remove('pointer-events-none');
             }
         }
 
@@ -375,11 +430,22 @@
                 `;
             });
 
-            // Renderizar Ofertas
+            function manejarClickProducto(id) {
+            const p = productosDB.find(prod => prod.id === id);
+            if (!p) return;
+            const requiresConfig = p.variaciones && ((p.variaciones.tamanos && p.variaciones.tamanos.length > 0) || (p.variaciones.sabores && p.variaciones.sabores.length > 0));
+            if (requiresConfig) {
+                abrirConfigProducto(id);
+            } else {
+                agregarSimpleAlCarrito(id);
+            }
+        }
+
+        // Renderizar Ofertas
             ofertasDB.forEach(of => {
                 const imgStr = of.imagen_url ? `<img src="${of.imagen_url}" class="absolute inset-0 w-full h-full object-cover opacity-60">` : '';
                 html += `
-                    <div class="snap-center shrink-0 w-64 h-32 relative bg-rose-700 rounded-2xl overflow-hidden shadow-md flex items-end p-4 border border-rose-200 group cursor-pointer" onclick="${of.producto_id ? `agregarAlCarrito('${of.producto_id}')` : ''}">
+                    <div class="snap-center shrink-0 w-64 h-32 relative bg-rose-700 rounded-2xl overflow-hidden shadow-md flex items-end p-4 border border-rose-200 group cursor-pointer" onclick="${of.producto_id ? `manejarClickProducto('${of.producto_id}')` : ''}">
                         ${imgStr}
                         <div class="absolute inset-0 bg-gradient-to-t from-rose-900 via-rose-900/60 to-transparent"></div>
                         <div class="relative z-10 w-full flex justify-between items-end">
@@ -427,8 +493,22 @@
                     ? `<img src="${p.imagen_url}" class="w-full h-full object-cover">`
                     : `<div class="w-full h-full bg-brand-50 flex items-center justify-center text-4xl">🛍️</div>`;
                 
+                // Lógica de visualización de precios con opciones
+                const variaciones = p.variaciones || {};
+                const hasTamanos = variaciones.tamanos && variaciones.tamanos.length > 0;
+                const hasSabores = variaciones.sabores && variaciones.sabores.length > 0;
+                const requiresConfig = hasTamanos || hasSabores;
+                
+                let priceDisplay = '';
+                if (hasTamanos) {
+                    const minPrice = Math.min(...variaciones.tamanos.map(t => parseFloat(t.precio)));
+                    priceDisplay = `<span class="text-xs text-slate-500 font-medium block leading-none mb-1">Desde</span>$${minPrice.toFixed(2)}`;
+                } else {
+                    priceDisplay = `$${p.precio}<span class="text-xs text-slate-400 font-medium">/${p.precio_medida_unit || 'pza'}</span>`;
+                }
+                
                 return `
-                <div class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm flex gap-4 hover:shadow-md transition-all group">
+                <div class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm flex gap-4 hover:shadow-md transition-all group cursor-pointer" onclick="${requiresConfig ? `abrirConfigProducto('${p.id}')` : `agregarSimpleAlCarrito('${p.id}')`}">
                     <div class="w-24 h-24 rounded-xl flex-shrink-0 overflow-hidden border border-orange-100 group-hover:scale-105 transition-transform">
                         ${imgHtml}
                     </div>
@@ -437,14 +517,10 @@
                             <h3 class="font-bold text-slate-900 leading-tight mb-1">${p.nombre}</h3>
                             <p class="text-xs text-slate-500 line-clamp-2">${p.descripcion || ''}</p>
                         </div>
-                        <div class="flex items-center justify-between mt-2">
-                            <span class="font-black text-lg text-brand-600">$${p.precio}<span class="text-xs text-slate-400 font-medium">/${p.precio_medida_unit || 'pza'}</span></span>
+                        <div class="flex items-end justify-between mt-2">
+                            <span class="font-black text-lg text-brand-600 leading-none">${priceDisplay}</span>
                             <div class="flex items-center gap-2">
-                                ${(carrito[p.id] || 0) > 0 ? `
-                                    <button onclick="quitarDelCarrito('${p.id}')" class="w-8 h-8 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-full flex items-center justify-center transition-colors text-lg font-bold">−</button>
-                                    <span class="font-black text-sm text-slate-900 w-5 text-center">${carrito[p.id]}</span>
-                                ` : ''}
-                                <button onclick="agregarAlCarrito('${p.id}')" class="w-8 h-8 bg-brand-50 text-brand-600 hover:bg-brand-500 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                                <button class="w-8 h-8 bg-brand-50 text-brand-600 hover:bg-brand-500 hover:text-white rounded-full flex items-center justify-center transition-colors">
                                     <i data-feather="plus" class="w-4 h-4"></i>
                                 </button>
                             </div>
@@ -456,28 +532,77 @@
             feather.replace();
         }
 
-        // --- Carrito ---
-        function agregarAlCarrito(id) {
-            carrito[id] = (carrito[id] || 0) + 1;
+        // --- Lógica del Carrito (Rediseñada para Variaciones) ---
+        // carrito ahora es un objeto: { 'id_hash': { producto, qty } }
+        function agregarSimpleAlCarrito(id) {
+            const prod = productosDB.find(p => p.id === id);
+            if (!prod) return;
+            
+            const key = prod.id + '_simple';
+            if (carrito[key]) {
+                carrito[key].qty += 1;
+            } else {
+                carrito[key] = {
+                    id: prod.id,
+                    nombre: prod.nombre,
+                    precio: parseFloat(prod.precio),
+                    tamano: null,
+                    sabor: null,
+                    imagen_url: prod.imagen_url,
+                    qty: 1
+                };
+            }
             registrarEvento(negocioIdGlobal, 'cart', { producto_id: id });
             actualizarCarrito();
-            renderizarProductos();
         }
 
-        function quitarDelCarrito(id) {
-            if (carrito[id] > 0) carrito[id]--;
-            if (carrito[id] === 0) delete carrito[id];
+        function agregarConfiguradoAlCarrito(prodId, config) {
+            const prod = productosDB.find(p => p.id === prodId);
+            if (!prod) return;
+
+            // Crear un hash único para esta configuración
+            const tamStr = config.tamano ? config.tamano.nombre : 'nt';
+            const sabStr = config.sabor ? config.sabor : 'ns';
+            const key = `${prod.id}_${tamStr}_${sabStr}`.replace(/\s+/g, '-');
+
+            if (carrito[key]) {
+                carrito[key].qty += 1;
+            } else {
+                carrito[key] = {
+                    id: prod.id,
+                    nombre: prod.nombre,
+                    precio: config.tamano ? parseFloat(config.tamano.precio) : parseFloat(prod.precio),
+                    tamano: config.tamano ? config.tamano.nombre : null,
+                    sabor: config.sabor || null,
+                    imagen_url: prod.imagen_url,
+                    qty: 1
+                };
+            }
+            registrarEvento(negocioIdGlobal, 'cart', { producto_id: prodId });
             actualizarCarrito();
-            renderizarProductos();
+            cerrarConfigProducto();
+            abrirModalCarrito();
+        }
+
+        function sumarCarrito(key) {
+            if (carrito[key]) {
+                carrito[key].qty++;
+                actualizarCarrito();
+            }
+        }
+
+        function restarCarrito(key) {
+            if (carrito[key]) {
+                carrito[key].qty--;
+                if (carrito[key].qty <= 0) delete carrito[key];
+                actualizarCarrito();
+            }
         }
 
         function actualizarCarrito() {
-            const items = Object.entries(carrito);
-            const totalItems = items.reduce((sum, [, qty]) => sum + qty, 0);
-            const totalPrecio = items.reduce((sum, [id, qty]) => {
-                const prod = productosDB.find(p => p.id === id);
-                return sum + (prod ? parseFloat(prod.precio) * qty : 0);
-            }, 0);
+            const items = Object.values(carrito);
+            const totalItems = items.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrecio = items.reduce((sum, item) => sum + (item.precio * item.qty), 0);
 
             document.getElementById('carritoCount').textContent = totalItems;
             document.getElementById('carritoTotal').textContent = `$${totalPrecio.toFixed(2)}`;
@@ -497,23 +622,135 @@
             }
         }
 
+        // --- Lógica Modal Configuración de Producto ---
+        let configActual = { productoId: null, tamano: null, sabor: null };
+
+        function abrirConfigProducto(id) {
+            const prod = productosDB.find(p => p.id === id);
+            if (!prod) return;
+            const variaciones = prod.variaciones || {};
+
+            configActual = { 
+                productoId: id, 
+                tamano: (variaciones.tamanos && variaciones.tamanos.length > 0) ? variaciones.tamanos[0] : null, 
+                sabor: (variaciones.sabores && variaciones.sabores.length > 0) ? variaciones.sabores[0] : null 
+            };
+
+            // Setup Header
+            document.getElementById('configProdName').textContent = prod.nombre;
+            document.getElementById('configProdDesc').textContent = prod.descripcion || '';
+            const imgHtml = prod.imagen_url 
+                ? `<img src="${prod.imagen_url}" class="w-full h-full object-cover">`
+                : `<div class="w-full h-full bg-brand-50 flex items-center justify-center text-2xl">🛍️</div>`;
+            document.getElementById('configProdImg').innerHTML = imgHtml;
+
+            // Setup Options
+            let optionsHtml = '';
+
+            // Tamaños
+            if (variaciones.tamanos && variaciones.tamanos.length > 0) {
+                optionsHtml += `
+                    <div>
+                        <div class="flex items-baseline justify-between mb-3">
+                            <h4 class="font-bold text-slate-900 text-lg">Tamaño</h4>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">Obligatorio</span>
+                        </div>
+                        <div class="space-y-2">
+                `;
+                variaciones.tamanos.forEach((t, index) => {
+                    optionsHtml += `
+                        <label class="flex items-center justify-between p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="configTamano" value="${index}" ${index === 0 ? 'checked' : ''} onchange="actualizarConfigTamano(${index})" class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                <span class="font-medium text-slate-800">${t.nombre}</span>
+                            </div>
+                            <span class="font-bold text-slate-900">+$${parseFloat(t.precio).toFixed(2)}</span>
+                        </label>
+                    `;
+                });
+                optionsHtml += `</div></div>`;
+            }
+
+            // Sabores
+            if (variaciones.sabores && variaciones.sabores.length > 0) {
+                if (optionsHtml !== '') optionsHtml += '<hr class="border-slate-100 my-4">';
+                optionsHtml += `
+                    <div>
+                        <div class="flex items-baseline justify-between mb-3">
+                            <h4 class="font-bold text-slate-900 text-lg">Elige tu sabor</h4>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">Obligatorio</span>
+                        </div>
+                        <div class="space-y-2">
+                `;
+                variaciones.sabores.forEach((s, index) => {
+                    optionsHtml += `
+                        <label class="flex items-center justify-between p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="configSabor" value="${s}" ${index === 0 ? 'checked' : ''} onchange="configActual.sabor = '${s}'" class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                <span class="font-medium text-slate-800">${s}</span>
+                            </div>
+                        </label>
+                    `;
+                });
+                optionsHtml += `</div></div>`;
+            }
+
+            document.getElementById('configProdOptions').innerHTML = optionsHtml;
+            actualizarPrecioConfigurador();
+
+            // Setup Botón Confirmar
+            document.getElementById('btnConfirmConfig').onclick = () => agregarConfiguradoAlCarrito(id, configActual);
+
+            // Abrir Modal
+            const modal = document.getElementById('modalConfigProducto');
+            const panel = modal.querySelector('.transform');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0', 'pointer-events-none'), 10);
+            setTimeout(() => panel.classList.remove('translate-y-full'), 10);
+        }
+
+        function actualizarConfigTamano(index) {
+            const prod = productosDB.find(p => p.id === configActual.productoId);
+            configActual.tamano = prod.variaciones.tamanos[index];
+            actualizarPrecioConfigurador();
+        }
+
+        function actualizarPrecioConfigurador() {
+            const prod = productosDB.find(p => p.id === configActual.productoId);
+            let precioFinal = configActual.tamano ? parseFloat(configActual.tamano.precio) : parseFloat(prod.precio);
+            document.getElementById('configProdPrice').textContent = `$${precioFinal.toFixed(2)}`;
+            document.getElementById('configBtnTotal').textContent = `$${precioFinal.toFixed(2)}`;
+        }
+
+        function cerrarConfigProducto() {
+            const modal = document.getElementById('modalConfigProducto');
+            const panel = modal.querySelector('.transform');
+            panel.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }, 300);
+        }
+
         function abrirModalCarrito() {
             const modal = document.getElementById('modalCarrito');
             const panel = modal.querySelector('.transform');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.remove('hidden');
+            
+            // Renderizar y calcular total correcto
+            renderizarModalCarrito();
+            const items = Object.values(carrito);
+            const totalPrecio = items.reduce((sum, item) => sum + (item.precio * item.qty), 0);
+            document.getElementById('modalCarritoTotal').textContent = `$${totalPrecio.toFixed(2)}`;
+
+            // Timeout para permitir que el display:flex se aplique antes de la opacidad
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+            }, 10);
             // Timeout pequeño para la animación del panel
             setTimeout(() => {
                 panel.classList.remove('translate-y-full');
             }, 10);
-            renderizarModalCarrito();
-            
-            // Calcular total
-            const items = Object.entries(carrito);
-            const totalPrecio = items.reduce((sum, [id, qty]) => {
-                const prod = productosDB.find(p => p.id === id);
-                return sum + (prod ? parseFloat(prod.precio) * qty : 0);
-            }, 0);
-            document.getElementById('modalCarritoTotal').textContent = `$${totalPrecio.toFixed(2)}`;
         }
 
         function cerrarModalCarrito() {
@@ -522,6 +759,9 @@
             panel.classList.add('translate-y-full');
             setTimeout(() => {
                 modal.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
             }, 300);
         }
 
@@ -534,26 +774,29 @@
                 return;
             }
 
-            container.innerHTML = items.map(([id, qty]) => {
-                const p = productosDB.find(p => p.id === id);
-                if (!p) return '';
-                const imgHtml = p.imagen_url 
-                    ? `<img src="${p.imagen_url}" class="w-full h-full object-cover">`
+            container.innerHTML = items.map(([key, item]) => {
+                const imgHtml = item.imagen_url 
+                    ? `<img src="${item.imagen_url}" class="w-full h-full object-cover">`
                     : `<div class="w-full h-full bg-brand-50 flex items-center justify-center text-xl">🛍️</div>`;
                 
+                let extrasHtml = '';
+                if (item.tamano) extrasHtml += `<span class="block text-[11px] text-slate-500 font-medium leading-tight">Tamaño: ${item.tamano}</span>`;
+                if (item.sabor) extrasHtml += `<span class="block text-[11px] text-slate-500 font-medium leading-tight">Sabor: ${item.sabor}</span>`;
+
                 return `
                 <div class="flex items-center gap-4 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm">
                     <div class="w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden border border-slate-100">
                         ${imgHtml}
                     </div>
                     <div class="flex-1">
-                        <h4 class="font-bold text-slate-900 text-sm leading-tight">${p.nombre}</h4>
-                        <span class="font-black text-brand-600 text-sm">$${parseFloat(p.precio).toFixed(2)}</span>
+                        <h4 class="font-bold text-slate-900 text-sm leading-tight">${item.nombre}</h4>
+                        ${extrasHtml}
+                        <span class="font-black text-brand-600 text-sm block mt-1">$${item.precio.toFixed(2)}</span>
                     </div>
                     <div class="flex items-center gap-2 bg-slate-50 rounded-full p-1 border border-slate-100">
-                        <button onclick="quitarDelCarrito('${p.id}')" class="w-8 h-8 text-slate-600 hover:bg-white rounded-full flex items-center justify-center transition-colors text-lg font-bold shadow-sm">−</button>
-                        <span class="font-bold text-sm text-slate-900 w-4 text-center">${qty}</span>
-                        <button onclick="agregarAlCarrito('${p.id}')" class="w-8 h-8 text-slate-600 hover:bg-white rounded-full flex items-center justify-center transition-colors shadow-sm">
+                        <button onclick="restarCarrito('${key}')" class="w-8 h-8 text-slate-600 hover:bg-white rounded-full flex items-center justify-center transition-colors text-lg font-bold shadow-sm">−</button>
+                        <span class="font-bold text-sm text-slate-900 w-4 text-center">${item.qty}</span>
+                        <button onclick="sumarCarrito('${key}')" class="w-8 h-8 text-slate-600 hover:bg-white rounded-full flex items-center justify-center transition-colors shadow-sm">
                             <i data-feather="plus" class="w-3 h-3"></i>
                         </button>
                     </div>
@@ -565,30 +808,35 @@
         }
 
         function continuarPedido() {
-            const items = Object.entries(carrito);
+            const items = Object.values(carrito);
             if (items.length === 0) return;
 
             let carritoParaGuardar = [];
             let total = 0;
 
-            items.forEach(([id, qty]) => {
-                const prod = productosDB.find(p => p.id === id);
-                if (prod) {
-                    const subtotal = parseFloat(prod.precio) * qty;
-                    total += subtotal;
-                    carritoParaGuardar.push({
-                        id: prod.id,
-                        nombre: prod.nombre,
-                        cantidad: qty,
-                        precio_unitario: parseFloat(prod.precio),
-                        subtotal: subtotal
-                    });
-                }
+            items.forEach(item => {
+                const subtotal = item.precio * item.qty;
+                total += subtotal;
+                
+                let nombreDisplay = item.nombre;
+                if (item.tamano) nombreDisplay += ` [${item.tamano}]`;
+                if (item.sabor) nombreDisplay += ` [${item.sabor}]`;
+
+                carritoParaGuardar.push({
+                    id: item.id,
+                    nombre: nombreDisplay,
+                    cantidad: item.qty,
+                    precio_unitario: item.precio,
+                    subtotal: subtotal
+                });
             });
 
             // Guardar en localStorage
             localStorage.setItem('laas_carrito', JSON.stringify(carritoParaGuardar));
             localStorage.setItem('laas_carrito_total', total.toFixed(2));
+
+            // Registrar inicio de checkout
+            registrarEvento(negocioIdGlobal, 'checkout_start', { total: total.toFixed(2) });
 
             // Redirigir a pedido.html
             window.location.href = `/pedido.html?n=${slug}`;
