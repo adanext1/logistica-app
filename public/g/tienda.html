@@ -147,9 +147,9 @@
         </div>
 
         <!-- CTA WhatsApp -->
-        <div class="mt-10 bg-gradient-to-r from-green-500 to-green-600 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden shadow-lg">
+        <a id="btnWhatsappCTA" href="#" target="_blank" class="mt-10 bg-gradient-to-r from-green-500 to-green-600 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden shadow-lg block hover:scale-[1.02] transition-transform active:scale-[0.98]">
             <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-            <div class="relative z-10 flex flex-col sm:flex-row items-center gap-6">
+            <div class="relative z-10 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
                 <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 border border-white/30">
                     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
                 </div>
@@ -158,7 +158,7 @@
                     <p class="text-green-100 text-sm">Escríbenos directo por WhatsApp y te ayudamos con tu pedido personalizado.</p>
                 </div>
             </div>
-        </div>
+        </a>
 
         <!-- Powered by -->
         <div class="mt-8 text-center pb-4">
@@ -251,6 +251,21 @@
         </div>
     </div>
 
+    <!-- Modal de Alerta Personalizado -->
+    <div id="modalAlerta" class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none transition-opacity duration-300 opacity-0 hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm pointer-events-auto" onclick="cerrarAlerta()"></div>
+        <div class="bg-white rounded-3xl p-8 shadow-2xl relative z-10 pointer-events-auto transform transition-transform duration-300 scale-90 max-w-[85%] w-80 text-center">
+            <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-100">
+                <i data-feather="info" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-900 mb-2">Atención</h3>
+            <p id="alertaMensaje" class="text-slate-500 text-sm mb-6 leading-relaxed">Mensaje de alerta</p>
+            <button onclick="cerrarAlerta()" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-black py-4 rounded-2xl transition-colors shadow-lg shadow-brand-500/30 active:scale-95">
+                Entendido
+            </button>
+        </div>
+    </div>
+
     <script>
         feather.replace();
 
@@ -328,9 +343,18 @@
 
                 // WhatsApp
                 if (negocio.whatsapp) {
+                    const waLink = `https://wa.me/52${negocio.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola! Quiero hacer un pedido en ${negocio.nombre_comercial}`)}`;
+                    
                     const btnWa = document.getElementById('btnWhatsapp');
-                    btnWa.href = `https://wa.me/52${negocio.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola! Quiero hacer un pedido en ${negocio.nombre_comercial}`)}`;
-                    btnWa.target = '_blank';
+                    if (btnWa) {
+                        btnWa.href = waLink;
+                        btnWa.target = '_blank';
+                    }
+
+                    const btnWaCTA = document.getElementById('btnWhatsappCTA');
+                    if (btnWaCTA) {
+                        btnWaCTA.href = waLink;
+                    }
                 }
 
                 // Obtener datos adicionales
@@ -512,10 +536,10 @@
                     <div class="w-24 h-24 rounded-xl flex-shrink-0 overflow-hidden border border-orange-100 group-hover:scale-105 transition-transform">
                         ${imgHtml}
                     </div>
-                    <div class="flex-1 flex flex-col justify-between">
+                    <div class="flex-1 flex flex-col justify-between min-w-0">
                         <div>
-                            <h3 class="font-bold text-slate-900 leading-tight mb-1">${p.nombre}</h3>
-                            <p class="text-xs text-slate-500 line-clamp-2">${p.descripcion || ''}</p>
+                            <h3 class="font-bold text-slate-900 leading-tight mb-1 break-words">${p.nombre}</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 break-words">${p.descripcion || ''}</p>
                         </div>
                         <div class="flex items-end justify-between mt-2">
                             <span class="font-black text-lg text-brand-600 leading-none">${priceDisplay}</span>
@@ -562,7 +586,7 @@
 
             // Crear un hash único para esta configuración
             const tamStr = config.tamano ? config.tamano.nombre : 'nt';
-            const sabStr = config.sabor ? config.sabor : 'ns';
+            const sabStr = (config.sabores && config.sabores.length > 0) ? config.sabores.slice().sort().join(', ') : 'ns';
             const key = `${prod.id}_${tamStr}_${sabStr}`.replace(/\s+/g, '-');
 
             if (carrito[key]) {
@@ -573,7 +597,7 @@
                     nombre: prod.nombre,
                     precio: config.tamano ? parseFloat(config.tamano.precio) : parseFloat(prod.precio),
                     tamano: config.tamano ? config.tamano.nombre : null,
-                    sabor: config.sabor || null,
+                    sabor: (config.sabores && config.sabores.length > 0) ? sabStr : null,
                     imagen_url: prod.imagen_url,
                     qty: 1
                 };
@@ -623,7 +647,7 @@
         }
 
         // --- Lógica Modal Configuración de Producto ---
-        let configActual = { productoId: null, tamano: null, sabor: null };
+        let configActual = { productoId: null, tamano: null, sabores: [] };
 
         function abrirConfigProducto(id) {
             const prod = productosDB.find(p => p.id === id);
@@ -633,7 +657,7 @@
             configActual = { 
                 productoId: id, 
                 tamano: (variaciones.tamanos && variaciones.tamanos.length > 0) ? variaciones.tamanos[0] : null, 
-                sabor: (variaciones.sabores && variaciones.sabores.length > 0) ? variaciones.sabores[0] : null 
+                sabores: (variaciones.sabores && variaciones.sabores.length > 0) ? [variaciones.sabores[0]] : [] 
             };
 
             // Setup Header
@@ -674,28 +698,52 @@
             // Sabores
             if (variaciones.sabores && variaciones.sabores.length > 0) {
                 if (optionsHtml !== '') optionsHtml += '<hr class="border-slate-100 my-4">';
+                
+                const maxSabores = variaciones.max_sabores || 1;
+                const reqText = maxSabores === 1 ? 'Elige 1' : `Elige hasta ${maxSabores}`;
+                
                 optionsHtml += `
                     <div>
-                        <div class="flex items-baseline justify-between mb-3">
-                            <h4 class="font-bold text-slate-900 text-lg">Elige tu sabor</h4>
-                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">Obligatorio</span>
-                        </div>
-                        <div class="space-y-2">
-                `;
-                variaciones.sabores.forEach((s, index) => {
-                    optionsHtml += `
-                        <label class="flex items-center justify-between p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="configSabor" value="${s}" ${index === 0 ? 'checked' : ''} onchange="configActual.sabor = '${s}'" class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                <span class="font-medium text-slate-800">${s}</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-bold text-slate-900 text-lg">Sabores / Opciones</h4>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="seleccionarSaborAlAzar(${maxSabores})" class="flex items-center gap-1 text-[11px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 px-2 py-1 rounded-full transition-colors active:scale-95 border border-brand-200 shadow-sm" title="¡Sorpréndeme!">
+                                    <i data-feather="shuffle" class="w-3 h-3"></i> Azar
+                                </button>
+                                <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">${reqText}</span>
                             </div>
-                        </label>
-                    `;
-                });
+                        </div>
+                        <div class="space-y-2" id="saboresListContainer">
+                `;
+                
+                if (maxSabores === 1) {
+                    variaciones.sabores.forEach((s, index) => {
+                        optionsHtml += `
+                            <label class="flex items-center justify-between p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="configSabor" value="${s}" ${index === 0 ? 'checked' : ''} onchange="configActual.sabores = ['${s}']" class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="font-medium text-slate-800">${s}</span>
+                                </div>
+                            </label>
+                        `;
+                    });
+                } else {
+                    variaciones.sabores.forEach((s, index) => {
+                        optionsHtml += `
+                            <label class="flex items-center justify-between p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" name="configSabor" value="${s}" ${index === 0 ? 'checked' : ''} onchange="manejarCambioSabor(this, '${s}', ${maxSabores})" class="w-5 h-5 text-brand-600 focus:ring-brand-500 border-slate-300 rounded">
+                                    <span class="font-medium text-slate-800">${s}</span>
+                                </div>
+                            </label>
+                        `;
+                    });
+                }
                 optionsHtml += `</div></div>`;
             }
 
             document.getElementById('configProdOptions').innerHTML = optionsHtml;
+            feather.replace();
             actualizarPrecioConfigurador();
 
             // Setup Botón Confirmar
@@ -707,6 +755,69 @@
             modal.classList.remove('hidden');
             setTimeout(() => modal.classList.remove('opacity-0', 'pointer-events-none'), 10);
             setTimeout(() => panel.classList.remove('translate-y-full'), 10);
+        }
+
+        function manejarCambioSabor(checkbox, sabor, max) {
+            if (checkbox.checked) {
+                if (configActual.sabores.length >= max) {
+                    checkbox.checked = false;
+                    mostrarAlerta(`Solo puedes elegir hasta ${max} opción(es).`);
+                    return;
+                }
+                configActual.sabores.push(sabor);
+            } else {
+                configActual.sabores = configActual.sabores.filter(s => s !== sabor);
+            }
+        }
+
+        function seleccionarSaborAlAzar(maxSabores) {
+            const prod = productosDB.find(p => p.id === configActual.productoId);
+            if (!prod || !prod.variaciones || !prod.variaciones.sabores) return;
+            
+            const saboresDisponibles = prod.variaciones.sabores;
+            
+            // Elegir aleatoriamente hasta maxSabores
+            const shuffled = [...saboresDisponibles].sort(() => 0.5 - Math.random());
+            const seleccionados = shuffled.slice(0, maxSabores);
+            
+            configActual.sabores = seleccionados;
+            
+            const container = document.getElementById('saboresListContainer');
+            const scrollParent = document.getElementById('configProdOptions');
+            
+            if (container && scrollParent) {
+                const currentScroll = scrollParent.scrollTop;
+                const labels = Array.from(container.children);
+                const selectedLabels = [];
+                const unselectedLabels = [];
+                
+                // Separar seleccionados y no seleccionados
+                labels.forEach(label => {
+                    const input = label.querySelector('input');
+                    if (input) {
+                        input.checked = seleccionados.includes(input.value);
+                        if (input.checked) {
+                            selectedLabels.push(label);
+                        } else {
+                            unselectedLabels.push(label);
+                        }
+                    }
+                });
+                
+                // Reordenar visualmente moviendo al principio los seleccionados
+                selectedLabels.forEach(label => container.appendChild(label));
+                unselectedLabels.forEach(label => container.appendChild(label));
+                
+                // Restaurar posición visual para que no salte abruptamente
+                scrollParent.scrollTop = currentScroll;
+                
+                // Pequeña animación para indicar que funcionó
+                container.style.transition = 'transform 0.15s ease-in-out';
+                container.style.transform = 'scale(0.97)';
+                setTimeout(() => {
+                    container.style.transform = 'scale(1)';
+                }, 150);
+            }
         }
 
         function actualizarConfigTamano(index) {
@@ -871,8 +982,31 @@
                 navigator.share({ title: document.title, url: window.location.href });
             } else {
                 navigator.clipboard.writeText(window.location.href);
-                alert('¡Link copiado!');
+                mostrarAlerta('¡Enlace de la tienda copiado al portapapeles!');
             }
+        }
+
+        // --- Sistema de Alertas ---
+        function mostrarAlerta(mensaje) {
+            document.getElementById('alertaMensaje').textContent = mensaje;
+            const modal = document.getElementById('modalAlerta');
+            const panel = modal.querySelector('.transform');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                panel.classList.remove('scale-90');
+                panel.classList.add('scale-100');
+            }, 10);
+            feather.replace();
+        }
+
+        function cerrarAlerta() {
+            const modal = document.getElementById('modalAlerta');
+            const panel = modal.querySelector('.transform');
+            panel.classList.remove('scale-100');
+            panel.classList.add('scale-90');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
         // --- Navbar scroll effect ---

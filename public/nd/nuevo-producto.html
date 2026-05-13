@@ -226,9 +226,15 @@
 
                 <!-- Sabores (Sin costo extra) -->
                 <div class="md:col-span-2 border-t border-outline-variant/30 pt-6 mt-2">
-                    <div class="mb-4">
-                        <h3 class="font-h3 text-[18px] font-bold text-on-surface mb-1">Sabores / Variaciones Gratuitas (Opcional)</h3>
-                        <p class="text-[13px] text-on-surface-variant">Complementos o sabores que el cliente puede elegir sin costo extra (ej. BBQ, Mango Habanero).</p>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+                        <div>
+                            <h3 class="font-h3 text-[18px] font-bold text-on-surface mb-1">Sabores / Variaciones Gratuitas (Opcional)</h3>
+                            <p class="text-[13px] text-on-surface-variant">Complementos o sabores que el cliente puede elegir sin costo extra.</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 w-full md:w-auto shrink-0">
+                            <label for="max_sabores" class="text-sm font-bold text-on-surface whitespace-nowrap">Máximo a elegir:</label>
+                            <input type="number" id="max_sabores" min="1" value="1" class="w-16 bg-transparent border-none text-center font-bold text-primary p-0 focus:ring-0">
+                        </div>
                     </div>
                     <div class="flex gap-2">
                         <input class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="sabor_input" placeholder="Ej. BBQ, Mango, Picante..." type="text" onkeypress="if(event.key === 'Enter') addSabor(event)"/>

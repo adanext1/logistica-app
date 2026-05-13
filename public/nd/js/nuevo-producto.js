@@ -57,6 +57,8 @@ async function cargarProductoParaEditar(prodId) {
             }
             if (p.variaciones.sabores) {
                 sabores = p.variaciones.sabores;
+                const maxSaboresInput = document.getElementById('max_sabores');
+                if (maxSaboresInput) maxSaboresInput.value = p.variaciones.max_sabores || 1;
                 renderSabores();
             }
         }
@@ -190,10 +192,14 @@ async function guardarProducto(e, negocioId) {
         imagen_base64 = await toBase64(fotoFile);
     }
 
+    const maxSaboresInput = document.getElementById('max_sabores');
+    const max_sabores = maxSaboresInput ? parseInt(maxSaboresInput.value) || 1 : 1;
+
     // Estructurar las variaciones en el formato JSON esperado
     const variacionesJson = {
         tamanos: tamanos.length > 0 ? tamanos : undefined,
-        sabores: sabores.length > 0 ? sabores : undefined
+        sabores: sabores.length > 0 ? sabores : undefined,
+        max_sabores: sabores.length > 0 ? max_sabores : undefined
     };
 
     // Si ambos están vacíos, mandamos null

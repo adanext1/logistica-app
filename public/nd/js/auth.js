@@ -29,3 +29,35 @@ function cerrarSesion() {
 
 // Aseguramos que sea accesible globalmente para los botones onclick
 window.cerrarSesion = cerrarSesion;
+
+/**
+ * Abre la tienda pública del negocio en una nueva pestaña
+ */
+function irALaTienda() {
+    const slug = localStorage.getItem('negocio_slug');
+    if (slug) {
+        window.open(`/${slug}`, '_blank');
+    } else {
+        alert('No se pudo encontrar el enlace de tu tienda.');
+    }
+}
+
+/**
+ * Copia el enlace de la tienda al portapapeles
+ */
+function copiarLinkTienda() {
+    const slug = localStorage.getItem('negocio_slug');
+    if (slug) {
+        const url = `${window.location.origin}/${slug}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('¡Enlace de tu tienda copiado al portapapeles!');
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+        });
+    } else {
+        alert('No se pudo generar el enlace.');
+    }
+}
+
+window.irALaTienda = irALaTienda;
+window.copiarLinkTienda = copiarLinkTienda;

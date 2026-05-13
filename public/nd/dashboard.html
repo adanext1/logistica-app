@@ -224,6 +224,24 @@
         <section class="w-full flex flex-col gap-4">
             <h3 class="font-h3 text-h3 text-on-surface px-2">Acciones Rápidas</h3>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-card-gap">
+                <button onclick="irALaTienda()"
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group text-left">
+                    <div
+                        class="w-16 h-16 rounded-full bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">open_in_new</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface text-center">Visitar Mi Tienda</span>
+                </button>
+                <button onclick="copiarLinkTienda()"
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group text-left">
+                    <div
+                        class="w-16 h-16 rounded-full bg-orange-50 group-hover:bg-orange-100 flex items-center justify-center text-orange-600 transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">content_copy</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface text-center">Copiar Enlace</span>
+                </button>
                 <a href="nuevo-producto.html"
                     class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group">
                     <div
@@ -252,7 +270,7 @@
                     <span class="font-label-sm text-label-sm text-on-surface text-center">Editar Horario</span>
                 </a>
                 <a href="catalogo.html"
-                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group">
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-sm shadow-primary/5 border border-outline-variant flex flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/5 hover:bg-surface-container transition-all active:scale-95 group text-left">
                     <div
                         class="w-16 h-16 rounded-full bg-primary-container/10 group-hover:bg-primary-container/20 flex items-center justify-center text-primary transition-colors">
                         <span class="material-symbols-outlined text-[36px]"
