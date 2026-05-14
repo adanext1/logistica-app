@@ -191,7 +191,7 @@
                 <!-- Category -->
                 <div class="md:col-span-2">
                     <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_category">Categoría</label>
-                    <select class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md appearance-none" id="product_category">
+                    <select class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md appearance-none" id="product_category" onchange="onCategoryChange()">
                         <option disabled selected value="">Cargando categorías...</option>
                     </select>
                 </div>
@@ -235,6 +235,21 @@
                             <label for="max_sabores" class="text-sm font-bold text-on-surface whitespace-nowrap">Máximo a elegir:</label>
                             <input type="number" id="max_sabores" min="1" value="1" class="w-16 bg-transparent border-none text-center font-bold text-primary p-0 focus:ring-0">
                         </div>
+                    </div>
+                    
+                    <!-- Sabores de la categoría seleccionada -->
+                    <div id="category_flavors_container" class="hidden mb-6 bg-surface-container-low border border-outline-variant/30 rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-3 border-b border-outline-variant/30 pb-2">
+                            <h4 class="font-bold text-[14px] text-on-surface">Sabores de la Categoría</h4>
+                            <button type="button" onclick="seleccionarTodosSaboresCategoria()" class="text-[12px] font-bold text-primary hover:underline">Seleccionar Todos</button>
+                        </div>
+                        <div id="category_flavors_list" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <!-- Checkboxes generados por JS -->
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="block font-label-sm text-[13px] text-on-surface-variant mb-2">Añadir sabor libre / personalizado:</label>
                     </div>
                     <div class="flex gap-2">
                         <input class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="sabor_input" placeholder="Ej. BBQ, Mango, Picante..." type="text" onkeypress="if(event.key === 'Enter') addSabor(event)"/>

@@ -252,6 +252,50 @@
         </button>
     </aside>
 
+    <!-- Modal de Edición de Categoría -->
+    <div id="modalCategoria" class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none transition-opacity duration-300 opacity-0 hidden">
+        <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm pointer-events-auto" onclick="cerrarModalCategoria()"></div>
+        <div class="bg-surface rounded-2xl w-full max-w-lg mx-4 flex flex-col relative z-10 pointer-events-auto transform transition-transform duration-300 scale-95 shadow-xl max-h-[90vh]">
+            <div class="flex items-center justify-between p-4 md:p-6 border-b border-outline-variant/30">
+                <h3 class="font-h3 text-[20px] font-bold text-on-surface">Editar Categoría</h3>
+                <button onclick="cerrarModalCategoria()" class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            
+            <div class="p-4 md:p-6 overflow-y-auto flex-1">
+                <!-- Nombre de Categoría -->
+                <div class="mb-6">
+                    <label class="block text-[14px] font-bold text-on-surface mb-2">Nombre de la Categoría</label>
+                    <input type="text" id="catEditNombre" class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 focus:ring-primary focus:border-primary text-on-surface">
+                </div>
+
+                <!-- Variaciones Globales (Sabores) -->
+                <div>
+                    <h4 class="font-bold text-[16px] text-on-surface mb-1">Sabores / Variaciones de Categoría</h4>
+                    <p class="text-[12px] text-on-surface-variant mb-4">Los sabores que añadas aquí estarán disponibles para todos los productos de esta categoría.</p>
+                    
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="catNuevoSabor" placeholder="Ej. BBQ, Mango Habanero..." class="flex-1 bg-surface-container-low border-outline-variant rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-[14px]" onkeypress="if(event.key === 'Enter') agregarSaborCategoria()">
+                        <button onclick="agregarSaborCategoria()" class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-bold text-[14px] hover:bg-secondary/90 transition-colors">
+                            Añadir
+                        </button>
+                    </div>
+
+                    <!-- Lista de sabores -->
+                    <div id="catSaboresLista" class="space-y-2 border border-outline-variant/30 rounded-lg p-3 bg-surface-container-lowest min-h-[100px] max-h-[250px] overflow-y-auto">
+                        <!-- Items de sabores se llenan con JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-6 border-t border-outline-variant/30 flex justify-end gap-3 bg-surface rounded-b-2xl">
+                <button onclick="cerrarModalCategoria()" class="px-6 py-3 font-bold text-primary hover:bg-primary/10 rounded-full transition-colors text-[14px]">Cancelar</button>
+                <button onclick="guardarCategoria()" class="px-6 py-3 font-bold bg-primary text-on-primary hover:bg-primary/90 rounded-full transition-colors shadow-md text-[14px]">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Adjust main padding for desktop sidebar -->
     <style>
         @media (min-width: 768px) {

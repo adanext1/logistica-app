@@ -664,14 +664,14 @@ app.get('/api/negocio/:id/categorias', async (req, res) => {
 // Crear categoría
 app.post('/api/categorias', async (req, res) => {
     try {
-        const { negocio_id, nombre } = req.body;
+        const { negocio_id, nombre, variaciones } = req.body;
         if (!negocio_id || !nombre) return res.status(400).json({ error: 'Datos insuficientes' });
 
         const slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
         const { data, error } = await supabase
             .from('categorias_productos')
-            .insert([{ negocio_id, nombre, slug }])
+            .insert([{ negocio_id, nombre, slug, variaciones: variaciones || null }])
             .select()
             .single();
 
@@ -679,6 +679,36 @@ app.post('/api/categorias', async (req, res) => {
         res.status(201).json(data);
     } catch (err) {
         res.status(500).json({ error: 'Error al crear categoría' });
+    }
+});
+
+// Actualizar categoría
+app.put('/api/categorias/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, variaciones } = req.body;
+        
+        let updateData = {};
+        if (nombre) {
+            updateData.nombre = nombre;
+            updateData.slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        }
+        if (variaciones !== undefined) {
+            updateData.variaciones = variaciones;
+        }
+
+        const { data, error } = await supabase
+            .from('categorias_productos')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error("Error al actualizar categoría:", err);
+        res.status(500).json({ error: 'Error al actualizar categoría' });
     }
 });
 

@@ -62,11 +62,18 @@ async function cargarProductoParaEditar(prodId) {
                 renderSabores();
             }
         }
+        
+        // Disparar cambio de categoría para cargar checkboxes si hay categoría
+        if (p.categoria_id) {
+            onCategoryChange();
+        }
     } catch (err) {
         console.error("Error al cargar producto:", err);
         mostrarNotificacion("Error al cargar el producto para editar", "error");
     }
 }
+
+let allCategories = [];
 
 async function cargarCategorias(negocioId) {
     const select = document.getElementById('product_category');
@@ -74,19 +81,68 @@ async function cargarCategorias(negocioId) {
 
     try {
         const response = await fetch(`/api/negocio/${negocioId}/categorias`);
-        const categorias = await response.json();
+        allCategories = await response.json();
 
-        if (categorias.length === 0) {
+        if (allCategories.length === 0) {
             select.innerHTML = '<option value="">Sin categorías. Créalas en el catálogo.</option>';
             return;
         }
 
         select.innerHTML = '<option value="" disabled selected>Selecciona una categoría...</option>' + 
-            categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+            allCategories.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
     } catch (error) {
         console.error("Error al cargar categorías:", error);
     }
+}
+
+function onCategoryChange() {
+    const select = document.getElementById('product_category');
+    const catId = select.value;
+    const cat = allCategories.find(c => c.id === catId);
+    
+    const container = document.getElementById('category_flavors_container');
+    const list = document.getElementById('category_flavors_list');
+    
+    if (cat && cat.variaciones && cat.variaciones.sabores && cat.variaciones.sabores.length > 0) {
+        let flavorsHtml = '';
+        
+        cat.variaciones.sabores.forEach(s => {
+            if (!s.activo && !sabores.includes(s.nombre)) return; // Ignorar inactivos si no estaban seleccionados
+            
+            const isChecked = sabores.includes(s.nombre);
+            
+            // Mover sabor de chips personalizados a los checkboxes
+            if (isChecked) {
+                sabores = sabores.filter(custom => custom !== s.nombre);
+            }
+            
+            flavorsHtml += `
+                <label class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 cursor-pointer hover:bg-surface-container-high transition-colors">
+                    <input type="checkbox" value="${s.nombre}" class="cat-flavor-checkbox w-4 h-4 text-primary bg-surface-container-lowest border-outline-variant rounded focus:ring-primary focus:ring-2" ${isChecked ? 'checked' : ''}>
+                    <span class="text-[14px] text-on-surface select-none">${s.nombre} ${!s.activo ? '<span class="text-[10px] text-error">(Inactivo)</span>' : ''}</span>
+                </label>
+            `;
+        });
+        
+        if (flavorsHtml) {
+            list.innerHTML = flavorsHtml;
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    } else {
+        container.classList.add('hidden');
+    }
+    
+    // Volver a renderizar chips por si se movieron a checkboxes
+    renderSabores();
+}
+
+function seleccionarTodosSaboresCategoria() {
+    document.querySelectorAll('.cat-flavor-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
 }
 
 let tamanos = [];
@@ -195,11 +251,15 @@ async function guardarProducto(e, negocioId) {
     const maxSaboresInput = document.getElementById('max_sabores');
     const max_sabores = maxSaboresInput ? parseInt(maxSaboresInput.value) || 1 : 1;
 
+    // Recoger sabores de categoría (checkboxes) + libres (chips)
+    const checkedCatFlavors = Array.from(document.querySelectorAll('.cat-flavor-checkbox:checked')).map(cb => cb.value);
+    const finalSabores = [...new Set([...sabores, ...checkedCatFlavors])];
+
     // Estructurar las variaciones en el formato JSON esperado
     const variacionesJson = {
         tamanos: tamanos.length > 0 ? tamanos : undefined,
-        sabores: sabores.length > 0 ? sabores : undefined,
-        max_sabores: sabores.length > 0 ? max_sabores : undefined
+        sabores: finalSabores.length > 0 ? finalSabores : undefined,
+        max_sabores: finalSabores.length > 0 ? max_sabores : undefined
     };
 
     // Si ambos están vacíos, mandamos null

@@ -654,6 +654,18 @@
             if (!prod) return;
             const variaciones = prod.variaciones || {};
 
+            // Filtrar sabores inactivos según la categoría
+            let saboresInactivos = [];
+            const categoria = categoriasDB.find(c => c.id === prod.categoria_id);
+            if (categoria && categoria.variaciones && categoria.variaciones.sabores) {
+                saboresInactivos = categoria.variaciones.sabores
+                    .filter(s => !s.activo)
+                    .map(s => s.nombre);
+            }
+            
+            const saboresValidos = (variaciones.sabores || []).filter(s => !saboresInactivos.includes(s));
+            variaciones.sabores = saboresValidos;
+
             configActual = { 
                 productoId: id, 
                 tamano: (variaciones.tamanos && variaciones.tamanos.length > 0) ? variaciones.tamanos[0] : null, 
