@@ -61,3 +61,41 @@ function copiarLinkTienda() {
 
 window.irALaTienda = irALaTienda;
 window.copiarLinkTienda = copiarLinkTienda;
+
+/**
+ * Carga el nombre y logo del negocio en el header (para todas las páginas del panel)
+ */
+async function cargarPerfilHeader() {
+    const id = localStorage.getItem('negocio_id');
+    if (!id) return;
+
+    try {
+        const response = await fetch(`/api/negocio/${id}`);
+        const data = await response.json();
+
+        // Actualizar Header (IDs compartidos en todas las páginas del panel)
+        const logoPlaceholder = document.getElementById('dashboardLogoPlaceholder');
+        const logoImg = document.getElementById('dashboardLogoNegocio');
+        const nombreNegocio = document.getElementById('dashboardNombreNegocio');
+
+        if (logoImg && data.logo_url) {
+            if (logoPlaceholder) logoPlaceholder.classList.add('hidden');
+            logoImg.src = data.logo_url;
+            logoImg.classList.remove('hidden');
+        }
+
+        if (nombreNegocio) {
+            // Si es el dashboard, ponemos "Hola, "
+            if (window.location.pathname.includes('dashboard.html')) {
+                nombreNegocio.innerText = `Hola, ${data.nombre_comercial}`;
+            } else {
+                nombreNegocio.innerText = data.nombre_comercial || 'Mi Negocio';
+            }
+        }
+    } catch (error) {
+        console.error("Error al cargar perfil en header:", error);
+    }
+}
+
+// Ejecutar carga de perfil al cargar el script
+document.addEventListener('DOMContentLoaded', cargarPerfilHeader);

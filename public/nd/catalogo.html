@@ -270,6 +270,18 @@
                     <input type="text" id="catEditNombre" class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 focus:ring-primary focus:border-primary text-on-surface">
                 </div>
 
+                <!-- Visibilidad -->
+                <div class="mb-6 flex items-center justify-between bg-surface-container-low/50 p-3 rounded-xl border border-outline-variant/20">
+                    <div>
+                        <p class="text-[14px] font-bold text-on-surface">Visibilidad en Tienda</p>
+                        <p class="text-[11px] text-on-surface-variant">Si se apaga, la categoría no aparecerá como filtro en la tienda.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="catEditVisible" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+
                 <!-- Variaciones Globales (Sabores) -->
                 <div>
                     <h4 class="font-bold text-[16px] text-on-surface mb-1">Sabores / Variaciones de Categoría</h4>

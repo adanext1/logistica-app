@@ -189,10 +189,18 @@
                 </div>
 
                 <!-- Category -->
-                <div class="md:col-span-2">
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_category">Categoría</label>
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_category">Categoría Principal (Tienda)</label>
                     <select class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md appearance-none" id="product_category" onchange="onCategoryChange()">
                         <option disabled selected value="">Cargando categorías...</option>
+                    </select>
+                </div>
+
+                <!-- Ghost Category (Variations) -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="product_variation_category">Categoría Fantasma (Variaciones)</label>
+                    <select class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md appearance-none" id="product_variation_category" onchange="onCategoryChange()">
+                        <option selected value="">Ninguna (Usar principal)</option>
                     </select>
                 </div>
 

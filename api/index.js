@@ -696,6 +696,9 @@ app.put('/api/categorias/:id', async (req, res) => {
         if (variaciones !== undefined) {
             updateData.variaciones = variaciones;
         }
+        if (req.body.esta_visible !== undefined) {
+            updateData.esta_visible = req.body.esta_visible;
+        }
 
         const { data, error } = await supabase
             .from('categorias_productos')
@@ -752,6 +755,7 @@ app.post('/api/productos', async (req, res) => {
                 precio,
                 precio_medida_unit: unidad,
                 categoria_id,
+                categoria_variaciones_id: req.body.categoria_variaciones_id || null,
                 descripcion,
                 esta_disponible: disponible !== undefined ? disponible : true,
                 imagen_url,
@@ -800,6 +804,7 @@ app.put('/api/productos/:id', async (req, res) => {
             precio,
             precio_medida_unit: unidad,
             categoria_id,
+            categoria_variaciones_id: req.body.categoria_variaciones_id || null,
             descripcion,
             esta_disponible: disponible !== undefined ? disponible : true,
             variaciones: variaciones || null

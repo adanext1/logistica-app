@@ -68,30 +68,49 @@ async function filtrarPorCategoria(categoriaId) {
     const id = localStorage.getItem('negocio_id');
     categoriaActiva = categoriaId === 'todas' ? null : categoriaId;
     
-    // Actualizar estilo visual de los botones
+    // 1. Resetear todos los elementos al estado inactivo
     document.querySelectorAll('#categoriasContainer > button, #categoriasContainer > div').forEach(el => {
         if (el.tagName === 'BUTTON') {
-            el.classList.remove('bg-primary', 'text-on-primary');
+            // Botón "Todas"
+            el.classList.remove('bg-primary', 'text-on-primary', 'shadow-md');
             el.classList.add('bg-surface-container-high', 'text-on-surface-variant');
         } else {
-            const btn = el.querySelector('button');
-            btn.classList.remove('text-on-primary');
-            el.classList.remove('bg-primary');
+            // Wrapper de categoría individual
+            el.classList.remove('bg-primary', 'shadow-md');
             el.classList.add('bg-surface-container-high');
+            const nameBtn = el.querySelector('button:first-child');
+            const editBtn = el.querySelector('button:last-child');
+            nameBtn.classList.remove('text-on-primary');
+            nameBtn.classList.add('text-on-surface-variant');
+            editBtn.classList.remove('text-on-primary');
+            editBtn.classList.add('text-primary');
         }
     });
     
-    const btnActivo = event ? event.currentTarget : null;
-    if (btnActivo) {
-        if (btnActivo.tagName === 'BUTTON' && !btnActivo.parentElement.classList.contains('flex')) {
-             btnActivo.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
-             btnActivo.classList.add('bg-primary', 'text-on-primary');
-        } else {
-             btnActivo.classList.remove('text-on-surface-variant');
-             btnActivo.classList.add('text-on-primary');
-             btnActivo.parentElement.classList.remove('bg-surface-container-high');
-             btnActivo.parentElement.classList.add('bg-primary');
+    // 2. Aplicar estado activo al seleccionado
+    if (categoriaId === 'todas') {
+        const btnTodas = document.querySelector('#categoriasContainer > button');
+        if (btnTodas) {
+            btnTodas.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+            btnTodas.classList.add('bg-primary', 'text-on-primary', 'shadow-md');
         }
+    } else {
+        // Buscar el wrapper que contiene el botón con el ID de la categoría
+        const allWrappers = document.querySelectorAll('#categoriasContainer > div');
+        allWrappers.forEach(wrapper => {
+            const btn = wrapper.querySelector('button');
+            if (btn && btn.getAttribute('onclick').includes(categoriaId)) {
+                wrapper.classList.remove('bg-surface-container-high');
+                wrapper.classList.add('bg-primary', 'shadow-md');
+                
+                const nameBtn = wrapper.querySelector('button:first-child');
+                const editBtn = wrapper.querySelector('button:last-child');
+                nameBtn.classList.remove('text-on-surface-variant');
+                nameBtn.classList.add('text-on-primary');
+                editBtn.classList.remove('text-primary');
+                editBtn.classList.add('text-on-primary');
+            }
+        });
     }
 
     ejecutarBusqueda();
@@ -181,6 +200,7 @@ function abrirModalCategoria(catId) {
     if (!catEditActual) return;
 
     document.getElementById('catEditNombre').value = catEditActual.nombre;
+    document.getElementById('catEditVisible').checked = catEditActual.esta_visible !== false;
     
     catSaboresTemp = [];
     if (catEditActual.variaciones && catEditActual.variaciones.sabores) {
@@ -261,14 +281,13 @@ async function guardarCategoria() {
     if (!catEditActual) return;
     
     const nombre = document.getElementById('catEditNombre').value.trim();
-    if (!nombre) {
-        alert("El nombre de la categoría no puede estar vacío.");
-        return;
-    }
-
+    if (!nombre) return alert("El nombre es obligatorio");
+    const esta_visible = document.getElementById('catEditVisible').checked;
+    
     const payload = {
         nombre: nombre,
-        variaciones: { sabores: catSaboresTemp }
+        variaciones: { sabores: catSaboresTemp },
+        esta_visible: esta_visible
     };
 
     try {

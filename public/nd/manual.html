@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Manual Maestro - Camino Real</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74',
+                            400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c',
+                            800: '#9a3412', 900: '#7c2d12'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .nav-link.active {
+            background-color: #f97316;
+            color: white;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Outfit', sans-serif; }
+
+        .section-card {
+            background: white;
+            border-radius: 3rem;
+            padding: 2.5rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 3rem;
+        }
+
+        .step-badge {
+            width: 24px;
+            height: 24px;
+            background: #f97316;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #fdba74; border-radius: 10px; }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-x-hidden pt-24">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 glass-card border-b border-orange-100 px-6 py-4 flex justify-between items-center h-20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20 overflow-hidden">
+                <img id="dashboardLogoNegocio" src="" alt="Logo" class="w-full h-full object-cover hidden">
+                <span id="dashboardLogoPlaceholder" class="material-symbols-outlined text-white">menu_book</span>
+            </div>
+            <div>
+                <h1 id="dashboardNombreNegocio" class="text-lg font-extrabold text-slate-900 leading-none tracking-tight uppercase">Manual de Usuario</h1>
+                <p class="text-[10px] font-bold text-brand-600 uppercase tracking-widest mt-0.5">Guía de Operación Camino Real</p>
+            </div>
+        </div>
+        <button onclick="window.history.back()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-xs transition-all">
+            <span class="material-symbols-outlined text-sm">close</span> Salir
+        </button>
+    </header>
+
+    <div class="flex min-h-screen max-w-[1400px] mx-auto px-6">
+        <!-- Sidebar Navigation -->
+        <aside class="hidden lg:flex flex-col w-72 h-[calc(100vh-120px)] fixed top-24 px-6 gap-2 overflow-y-auto">
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">Navegación</p>
+            <a href="#intro" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">info</span> Bienvenida
+            </a>
+            <a href="#pantalla-dashboard" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">grid_view</span> Dashboard (Inicio)
+            </a>
+            <a href="#pantalla-perfil" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">person</span> Mi Perfil
+            </a>
+            <a href="#pantalla-catalogo" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">inventory_2</span> Catálogo
+            </a>
+            <a href="#pantalla-categorias" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50 pl-8 text-sm">
+                <span class="material-symbols-outlined text-sm">category</span> Gestión de Categorías
+            </a>
+            <a href="#pantalla-producto" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">add_circle</span> Crear Producto
+            </a>
+            <a href="#pantalla-horarios" class="nav-link flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-semibold hover:bg-orange-50">
+                <span class="material-symbols-outlined">calendar_clock</span> Horarios
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-80 pb-32 max-w-4xl">
+            
+            <!-- Hero -->
+            <section id="intro" class="mb-20 pt-8 scroll-mt-28">
+                <div class="bg-gradient-to-br from-brand-600 to-red-600 rounded-[3rem] p-12 text-white relative overflow-hidden shadow-2xl shadow-brand-500/20 mb-10">
+                    <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <span class="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md mb-4 inline-block">Guía Maestra de Administración</span>
+                        <h2 class="text-4xl lg:text-6xl font-black tracking-tighter mb-4 leading-tight">Aprende a usar tu sistema de punta a punta</h2>
+                        <p class="text-brand-50 text-xl leading-relaxed max-w-2xl">
+                            Esta es la documentación técnica y operativa más detallada de tu panel. Aquí no solo verás qué botones presionar, sino el por qué de cada función y cómo optimizar tu flujo de trabajo.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANTALLA: DASHBOARD -->
+            <section id="pantalla-dashboard" class="scroll-mt-28 mb-20">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Pantalla: Dashboard (Inicio)</h2>
+                </div>
+                <div class="section-card">
+                    <p class="text-slate-600 mb-8">Es tu vista aérea. Sirve para ver cómo va el día sin entrar en menús complicados.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-6">
+                            <h4 class="font-bold text-slate-900 border-b pb-2">¿Qué puedes ver?</h4>
+                            <ul class="space-y-4">
+                                <li class="flex gap-3 items-start">
+                                    <div class="step-badge">1</div>
+                                    <p class="text-sm"><b>Tarjetas de Métricas:</b> Visitas (clientes que abrieron tu tienda), Productos (total activo) y Carritos (pedidos intentados).</p>
+                                </li>
+                                <li class="flex gap-3 items-start">
+                                    <div class="step-badge">2</div>
+                                    <p class="text-sm"><b>Los Más Deseados:</b> Un ranking automático de tus 5 productos con más "clics" en la tienda. Te ayuda a saber qué promocionar.</p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="space-y-6">
+                            <h4 class="font-bold text-slate-900 border-b pb-2">Acciones Rápidas</h4>
+                            <ul class="space-y-4">
+                                <li class="flex gap-3 items-start">
+                                    <span class="material-symbols-outlined text-blue-600 text-sm">open_in_new</span>
+                                    <p class="text-sm"><b>Visitar Tienda:</b> Abre tu página pública. Úsala siempre después de un cambio para verificar que se vea bien.</p>
+                                </li>
+                                <li class="flex gap-3 items-start">
+                                    <span class="material-symbols-outlined text-orange-600 text-sm">content_copy</span>
+                                    <p class="text-sm"><b>Copiar Enlace:</b> Copia tu URL (ej. caminoreal.com/tu-negocio) para pegarla en tus anuncios de Facebook o Instagram.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANTALLA: MI PERFIL -->
+            <section id="pantalla-perfil" class="scroll-mt-28 mb-20">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Pantalla: Mi Perfil</h2>
+                </div>
+                <div class="section-card">
+                    <p class="text-slate-600 mb-8">Aquí defines la cara de tu negocio y tu ubicación logística.</p>
+                    <div class="space-y-8">
+                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <h4 class="font-bold text-slate-900 mb-4">Camos y sus Funciones:</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                                <div>
+                                    <p class="mb-3"><b>Nombre Comercial:</b> El nombre que verán los clientes en la parte superior de la tienda.</p>
+                                    <p class="mb-3"><b>WhatsApp de Pedidos:</b> <span class="text-brand-600">CRÍTICO.</span> Ponlo a 10 dígitos. Aquí llegarán los mensajes de pedido.</p>
+                                    <p class="mb-3"><b>Descripción (Corta y Larga):</b> La corta sale en el directorio general. La larga aparece cuando el cliente entra a tu tienda.</p>
+                                </div>
+                                <div>
+                                    <p class="mb-3"><b>Logo (Foto de Perfil):</b> Formato cuadrado recomendado. Es el círculo que aparece en el directorio.</p>
+                                    <p class="mb-3"><b>Portada (Splash Art):</b> Imagen rectangular grande. Es lo primero que ve el cliente al entrar a tu tienda.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                            <h4 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">map</span> El Mapa GPS
+                            </h4>
+                            <p class="text-sm text-blue-800 leading-relaxed">
+                                <b>Cómo usarlo:</b> Puedes escribir tu dirección en el texto, pero <span class="font-bold">debes</span> mover el marcador rojo en el mapa. Arrástralo exactamente sobre tu local. El sistema guarda las coordenadas latitud/longitud automáticamente. Sin esto, el calculador de envíos no funcionará correctamente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANTALLA: CATÁLOGO -->
+            <section id="pantalla-catalogo" class="scroll-mt-28 mb-20">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Pantalla: Catálogo</h2>
+                </div>
+                <div class="section-card">
+                    <p class="text-slate-600 mb-8">El inventario centralizado. Desde aquí filtras y gestionas tus productos masivamente.</p>
+                    <div class="space-y-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                                <h4 class="font-bold mb-3">Filtro por Categorías</h4>
+                                <p class="text-xs text-slate-500">Toca las "pastillas" de colores arriba de la lista para ver solo los productos de ese tipo (ej. Solo "Bebidas").</p>
+                            </div>
+                            <div class="flex-1 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                                <h4 class="font-bold mb-3">Buscador en tiempo real</h4>
+                                <p class="text-xs text-slate-500">Escribe el nombre de un producto y la lista se filtrará instantáneamente sin necesidad de recargar la página.</p>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-red-50 rounded-2xl border border-red-100">
+                            <h4 class="font-bold text-red-900 mb-2">Acciones en cada Producto:</h4>
+                            <div class="flex gap-6 text-xs font-bold text-red-800">
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">edit</span> Editar Detalles</span>
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">delete</span> Eliminar por completo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODAL: GESTIÓN DE CATEGORÍAS -->
+            <section id="pantalla-categorias" class="scroll-mt-28 mb-20">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Modal: Configuración de Categoría</h2>
+                </div>
+                <div class="bg-slate-900 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                    <div class="relative z-10 space-y-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white">category</span>
+                            </div>
+                            <h3 class="text-2xl font-bold">La "Magia" de los Sabores Maestros</h3>
+                        </div>
+                        <p class="text-slate-300">Al darle al botón de Editar <span class="material-symbols-outlined text-sm align-middle">edit</span> en una categoría, se abre este modal crítico.</p>
+                        
+                        <div class="space-y-6">
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
+                                <h4 class="font-bold text-brand-400 mb-2">Categorías Fantasma (Combinación Híbrida)</h4>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    ¡Lo mejor de ambos mundos! Ahora el sistema permite mezclar: <br><br>
+                                    1. <b>Sabores de la Principal:</b> Ideales para complementos que solo lleva ese grupo de productos. <br>
+                                    2. <b>Sabores de la Fantasma:</b> Ideales para salsas globales que compartes en todo tu menú. <br><br>
+                                    En la pantalla de creación verás ambas listas unificadas. Si apagas un sabor en cualquiera de las dos categorías, desaparecerá automáticamente de la tienda.
+                                </p>
+                            </div>
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
+                                <h4 class="font-bold text-brand-400 mb-2">Gestión de Sabores Globales</h4>
+                                <p class="text-sm text-slate-400 leading-relaxed">Aquí escribes los ingredientes que comparten todos los productos de esta categoría (ej. Salsas para Alitas). <br><br> 
+                                <b>Botón Añadir:</b> Agrega un sabor nuevo. <br>
+                                <b>Icono Basura:</b> Borra el sabor permanentemente. <br>
+                                <b>El Switch (Interruptor):</b> <span class="text-brand-300 font-bold">LO MÁS ÚTIL.</span> Si apagas el switch de un sabor aquí, desaparecerá automáticamente de todos los productos de la tienda sin que tengas que editarlos uno por uno.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANTALLA: NUEVO PRODUCTO -->
+            <section id="pantalla-producto" class="scroll-mt-28 mb-20">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Pantalla: Crear / Editar Producto</h2>
+                </div>
+                <div class="section-card">
+                    <p class="text-slate-600 mb-8">Es el formulario más completo. Define cómo se comporta el producto en la tienda.</p>
+                    
+                    <!-- Paso 1 -->
+                    <div class="mb-10 space-y-4">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-3">
+                            <div class="step-badge">1</div> Datos Principales
+                        </h4>
+                        <div class="pl-9 space-y-2 text-sm text-slate-600">
+                            <p><b>Categoría:</b> Selecciónala primero. Esto hará que aparezcan los "Sabores Maestros" que configuraste antes.</p>
+                            <p><b>Imagen:</b> Sube una foto de alta calidad. El sistema la procesará para que no pese demasiado pero se vea nítida.</p>
+                        </div>
+                    </div>
+
+                    <!-- Paso 2 -->
+                    <div class="mb-10 space-y-4 bg-blue-50 p-6 rounded-[2rem] border border-blue-100">
+                        <h4 class="font-bold text-blue-900 flex items-center gap-3">
+                            <div class="step-badge bg-blue-600 text-white">2</div> Precios Dinámicos (Variantes)
+                        </h4>
+                        <div class="pl-9 space-y-3">
+                            <p class="text-sm text-blue-800">Si tu producto tiene tamaños o porciones distintas:</p>
+                            <div class="bg-white p-4 rounded-xl border border-blue-200">
+                                <p class="text-xs text-slate-600"><b>Campos:</b> Etiqueta (ej. "Grande") y Precio (ej. "250").</p>
+                                <p class="text-xs text-slate-600"><b>Añadir Opción:</b> Puedes crear todas las que quieras.</p>
+                                <p class="text-xs text-brand-600 font-bold mt-2">Nota: Si usas variantes, el precio base del producto será ignorado en la tienda.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3 -->
+                    <div class="mb-10 space-y-4">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-3">
+                            <div class="step-badge">3</div> Configuración de Sabores (Variaciones)
+                        </h4>
+                        <div class="pl-9 space-y-4 text-sm text-slate-600">
+                            <div class="p-4 border-l-4 border-brand-500 bg-slate-50">
+                                <p><b>Máximo a elegir:</b> Define el límite. Si pones 1, el cliente solo puede elegir un sabor. Si pones 0, pueden elegir todos los que quieran.</p>
+                            </div>
+                            <p><b>Checkboxes de Categoría:</b> Aquí marcas qué sabores de la "lista maestra" lleva este producto específico. Usa el botón <b>"Seleccionar Todos"</b> para ahorrar tiempo.</p>
+                            <p><b>Sabores Libres (Tags):</b> Escribe sabores únicos para este producto que no estén en la categoría y presiona Enter.</p>
+                            <p><b>Input de Texto Libre:</b> Si lo prendes, aparecerá una cajita en la tienda para que el cliente escriba instrucciones especiales (ej. "Término medio", "Sin aderezo").</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANTALLA: HORARIOS -->
+            <section id="pantalla-horarios" class="scroll-mt-28 mb-20">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-2 bg-brand-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Pantalla: Horarios</h2>
+                </div>
+                <div class="section-card">
+                    <div class="space-y-6">
+                        <p class="text-slate-600">Controla la disponibilidad operativa de tu tienda digital.</p>
+                        <div class="bg-green-50 p-8 rounded-[2rem] border border-green-100 flex flex-col md:flex-row gap-8 items-center">
+                            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <span class="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="font-bold text-green-900">¿Cómo operar esta pantalla?</h4>
+                                <ul class="text-sm text-green-800 space-y-2">
+                                    <li><b>Switch (Interruptor):</b> Si está verde, el día está abierto. Si está gris, el día está cerrado (ej. día de descanso).</li>
+                                    <li><b>Hora Inicio/Fin:</b> Define tu jornada (ej. 10:00 a 22:00).</li>
+                                    <li><b>Copiar a Todos:</b> Configura el lunes y dale clic a este botón. El sistema rellenará toda la semana igual en un segundo.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 italic">Nota: Los cambios en horarios se reflejan al instante en la tienda pública.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="mt-20 pt-12 border-t border-slate-200 text-center">
+                <p class="text-slate-400 text-sm mb-6">Esta guía está diseñada para que seas un experto en Camino Real.</p>
+                <a href="https://wa.me/5211234567890" target="_blank" class="inline-flex items-center gap-3 px-10 py-5 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold shadow-xl shadow-green-500/20 transition-all active:scale-95">
+                    <span class="material-symbols-outlined">support_agent</span> Solicitar Ayuda Técnica
+                </a>
+                <p class="mt-16 text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">Plataforma Camino Real &copy; 2026</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Mobile Navigation Toggle -->
+    <button id="mobileNavBtn" class="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-brand-600 text-white rounded-full shadow-2xl z-50 flex items-center justify-center active:scale-90 transition-transform">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <!-- Mobile Nav Menu -->
+    <div id="mobileMenu" class="fixed inset-0 bg-slate-900/95 backdrop-blur-2xl z-[60] flex flex-col items-center justify-center gap-6 text-white transition-all opacity-0 pointer-events-none">
+        <button id="closeMobileMenu" class="absolute top-8 right-8 text-white/60 hover:text-white">
+            <span class="material-symbols-outlined text-4xl">close</span>
+        </button>
+        <a href="#introduccion" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Bienvenida</a>
+        <a href="#pantalla-dashboard" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Dashboard</a>
+        <a href="#pantalla-perfil" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Mi Perfil</a>
+        <a href="#pantalla-catalogo" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Catálogo</a>
+        <a href="#pantalla-producto" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Productos</a>
+        <a href="#pantalla-horarios" class="text-2xl font-bold hover:text-brand-400" onclick="toggleMobileMenu()">Horarios</a>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Scroll Spy Logic
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Mobile Menu Logic
+        const mobileNavBtn = document.getElementById('mobileNavBtn');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('opacity-0');
+            mobileMenu.classList.toggle('pointer-events-none');
+        }
+
+        mobileNavBtn.addEventListener('click', toggleMobileMenu);
+        closeMobileMenu.addEventListener('click', toggleMobileMenu);
+    </script>
+</body>
+
+</html>

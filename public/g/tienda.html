@@ -417,6 +417,8 @@
             `;
             
             categoriasDB.forEach(cat => {
+                if (cat.esta_visible === false) return; // Ocultar si está explícitamente desactivada
+                
                 html += `
                 <button class="cat-filter bg-white text-slate-600 hover:bg-orange-50 border border-orange-200 px-5 py-2 rounded-full font-bold text-sm whitespace-nowrap transition" data-cat="${cat.id}" onclick="filtrarPorCategoria('${cat.id}', this)">
                     ${cat.nombre}
@@ -654,14 +656,19 @@
             if (!prod) return;
             const variaciones = prod.variaciones || {};
 
-            // Filtrar sabores inactivos según la categoría
+            // Filtrar sabores inactivos revisando AMBAS categorías (Principal y Fantasma)
             let saboresInactivos = [];
-            const categoria = categoriasDB.find(c => c.id === prod.categoria_id);
-            if (categoria && categoria.variaciones && categoria.variaciones.sabores) {
-                saboresInactivos = categoria.variaciones.sabores
-                    .filter(s => !s.activo)
-                    .map(s => s.nombre);
-            }
+            const catsToCheck = [prod.categoria_id, prod.categoria_variaciones_id].filter(id => id);
+            
+            catsToCheck.forEach(catId => {
+                const cat = categoriasDB.find(c => c.id === catId);
+                if (cat && cat.variaciones && cat.variaciones.sabores) {
+                    const inactivos = cat.variaciones.sabores
+                        .filter(s => !s.activo)
+                        .map(s => s.nombre);
+                    saboresInactivos = [...new Set([...saboresInactivos, ...inactivos])];
+                }
+            });
             
             const saboresValidos = (variaciones.sabores || []).filter(s => !saboresInactivos.includes(s));
             variaciones.sabores = saboresValidos;

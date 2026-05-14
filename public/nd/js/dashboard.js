@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar Estadísticas Bento Grid
     cargarEstadisticas(id);
 
-    // Cargar Perfil Básico
-    cargarPerfil(id);
-
     // Cargar Top Productos
     cargarTopProductos(id);
 
@@ -97,25 +94,4 @@ async function cargarEstadisticas(id) {
     }
 }
 
-async function cargarPerfil(id) {
-    try {
-        const response = await fetch(`/api/negocio/${id}`); 
-        const data = await response.json();
 
-        const elNombre = document.getElementById('dashboardNombreNegocio');
-        const elLogo = document.getElementById('dashboardLogoNegocio');
-        const elPlaceholder = document.getElementById('dashboardLogoPlaceholder');
-
-        if (elNombre) elNombre.innerText = `Hola, ${data.nombre_comercial}`;
-        if (data.logo_url) {
-            if (elLogo) {
-                elLogo.src = data.logo_url;
-                elLogo.classList.remove('hidden');
-            }
-            if (elPlaceholder) elPlaceholder.classList.add('hidden');
-        }
-
-    } catch (error) {
-        console.error("Error al cargar perfil:", error);
-    }
-}

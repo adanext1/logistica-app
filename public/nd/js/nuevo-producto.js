@@ -41,6 +41,7 @@ async function cargarProductoParaEditar(prodId) {
         document.getElementById('product_price').value = p.precio || '';
         document.getElementById('product_unit').value = p.precio_medida_unit || 'unid';
         if (p.categoria_id) document.getElementById('product_category').value = p.categoria_id;
+        if (p.categoria_variaciones_id) document.getElementById('product_variation_category').value = p.categoria_variaciones_id;
         document.getElementById('product_description').value = p.descripcion || '';
         document.getElementById('esta_disponible').checked = p.esta_disponible;
 
@@ -77,6 +78,7 @@ let allCategories = [];
 
 async function cargarCategorias(negocioId) {
     const select = document.getElementById('product_category');
+    const ghostSelect = document.getElementById('product_variation_category');
     if (!select) return;
 
     try {
@@ -88,8 +90,10 @@ async function cargarCategorias(negocioId) {
             return;
         }
 
-        select.innerHTML = '<option value="" disabled selected>Selecciona una categoría...</option>' + 
-            allCategories.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        const optionsHtml = allCategories.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        
+        select.innerHTML = '<option value="" disabled selected>Selecciona una categoría...</option>' + optionsHtml;
+        ghostSelect.innerHTML = '<option value="">Ninguna (Usar principal)</option>' + optionsHtml;
 
     } catch (error) {
         console.error("Error al cargar categorías:", error);
@@ -98,44 +102,58 @@ async function cargarCategorias(negocioId) {
 
 function onCategoryChange() {
     const select = document.getElementById('product_category');
-    const catId = select.value;
-    const cat = allCategories.find(c => c.id === catId);
+    const ghostSelect = document.getElementById('product_variation_category');
+    
+    const mainCatId = select.value;
+    const ghostCatId = ghostSelect.value;
+    
+    const mainCat = allCategories.find(c => c.id === mainCatId);
+    const ghostCat = allCategories.find(c => c.id === ghostCatId);
     
     const container = document.getElementById('category_flavors_container');
     const list = document.getElementById('category_flavors_list');
     
-    if (cat && cat.variaciones && cat.variaciones.sabores && cat.variaciones.sabores.length > 0) {
-        let flavorsHtml = '';
+    let combinedFlavorsHtml = '';
+    
+    // Función helper para generar el HTML de un sabor
+    const generateFlavorHtml = (s, catName, isGhost = false) => {
+        if (!s.activo && !sabores.includes(s.nombre)) return ''; 
+        const isChecked = sabores.includes(s.nombre);
+        if (isChecked) sabores = sabores.filter(custom => custom !== s.nombre);
         
-        cat.variaciones.sabores.forEach(s => {
-            if (!s.activo && !sabores.includes(s.nombre)) return; // Ignorar inactivos si no estaban seleccionados
-            
-            const isChecked = sabores.includes(s.nombre);
-            
-            // Mover sabor de chips personalizados a los checkboxes
-            if (isChecked) {
-                sabores = sabores.filter(custom => custom !== s.nombre);
-            }
-            
-            flavorsHtml += `
-                <label class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 cursor-pointer hover:bg-surface-container-high transition-colors">
-                    <input type="checkbox" value="${s.nombre}" class="cat-flavor-checkbox w-4 h-4 text-primary bg-surface-container-lowest border-outline-variant rounded focus:ring-primary focus:ring-2" ${isChecked ? 'checked' : ''}>
-                    <span class="text-[14px] text-on-surface select-none">${s.nombre} ${!s.activo ? '<span class="text-[10px] text-error">(Inactivo)</span>' : ''}</span>
-                </label>
-            `;
+        return `
+            <label class="flex items-center gap-2 p-2 rounded border border-outline-variant/30 cursor-pointer hover:bg-surface-container-high transition-colors ${isGhost ? 'bg-primary/5' : ''}">
+                <input type="checkbox" value="${s.nombre}" class="cat-flavor-checkbox w-4 h-4 text-primary bg-surface-container-lowest border-outline-variant rounded focus:ring-primary focus:ring-2" ${isChecked ? 'checked' : ''}>
+                <div class="flex flex-col">
+                    <span class="text-[13px] text-on-surface leading-tight font-bold">${s.nombre} ${!s.activo ? '<span class="text-[10px] text-error">(Inactivo)</span>' : ''}</span>
+                    <span class="text-[9px] text-on-surface-variant uppercase tracking-tighter">${catName}</span>
+                </div>
+            </label>
+        `;
+    };
+
+    // 1. Cargar Sabores de Categoría Principal
+    if (mainCat && mainCat.variaciones && mainCat.variaciones.sabores) {
+        mainCat.variaciones.sabores.forEach(s => {
+            combinedFlavorsHtml += generateFlavorHtml(s, "Principal");
         });
-        
-        if (flavorsHtml) {
-            list.innerHTML = flavorsHtml;
-            container.classList.remove('hidden');
-        } else {
-            container.classList.add('hidden');
-        }
+    }
+
+    // 2. Cargar Sabores de Categoría Fantasma (si existe y es distinta a la principal)
+    if (ghostCat && ghostCatId !== mainCatId && ghostCat.variaciones && ghostCat.variaciones.sabores) {
+        combinedFlavorsHtml += `<!-- Divisor visual opcional -->`;
+        ghostCat.variaciones.sabores.forEach(s => {
+            combinedFlavorsHtml += generateFlavorHtml(s, "Fantasma", true);
+        });
+    }
+    
+    if (combinedFlavorsHtml) {
+        list.innerHTML = combinedFlavorsHtml;
+        container.classList.remove('hidden');
     } else {
         container.classList.add('hidden');
     }
     
-    // Volver a renderizar chips por si se movieron a checkboxes
     renderSabores();
 }
 
@@ -231,6 +249,7 @@ async function guardarProducto(e, negocioId) {
     const precio = document.getElementById('product_price').value;
     const unidad = document.getElementById('product_unit').value;
     const categoria_id = document.getElementById('product_category').value;
+    const categoria_variaciones_id = document.getElementById('product_variation_category').value;
     const descripcion = document.getElementById('product_description').value;
     const fotoInput = document.getElementById('product_photo');
     const esta_disponible = document.getElementById('esta_disponible').checked;
@@ -271,6 +290,7 @@ async function guardarProducto(e, negocioId) {
         precio,
         unidad,
         categoria_id,
+        categoria_variaciones_id: categoria_variaciones_id || null,
         descripcion,
         imagen_base64,
         variaciones: hasVariations ? variacionesJson : null,
