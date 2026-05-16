@@ -106,6 +106,11 @@
                         <input type="text" id="numeroCasa" placeholder="Ej. 123 o S/N" required
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50">
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">Colonia</label>
+                        <input type="text" id="coloniaCliente" placeholder="Ej. Centro" required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50">
+                    </div>
                     <div class="col-span-2">
                         <label class="block text-sm font-semibold text-slate-600 mb-1">Referencias del domicilio</label>
                         <input type="text" id="referenciasDomicilio" placeholder="Ej. Portón negro, frente al parque..." required
@@ -187,15 +192,16 @@
         document.getElementById('whatsappCliente').value = localStorage.getItem('laas_whatsapp') || '';
         document.getElementById('callePrincipal').value = localStorage.getItem('laas_calle') || '';
         document.getElementById('numeroCasa').value = localStorage.getItem('laas_numero') || '';
+        document.getElementById('coloniaCliente').value = localStorage.getItem('laas_colonia') || '';
         document.getElementById('referenciasDomicilio').value = localStorage.getItem('laas_referencias') || '';
 
         // --- CARGAR RESUMEN DEL CARRITO ---
         let carritoGuardado = [];
         let carritoTotal = "0.00";
         try {
-            const c = localStorage.getItem('laas_carrito');
+            const c = localStorage.getItem(`laas_carrito_${slug}`);
             if (c) carritoGuardado = JSON.parse(c);
-            carritoTotal = localStorage.getItem('laas_carrito_total') || "0.00";
+            carritoTotal = localStorage.getItem(`laas_carrito_total_${slug}`) || "0.00";
         } catch (e) { console.error("Error leyendo carrito"); }
 
         if (carritoGuardado.length > 0) {
@@ -364,6 +370,7 @@
             const whatsappInput = document.getElementById('whatsappCliente').value;
             const calleInput = document.getElementById('callePrincipal').value;
             const numeroInput = document.getElementById('numeroCasa').value;
+            const coloniaInput = document.getElementById('coloniaCliente').value;
             const referenciasInput = document.getElementById('referenciasDomicilio').value;
             const latDestino = document.getElementById('latDestino').value;
             const lngDestino = document.getElementById('lngDestino').value;
@@ -376,6 +383,7 @@
             localStorage.setItem('laas_whatsapp', whatsappInput);
             localStorage.setItem('laas_calle', calleInput);
             localStorage.setItem('laas_numero', numeroInput);
+            localStorage.setItem('laas_colonia', coloniaInput);
             localStorage.setItem('laas_referencias', referenciasInput);
 
             if (!latDestino || !lngDestino) {
@@ -410,7 +418,8 @@
                     ...data,
                     nombreCliente: nombreInput,
                     whatsappCliente: whatsappInput,
-                    direccionDetalles: direccionInput
+                    direccionDetalles: direccionInput,
+                    coloniaCliente: coloniaInput
                 };
                 
                 // Ocultar botón calcular
@@ -483,6 +492,8 @@
 
             const mensaje = `🛒 *Nuevo Pedido — ${tituloNegocio.innerText}*\n\n` +
                             `*Cliente:* ${datosCalculados.nombreCliente}\n` +
+                            `*Teléfono:* ${datosCalculados.whatsappCliente}\n` +
+                            `*Colonia:* ${datosCalculados.coloniaCliente}\n` +
                             `📍 *Ubicación:* https://maps.google.com/?q=${latD},${lngD}\n` +
                             `🏠 *Detalles:* ${datosCalculados.direccionDetalles}\n` +
                             `🛣️ *Distancia:* ${datosCalculados.distancia_km} km\n\n` +
@@ -499,7 +510,7 @@
                         negocio_slug: slug, 
                         nombre_cliente: datosCalculados.nombreCliente, 
                         telefono: datosCalculados.whatsappCliente, 
-                        direccion_detalles: datosCalculados.direccionDetalles, 
+                        direccion_detalles: `${datosCalculados.direccionDetalles} | Col: ${datosCalculados.coloniaCliente}`, 
                         costo_envio: datosCalculados.costo_envio, 
                         latDestino: latD, 
                         lngDestino: lngD,
@@ -521,8 +532,8 @@
             window.open(urlWhatsApp, '_blank');
 
             // 4. Limpiar el carrito después de enviarlo exitosamente
-            localStorage.removeItem('laas_carrito');
-            localStorage.removeItem('laas_carrito_total');
+            localStorage.removeItem(`laas_carrito_${slug}`);
+            localStorage.removeItem(`laas_carrito_total_${slug}`);
 
             btnConfirmarPedido.innerText = "¡Pedido enviado a WhatsApp!";
         });

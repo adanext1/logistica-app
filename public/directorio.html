@@ -73,84 +73,16 @@
             transform: translateY(-5px) scale(1.02);
         }
 
-        /* Viewer Stories (TikTok Style) */
-        #viewerStories {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        @keyframes marquee-vertical {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(-100%); }
         }
-
-        .story-track {
-            height: 100%;
-            width: 100%;
-            max-width: 500px;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            scrollbar-width: none;
+        .animate-marquee-up {
+            display: block;
+            animation: marquee-vertical 8s linear infinite;
         }
-
-        .story-track::-webkit-scrollbar {
-            display: none;
-        }
-
-        .story-slide {
-            height: 100%;
-            width: 100%;
-            scroll-snap-align: start;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .story-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .story-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 40%, transparent 60%, rgba(0, 0, 0, 0.4) 100%);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            pointer-events: none;
-        }
-
-        .story-content {
-            pointer-events: auto;
-        }
-
-        .progress-bar-container {
-            position: absolute;
-            top: 15px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-            z-index: 10;
-        }
-
-        .progress-bar {
-            height: 3px;
-            background: rgba(255, 255, 255, 0.3);
-            flex: 1;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #fff;
-            width: 0%;
+        .animate-marquee-up:hover {
+            animation-play-state: paused;
         }
     </style>
 </head>
@@ -340,25 +272,16 @@
             </div>
         </div>
 
-        <!-- VIEWER STORIES (TIKTOK STYLE) -->
-        <div id="viewerStories">
-            <div class="progress-bar-container" id="progressBarContainer"></div>
-
-            <button onclick="cerrarViewer()"
-                class="absolute top-10 right-6 z-50 text-white p-2 bg-black/20 rounded-full backdrop-blur-md">
+        <!-- TikTok / Reels Overlay -->
+        <div id="tiktokOverlay" class="fixed inset-0 bg-black z-[100] hidden transform translate-y-full transition-transform duration-500 ease-in-out">
+            <!-- Botón Cerrar -->
+            <button onclick="cerrarViewer()" class="absolute top-6 right-6 z-50 text-white p-3 bg-black/40 backdrop-blur-md rounded-full shadow-lg border border-white/20 active:scale-95 transition-transform">
                 <i data-feather="x" class="w-6 h-6"></i>
             </button>
-
-            <div id="storyTrack" class="story-track">
-                <!-- Slides dinámicos -->
-            </div>
-
-            <!-- Botón de Acción Fijo en el Viewer -->
-            <div class="absolute bottom-10 left-0 right-0 px-10 z-50 pointer-events-none">
-                <a id="btnStoryAction" href="#"
-                    class="pointer-events-auto block w-full bg-orange-600 text-white text-center font-bold py-4 rounded-2xl shadow-2xl transform active:scale-95 transition-all">
-                    PEDIR AHORA
-                </a>
+            
+            <!-- Contenedor de Reels (Scroll Vertical) -->
+            <div id="tiktokReelsContainer" class="w-full h-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar">
+                <!-- Se llena dinámicamente con las promos -->
             </div>
         </div>
 
@@ -461,92 +384,146 @@
 
         // --- Stories Logic ---
         let ofertasAgrupadas = [];
-        let currentGroupIndex = 0;
-        let currentPromoIndex = 0;
-        let storyInterval = null;
+        let slidePromos = []; // Lista plana de todas las promos
 
         function abrirViewer(groupIndex) {
-            currentGroupIndex = groupIndex;
-            currentPromoIndex = 0;
-            const grupo = ofertasAgrupadas[currentGroupIndex];
+            const grupo = ofertasAgrupadas[groupIndex];
+            
+            // Aplanar todas las promos con los datos de su negocio
+            slidePromos = [];
+            ofertasAgrupadas.forEach(g => {
+                g.promos.forEach(p => {
+                    slidePromos.push({
+                        ...p,
+                        negocio: g.negocio
+                    });
+                });
+            });
 
-            const viewer = document.getElementById('viewerStories');
-            const track = document.getElementById('storyTrack');
-            const progressContainer = document.getElementById('progressBarContainer');
+            // Encontrar el índice de la primera promo del grupo al que se le dio click
+            const startIndex = slidePromos.findIndex(p => p.negocio_id === grupo.negocio.id);
 
-            viewer.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            const overlay = document.getElementById('tiktokOverlay');
+            const container = document.getElementById('tiktokReelsContainer');
 
-            // Render slides
-            track.innerHTML = grupo.promos.map((p, i) => `
-                <div class="story-slide" id="slide-${i}">
-                    <img src="${p.imagen_url}" class="story-img" alt="${p.titulo}">
-                    <div class="story-overlay">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-white">
-                                <img src="${grupo.negocio.logo_url || 'https://ui-avatars.com/api/?name=' + grupo.negocio.nombre_comercial}" class="w-full h-full object-cover">
-                            </div>
-                            <span class="text-white font-bold text-sm shadow-sm">${grupo.negocio.nombre_comercial}</span>
+            let html = '';
+            slidePromos.forEach((of, index) => {
+                const isVideo = of.imagen_url && of.imagen_url.match(/\.(mp4|webm|mov|ogg)(\?.*)?$/i);
+                let mediaFull = '';
+                const esEvento = of.tipo === 'evento' || of.fecha_evento;
+                
+                if (of.imagen_url) {
+                    if (isVideo) {
+                        mediaFull = `<video src="${of.imagen_url}" class="absolute inset-0 w-full h-full object-cover" autoplay loop muted playsinline></video>`;
+                    } else {
+                        mediaFull = `<img src="${of.imagen_url}" class="absolute inset-0 w-full h-full object-cover">`;
+                    }
+                } else {
+                    mediaFull = `
+                    <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-brand-600 to-orange-800 flex flex-col items-center justify-center p-8">
+                        <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-2xl backdrop-blur-sm">
+                            <i data-feather="${esEvento ? 'calendar' : 'tag'}" class="w-16 h-16 text-white"></i>
                         </div>
-                        <div class="story-content text-white mb-20">
-                            <h3 class="text-2xl font-black mb-1">${p.titulo}</h3>
-                            <p class="text-sm opacity-90">${p.descripcion || ''}</p>
+                    </div>`;
+                }
+
+                // Botón Visitar Tienda
+                let buttonHtml = `
+                <div class="flex flex-col gap-3 mt-4">
+                    <a href="/${of.negocio.slug}" onclick="registrarEvento('${of.negocio.id}', 'click_promo_to_store', { promo_id: '${of.id}' })" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-xl shadow-orange-600/30 text-lg pointer-events-auto">
+                        <i data-feather="shopping-bag" class="w-5 h-5"></i>
+                        Visitar Tienda
+                    </a>
+                </div>`;
+
+                html += `
+                    <div class="w-full h-[100dvh] snap-start snap-always relative bg-black flex items-center justify-center" id="reel-${index}">
+                        ${mediaFull}
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90 pointer-events-none"></div>
+                        
+                        <!-- Logo y Nombre del Negocio (Arriba a la izquierda) -->
+                        <div class="absolute top-6 left-6 z-10 flex items-center gap-3 bg-black/20 p-2 rounded-2xl backdrop-blur-sm border border-white/10">
+                            <div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-white shadow-lg">
+                                <img src="${of.negocio.logo_url || 'https://ui-avatars.com/api/?name=' + of.negocio.nombre_comercial}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <p class="text-white font-black text-sm drop-shadow-lg">${of.negocio.nombre_comercial}</p>
+                                <span class="text-orange-400 text-[10px] font-bold drop-shadow-lg">Ver tienda</span>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-0 left-0 w-full p-6 pb-12 z-10 flex flex-col">
+                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur text-white text-[10px] font-bold rounded-full mb-3 uppercase tracking-wider w-max border border-white/20 shadow-sm">${esEvento ? 'Evento' : 'Oferta'}</span>
+                            <h3 class="text-white text-3xl font-black leading-tight mb-2 drop-shadow-lg">${of.titulo}</h3>
+                            ${of.descripcion ? `<div class="max-h-32 overflow-y-auto hide-scrollbar text-white/90 text-sm leading-relaxed drop-shadow">${of.descripcion.replace(/\n/g, '<br>')}</div>` : ''}
+                            ${buttonHtml}
                         </div>
                     </div>
+                `;
+            });
+
+            // Slide final de cierre
+            html += `
+                <div class="w-full h-[100dvh] snap-start snap-always relative bg-black flex flex-col items-center justify-center" id="reel-close-trigger">
+                    <div class="text-white text-center flex flex-col items-center gap-2">
+                        <div class="animate-bounce">
+                            <i data-feather="arrow-down" class="w-8 h-8 mx-auto text-orange-500"></i>
+                        </div>
+                        <p class="text-sm font-black uppercase tracking-wider">Volviendo al directorio</p>
+                    </div>
                 </div>
-            `).join('');
+            `;
 
-            // Render progress bars
-            progressContainer.innerHTML = grupo.promos.map((_, i) => `
-                <div class="progress-bar">
-                    <div class="progress-fill" id="fill-${i}"></div>
-                </div>
-            `).join('');
-
-            document.getElementById('btnStoryAction').href = `/${grupo.negocio.slug}`;
-
-            startStoryTimer();
+            container.innerHTML = html;
             feather.replace();
-        }
 
-        function startStoryTimer() {
-            if (storyInterval) clearInterval(storyInterval);
+            // Abrir overlay
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; 
 
-            let progress = 0;
-            const duration = 5000; // 5 segundos por historia
-            const step = 50; // actualizar cada 50ms
-            const increment = (step / duration) * 100;
+            setTimeout(() => {
+                overlay.classList.remove('translate-y-full');
+                const target = document.getElementById(`reel-${startIndex}`);
+                if (target) target.scrollIntoView({behavior: 'instant'});
+            }, 10);
+            
+            // Manejador de scroll para el autoplay y el auto-cierre
+            container.onscroll = () => {
+                clearTimeout(container.scrollTimeout);
+                container.scrollTimeout = setTimeout(() => {
+                    const reels = container.children;
+                    for(let i = 0; i < reels.length; i++) {
+                        const rect = reels[i].getBoundingClientRect();
+                        const video = reels[i].querySelector('video');
+                        
+                        if (rect.top >= -50 && rect.top <= window.innerHeight / 2) {
+                            if (reels[i].id === 'reel-close-trigger') {
+                                cerrarViewer();
+                                return;
+                            }
+                            if (video) video.play().catch(()=>{});
+                        } else {
+                            if (video) video.pause();
+                        }
+                    }
+                }, 100);
+            };
 
-            const fill = document.getElementById(`fill-${currentPromoIndex}`);
-
-            storyInterval = setInterval(() => {
-                progress += increment;
-                if (fill) fill.style.width = `${progress}%`;
-
-                if (progress >= 100) {
-                    siguientePromo();
-                }
-            }, step);
-        }
-
-        function siguientePromo() {
-            clearInterval(storyInterval);
-            const grupo = ofertasAgrupadas[currentGroupIndex];
-
-            if (currentPromoIndex < grupo.promos.length - 1) {
-                currentPromoIndex++;
-                const slide = document.getElementById(`slide-${currentPromoIndex}`);
-                slide.scrollIntoView({ behavior: 'smooth' });
-                startStoryTimer();
-            } else {
-                cerrarViewer();
-            }
+            // Disparar play inicial
+            setTimeout(() => { container.onscroll(); }, 300);
         }
 
         function cerrarViewer() {
-            clearInterval(storyInterval);
-            document.getElementById('viewerStories').style.display = 'none';
+            const overlay = document.getElementById('tiktokOverlay');
+            overlay.classList.add('translate-y-full');
             document.body.style.overflow = '';
+            
+            document.querySelectorAll('#tiktokReelsContainer video').forEach(v => v.pause());
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                document.getElementById('tiktokReelsContainer').innerHTML = '';
+            }, 500);
         }
 
         async function cargarOfertas() {
@@ -560,21 +537,28 @@
                     return;
                 }
 
-                grid.innerHTML = ofertasAgrupadas.map((grupo, idx) => `
-                    <div class="story-card group" onclick="registrarEvento('${grupo.negocio.id}', 'view_story'); abrirViewer(${idx})">
-                        <img src="${grupo.promos[0].imagen_url}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                        <div class="absolute top-2 left-2">
-                            <div class="w-8 h-8 rounded-full border-2 border-orange-500 overflow-hidden bg-white">
-                                <img src="${grupo.negocio.logo_url || 'https://ui-avatars.com/api/?name=' + grupo.negocio.nombre_comercial}" class="w-full h-full object-cover">
+                grid.innerHTML = ofertasAgrupadas.map((grupo, idx) => {
+                    const isVideo = grupo.promos[0].imagen_url && grupo.promos[0].imagen_url.match(/\.(mp4|webm|mov|ogg)(\?.*)?$/i);
+                    const mediaHtml = isVideo 
+                        ? `<video src="${grupo.promos[0].imagen_url}" class="w-full h-full object-cover" autoplay loop muted playsinline></video>`
+                        : `<img src="${grupo.promos[0].imagen_url}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`;
+
+                    return `
+                        <div class="story-card group" onclick="registrarEvento('${grupo.negocio.id}', 'view_story'); abrirViewer(${idx})">
+                            ${mediaHtml}
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div class="absolute top-2 left-2">
+                                <div class="w-8 h-8 rounded-full border-2 border-orange-500 overflow-hidden bg-white">
+                                    <img src="${grupo.negocio.logo_url || 'https://ui-avatars.com/api/?name=' + grupo.negocio.nombre_comercial}" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                            <div class="absolute bottom-3 left-3 right-3">
+                                <p class="text-white text-[10px] font-black uppercase leading-tight truncate">${grupo.negocio.nombre_comercial}</p>
+                                <p class="text-orange-400 text-[8px] font-bold">${grupo.promos.length} oferta${grupo.promos.length > 1 ? 's' : ''}</p>
                             </div>
                         </div>
-                        <div class="absolute bottom-3 left-3 right-3">
-                            <p class="text-white text-[10px] font-black uppercase leading-tight truncate">${grupo.negocio.nombre_comercial}</p>
-                            <p class="text-orange-400 text-[8px] font-bold">${grupo.promos.length} oferta${grupo.promos.length > 1 ? 's' : ''}</p>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (err) {
                 console.error("Error al cargar ofertas:", err);
                 document.getElementById('seccionPromos').style.display = 'none';

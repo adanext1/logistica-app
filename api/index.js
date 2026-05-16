@@ -84,10 +84,16 @@ function parsearCoordenadas(ubicacion) {
  * @returns {Promise<string|null>} URL pública o null si falla
  */
 async function subirImagenBase64(base64Data, prefix = 'img', bucket = 'logos-comercios', folder = '') {
-    if (!base64Data || !base64Data.startsWith('data:image')) return null;
+    if (!base64Data) throw new Error('No se recibió ninguna información de archivo (Base64 vacío).');
+    
+    if (!(base64Data.startsWith('data:image') || base64Data.startsWith('data:video'))) {
+        throw new Error('El archivo no es una imagen o video válido.');
+    }
 
-    const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) return null;
+    const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,([\s\S]+)$/);
+    if (!matches || matches.length !== 3) {
+        throw new Error('El formato Base64 del archivo es inválido o está corrupto.');
+    }
 
     const contentType = matches[1]; // ej: image/png
     const extension = contentType.split('/')[1] || 'jpg';
@@ -104,7 +110,7 @@ async function subirImagenBase64(base64Data, prefix = 'img', bucket = 'logos-com
 
     if (uploadError) {
         console.error(`Error al subir imagen a ${bucket}/${folder}:`, uploadError);
-        return null;
+        throw uploadError;
     }
 
     const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(pathName);
@@ -848,13 +854,124 @@ app.delete('/api/productos/:id', async (req, res) => {
 
 // --- OFERTAS Y EVENTOS ---
 
+// Listar TODAS las ofertas de un negocio (para el admin)
+app.get('/api/admin/negocio/:id/ofertas', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('ofertas')
+            .select('*')
+            .eq('negocio_id', req.params.id)
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error("Error al cargar ofertas admin:", err);
+        res.status(500).json({ error: 'Error al cargar ofertas' });
+    }
+});
+
+// Crear oferta/promo/evento
+app.post('/api/ofertas', async (req, res) => {
+    try {
+        const { negocio_id, titulo, descripcion, imagen_base64, fecha_inicio, fecha_fin, tipo, esta_activa, dias_ciclicos, hora_inicio, hora_fin, precio, mensaje_whatsapp } = req.body;
+        
+        let imagen_url = null;
+        if (imagen_base64) {
+            imagen_url = await subirImagenBase64(imagen_base64, `promo`, 'productos-negocio', negocio_id);
+        }
+
+        const { data, error } = await supabase
+            .from('ofertas')
+            .insert([{
+                negocio_id,
+                titulo,
+                descripcion,
+                imagen_url,
+                fecha_inicio: fecha_inicio || null,
+                fecha_fin: fecha_fin || null,
+                tipo: tipo || 'promocion',
+                esta_activa: esta_activa !== undefined ? esta_activa : true,
+                dias_ciclicos: dias_ciclicos || [],
+                hora_inicio: hora_inicio || null,
+                hora_fin: hora_fin || null,
+                precio: precio ? parseFloat(precio) : null,
+                mensaje_whatsapp: mensaje_whatsapp || null
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.status(201).json(data);
+    } catch (err) {
+        console.error("Error al crear oferta:", err);
+        res.status(500).json({ error: err.message || 'Error al crear oferta' });
+    }
+});
+
+// Actualizar oferta
+app.put('/api/ofertas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { titulo, descripcion, imagen_base64, fecha_inicio, fecha_fin, tipo, esta_activa, dias_ciclicos, hora_inicio, hora_fin, precio, mensaje_whatsapp } = req.body;
+
+        let updateData = {
+            titulo,
+            descripcion,
+            fecha_inicio: fecha_inicio || null,
+            fecha_fin: fecha_fin || null,
+            tipo: tipo || 'promocion',
+            esta_activa,
+            dias_ciclicos: dias_ciclicos || [],
+            hora_inicio: hora_inicio || null,
+            hora_fin: hora_fin || null,
+            precio: precio ? parseFloat(precio) : null,
+            mensaje_whatsapp: mensaje_whatsapp || null
+        };
+
+        if (imagen_base64 && (imagen_base64.startsWith('data:image') || imagen_base64.startsWith('data:video'))) {
+            const { data: current } = await supabase.from('ofertas').select('negocio_id').eq('id', id).single();
+            const url = await subirImagenBase64(imagen_base64, `promo`, 'productos-negocio', current?.negocio_id || 'general');
+            if (url) updateData.imagen_url = url;
+        }
+
+        const { data, error } = await supabase
+            .from('ofertas')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error("Error al actualizar oferta:", err);
+        res.status(500).json({ error: err.message || 'Error al actualizar oferta' });
+    }
+});
+
+// Eliminar oferta
+app.delete('/api/ofertas/:id', async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('ofertas')
+            .delete()
+            .eq('id', req.params.id);
+
+        if (error) throw error;
+        res.json({ mensaje: 'Oferta eliminada' });
+    } catch (err) {
+        console.error("Error al eliminar oferta:", err);
+        res.status(500).json({ error: 'Error al eliminar oferta' });
+    }
+});
+
 // Listar ofertas activas de un negocio
 app.get('/api/negocio/:id/ofertas', async (req, res) => {
     try {
         const hoy = new Date().toISOString();
         const { data, error } = await supabase
             .from('ofertas')
-            .select('id, titulo, descripcion, imagen_url, fecha_inicio, fecha_fin, producto_id')
+            .select('id, titulo, descripcion, imagen_url, fecha_inicio, fecha_fin, producto_id, tipo, precio, mensaje_whatsapp')
             .eq('negocio_id', req.params.id)
             .lte('fecha_inicio', hoy)
             .or(`fecha_fin.is.null,fecha_fin.gte.${hoy}`)

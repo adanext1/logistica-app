@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nueva Promoción - Camino Real</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#fff8f6",
+                        "on-surface": "#251913",
+                        "primary-container": "#f97316",
+                        "on-primary-container": "#582200",
+                        "outline-variant": "#e0c0b1",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#fff1eb",
+                        "primary": "#9d4300",
+                        "surface": "#fff8f6",
+                        "surface-container": "#ffeae0",
+                        "on-surface-variant": "#584237",
+                        "surface-container-highest": "#f6ded3"
+                    },
+                    "fontFamily": {
+                        "sans": ["Outfit"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; min-height: max(884px, 100dvh); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        @media (min-width: 768px) { main { padding-left: calc(16rem + 2rem) !important; } }
+        
+        /* Toggle Switch CSS */
+        .toggle-checkbox:checked { right: 0; border-color: #f97316; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #f97316; }
+        
+        /* Checkbox Days */
+        .day-checkbox:checked + label { background-color: #f97316; color: white; border-color: #f97316; }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen pt-20 pb-24 md:pb-8">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 h-20 bg-surface/70 backdrop-blur-xl shadow-sm border-b border-outline-variant/30">
+        <div class="flex items-center gap-4">
+            <a href="promonovedades.html" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h1 class="text-xl font-bold text-primary truncate">Crear Publicación</h1>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="px-6 max-w-4xl mx-auto mt-8">
+        <form id="promoForm" class="bg-white rounded-2xl shadow-sm p-6 lg:p-8 border border-outline-variant/30 space-y-8">
+            
+            <div class="flex justify-between items-center bg-surface-container-low p-4 rounded-xl border border-outline-variant/20">
+                <div>
+                    <h3 class="font-bold text-on-surface">Estado de la Publicación</h3>
+                    <p class="text-sm text-on-surface-variant">Si está apagado, no se mostrará en la tienda bajo ninguna condición.</p>
+                </div>
+                <div class="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="esta_activa" id="esta_activa" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 z-10 transition-transform duration-200 ease-in-out"/>
+                    <label for="esta_activa" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+
+            <!-- Publication Type -->
+            <div class="space-y-4">
+                <label class="font-medium text-sm text-on-surface-variant">Tipo de Publicación</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="tipo" value="promocion" checked class="peer sr-only">
+                        <div class="flex flex-col items-center justify-center p-6 border-2 border-transparent peer-checked:border-primary peer-checked:bg-surface-container bg-surface-container-low hover:bg-surface-container rounded-xl transition-all shadow-sm">
+                            <span class="material-symbols-outlined peer-checked:text-primary mb-2 text-3xl">sell</span>
+                            <span class="font-bold text-sm text-on-surface">Promoción</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="tipo" value="evento" class="peer sr-only">
+                        <div class="flex flex-col items-center justify-center p-6 border-2 border-transparent peer-checked:border-primary peer-checked:bg-surface-container bg-surface-container-low hover:bg-surface-container rounded-xl transition-all shadow-sm">
+                            <span class="material-symbols-outlined mb-2 text-3xl">campaign</span>
+                            <span class="font-bold text-sm text-on-surface">Novedad / Evento</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div>
+                <label class="block font-medium text-sm text-on-surface-variant mb-3">Media del Banner (Reels/TikTok 9:16) o Diseño Automático</label>
+                <div class="flex justify-center bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4">
+                    <div id="imageUploadArea" class="relative w-full max-w-[280px] aspect-[9/16] border-2 border-dashed border-primary/50 bg-surface-container rounded-xl flex flex-col cursor-pointer hover:bg-surface-container-high transition-colors overflow-hidden group shadow-sm">
+                        <input type="file" id="imagenPromo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        
+                        <!-- Media Preview (Image or Video) -->
+                        <div id="imagePreview" class="absolute inset-0 w-full h-full bg-cover bg-center z-10 hidden pointer-events-none"></div>
+                        <video id="videoPreview" class="absolute inset-0 w-full h-full object-cover z-10 hidden pointer-events-none" autoplay loop muted playsinline></video>
+                        
+                        <!-- Fallback Design (When no media is uploaded) -->
+                        <div id="fallbackPreview" class="absolute inset-0 w-full h-full bg-gradient-to-br from-primary to-secondary p-6 flex flex-col justify-center items-center text-center z-0 transition-all">
+                            <h2 id="fallbackTitle" class="text-3xl font-extrabold text-white mb-3 leading-tight drop-shadow-md">TÍTULO</h2>
+                            <p id="fallbackDesc" class="text-sm text-white/90 drop-shadow line-clamp-6">Agrega una descripción para ver cómo lucirá tu publicación.</p>
+                        </div>
+                        
+                        <!-- Upload Hint Overlay -->
+                        <div id="imagePlaceholder" class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm text-white">
+                            <span class="material-symbols-outlined mb-2 text-4xl">add_a_photo</span>
+                            <p class="font-medium text-sm text-center px-4">Toca para subir<br>Imagen</p>
+                            <p class="text-[10px] opacity-75 mt-1">Formato 9:16 recomendado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Title -->
+                <div>
+                    <label class="block font-medium text-sm text-on-surface-variant mb-2" for="titulo">Título</label>
+                    <input required class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3" id="titulo" placeholder="Ej. 2x1 en toda la tienda" type="text" />
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block font-medium text-sm text-on-surface-variant mb-2" for="descripcion">Descripción Detallada (Opcional)</label>
+                    <textarea class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 resize-none" id="descripcion" rows="3" placeholder="Describe los términos, condiciones o beneficios..."></textarea>
+                </div>
+
+                <!-- Llamada a la Acción (NUEVO) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-primary/5 p-4 rounded-xl border border-primary/20 mt-6">
+                    <div>
+                        <label class="block font-medium text-sm text-primary mb-2" for="precio">Precio Promocional (Opcional)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">$</span>
+                            <input class="w-full bg-white border-outline-variant rounded-lg pl-8 pr-4 py-3 focus:ring-primary focus:border-primary" id="precio" placeholder="0.00" type="number" step="0.01" min="0" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-sm text-primary mb-2" for="mensaje_whatsapp">Mensaje WhatsApp (Opcional)</label>
+                        <input class="w-full bg-white border-outline-variant rounded-lg px-4 py-3 focus:ring-primary focus:border-primary" id="mensaje_whatsapp" placeholder="Ej. ¡Hola! Quiero la promo de Alitas" type="text" />
+                        <p class="text-[10px] text-on-surface-variant mt-1">Texto predefinido cuando el cliente presione el botón de pedir por WhatsApp.</p>
+                    </div>
+                </div>
+
+                <hr class="border-outline-variant/30">
+                <h3 class="font-bold text-lg text-on-surface">Programación (Opcional)</h3>
+                <p class="text-sm text-on-surface-variant -mt-4">Si dejas estos campos vacíos, la promoción estará activa siempre.</p>
+
+                <!-- Validity Dates -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block font-medium text-sm text-on-surface-variant mb-2" for="fecha_inicio">Válido Desde (Fecha)</label>
+                        <input class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3" id="fecha_inicio" type="date" />
+                    </div>
+                    <div>
+                        <label class="block font-medium text-sm text-on-surface-variant mb-2" for="fecha_fin">Válido Hasta (Fecha)</label>
+                        <input class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3" id="fecha_fin" type="date" />
+                    </div>
+                </div>
+
+                <!-- Cyclic Days -->
+                <div>
+                    <label class="block font-medium text-sm text-on-surface-variant mb-2">Días Cíclicos (Repetir cada semana)</label>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- 0=Dom, 1=Lun, 2=Mar... -->
+                        <div class="relative">
+                            <input type="checkbox" id="day-1" value="1" class="day-checkbox sr-only">
+                            <label for="day-1" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Lun</label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="day-2" value="2" class="day-checkbox sr-only">
+                            <label for="day-2" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Mar</label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="day-3" value="3" class="day-checkbox sr-only">
+                            <label for="day-3" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Mié</label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="day-4" value="4" class="day-checkbox sr-only">
+                            <label for="day-4" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Jue</label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="day-5" value="5" class="day-checkbox sr-only">
+                            <label for="day-5" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Vie</label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="day-6" value="6" class="day-checkbox sr-only">
+                            <label for="day-6" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Sáb</label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="day-0" value="0" class="day-checkbox sr-only">
+                            <label for="day-0" class="px-4 py-2 rounded-full border border-outline-variant text-sm cursor-pointer transition-colors block">Dom</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specific Times -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block font-medium text-sm text-on-surface-variant mb-2" for="hora_inicio">Hora de Inicio</label>
+                        <input class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3" id="hora_inicio" type="time" />
+                    </div>
+                    <div>
+                        <label class="block font-medium text-sm text-on-surface-variant mb-2" for="hora_fin">Hora de Fin</label>
+                        <input class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3" id="hora_fin" type="time" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex flex-col md:flex-row-reverse gap-3 pt-6 border-t border-outline-variant/30">
+                <button type="submit" id="btnGuardar" class="w-full md:w-auto bg-primary text-on-primary rounded-full px-12 py-4 font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    Guardar Publicación
+                </button>
+                <a href="promonovedades.html" class="w-full md:w-auto border border-outline-variant text-on-surface rounded-full px-12 py-4 font-bold text-center hover:bg-surface-container transition-all">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/nueva-promo.js"></script>
+</body>
+</html>
