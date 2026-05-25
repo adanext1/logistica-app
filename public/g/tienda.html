@@ -42,6 +42,17 @@
         .animate-marquee-up:hover {
             animation-play-state: paused;
         }
+
+        /* Estilos para el Bottom Sheet */
+        .bottom-sheet-transition {
+            transition: transform 0.35s cubic-bezier(0.15, 0.85, 0.35, 1), opacity 0.35s ease;
+        }
+        .no-transition {
+            transition: none !important;
+        }
+        .bottom-sheet-dragging {
+            cursor: grabbing;
+        }
     </style>
 </head>
 
@@ -848,19 +859,20 @@
                 }
                 
                 return `
-                <div class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm flex gap-4 hover:shadow-md transition-all group cursor-pointer" onclick="${requiresConfig ? `abrirConfigProducto('${p.id}')` : `agregarSimpleAlCarrito('${p.id}')`}">
+                <div class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm flex gap-4 hover:shadow-md transition-all group cursor-pointer" onclick="abrirDetalleProducto('${p.id}')">
                     <div class="w-24 h-24 rounded-xl flex-shrink-0 overflow-hidden border border-orange-100 group-hover:scale-105 transition-transform">
                         ${imgHtml}
                     </div>
                     <div class="flex-1 flex flex-col justify-between min-w-0">
                         <div>
                             <h3 class="font-bold text-slate-900 leading-tight mb-1 break-words">${p.nombre}</h3>
-                            <p class="text-xs text-slate-500 line-clamp-2 break-words">${p.descripcion || ''}</p>
+                            <p class="text-xs text-slate-500 line-clamp-2 break-words mb-1">${p.descripcion || ''}</p>
+                            ${p.descripcion ? `<span class="text-[10px] text-slate-400 font-bold hover:text-brand-600 transition-colors">Ver más</span>` : ''}
                         </div>
                         <div class="flex items-end justify-between mt-2">
                             <span class="font-black text-lg text-brand-600 leading-none">${priceDisplay}</span>
                             <div class="flex items-center gap-2">
-                                <button class="w-8 h-8 bg-brand-50 text-brand-600 hover:bg-brand-500 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                                <button onclick="event.stopPropagation(); manejarClickProducto('${p.id}')" class="w-8 h-8 bg-brand-50 text-brand-600 hover:bg-brand-500 hover:text-white rounded-full flex items-center justify-center transition-colors">
                                     <i data-feather="plus" class="w-4 h-4"></i>
                                 </button>
                             </div>
@@ -1370,6 +1382,301 @@
             }
         });
 
+        // --- Lógica del Detalle del Producto (Bottom Sheet) ---
+        let productoDetalleIdGlobal = null;
+
+        function formatDetailDescription(desc) {
+            if (!desc) return '<p class="text-slate-400 italic text-sm">Sin descripción disponible.</p>';
+            
+            let cleanDesc = desc.trim();
+            
+            // Buscar si hay secciones tipo "Por dentro" o "Por fuera" o "Ingredientes"
+            const parts = cleanDesc.split(/(Por dentro|Por fuera|Ingredientes)/i);
+            
+            if (parts.length > 1) {
+                let html = '';
+                let currentHeader = '';
+                
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i].trim();
+                    if (!part) continue;
+                    
+                    if (/^(Por dentro|Por fuera|Ingredientes)$/i.test(part)) {
+                        currentHeader = part;
+                    } else {
+                        let content = part.replace(/^[:,\-\s\.]+/, '').trim();
+                        
+                        if (currentHeader) {
+                            const capitalizeHeader = currentHeader.charAt(0).toUpperCase() + currentHeader.slice(1).toLowerCase();
+                            html += `<h5 class="font-bold text-slate-800 mt-4 mb-2 text-sm flex items-center gap-1.5">
+                                <span class="w-1.5 h-3 bg-brand-500 rounded-full"></span>
+                                ${capitalizeHeader}
+                            </h5>`;
+                            currentHeader = '';
+                        }
+                        
+                        // Separar ingredientes por comas, " y " o saltos de línea, normalizando capitalizaciones intermedias
+                        let normalized = content.replace(/([a-zñáéíóú])\s+([A-ZÁÉÍÓÚÑ][a-zñáéíóú]+)/g, '$1, $2');
+                        const items = normalized.split(/,|\by\b|\n/i)
+                            .map(item => item.trim())
+                            .filter(item => item.length > 1);
+                            
+                        if (items.length > 0) {
+                            html += `<ul class="space-y-2 pl-2">`;
+                            items.forEach(item => {
+                                const formattedItem = item.charAt(0).toUpperCase() + item.slice(1);
+                                html += `
+                                    <li class="flex items-start gap-2 text-slate-600 text-sm">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span>
+                                        <span>${formattedItem}</span>
+                                    </li>
+                                `;
+                            });
+                            html += `</ul>`;
+                        } else {
+                            html += `<p class="text-slate-600 text-sm pl-2">${content}</p>`;
+                        }
+                    }
+                }
+                return html;
+            }
+            
+            // Si no tiene palabras claves pero tiene comas, listamos por comas de forma inteligente
+            let normalized = cleanDesc.replace(/([a-zñáéíóú])\s+([A-ZÁÉÍÓÚÑ][a-zñáéíóú]+)/g, '$1, $2');
+            const items = normalized.split(/,|\by\b|\n/i)
+                .map(item => item.trim())
+                .filter(item => item.length > 2);
+                
+            if (items.length > 1) {
+                let html = `<h5 class="font-bold text-slate-800 mb-2 text-sm flex items-center gap-1.5">
+                    <span class="w-1.5 h-3 bg-brand-500 rounded-full"></span>
+                    Ingredientes
+                </h5>`;
+                html += `<ul class="space-y-2 pl-2">`;
+                items.forEach(item => {
+                    const formattedItem = item.charAt(0).toUpperCase() + item.slice(1);
+                    html += `
+                        <li class="flex items-start gap-2 text-slate-600 text-sm">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span>
+                            <span>${formattedItem}</span>
+                        </li>
+                    `;
+                });
+                html += `</ul>`;
+                return html;
+            }
+            
+            return `<p class="text-slate-600 text-sm leading-relaxed">${cleanDesc}</p>`;
+        }
+
+        function abrirDetalleProducto(id) {
+            const p = productosDB.find(prod => prod.id === id);
+            if (!p) return;
+            
+            productoDetalleIdGlobal = id;
+            registrarEvento(negocioIdGlobal, 'view_item', { producto_id: id });
+
+            // Info básica
+            document.getElementById('detalleProdName').textContent = p.nombre;
+
+            const variaciones = p.variaciones || {};
+            const hasTamanos = variaciones.tamanos && variaciones.tamanos.length > 0;
+            const hasSabores = variaciones.sabores && variaciones.sabores.length > 0;
+            const requiresConfig = hasTamanos || hasSabores;
+
+            let priceText = '';
+            let btnTotalText = '';
+            let basePrice = parseFloat(p.precio) || 0;
+
+            if (hasTamanos) {
+                const minPrice = Math.min(...variaciones.tamanos.map(t => parseFloat(t.precio)));
+                priceText = `Desde $${minPrice.toFixed(2)}`;
+                btnTotalText = `$${minPrice.toFixed(2)}`;
+                basePrice = minPrice;
+            } else {
+                priceText = `$${basePrice.toFixed(2)}${p.precio_medida_unit ? `/${p.precio_medida_unit}` : '/pza'}`;
+                btnTotalText = `$${basePrice.toFixed(2)}`;
+            }
+
+            document.getElementById('detalleProdPrice').textContent = priceText;
+
+            // Imagen Hero
+            const imgContainer = document.getElementById('detalleProdImg');
+            if (p.imagen_url) {
+                imgContainer.innerHTML = `<img src="${p.imagen_url}" class="w-full h-full object-cover" alt="${p.nombre}">`;
+            } else {
+                imgContainer.innerHTML = `<div class="w-full h-full bg-brand-50 flex items-center justify-center text-7xl">🛍️</div>`;
+            }
+
+            // Descripción y formato
+            const descFormatted = formatDetailDescription(p.descripcion);
+            document.getElementById('detalleProdDesc').innerHTML = descFormatted;
+
+            // Configurar botón
+            const btnAgregar = document.getElementById('btnAgregarDetalle');
+            const totalSpan = document.getElementById('detalleBtnTotal');
+            
+            if (requiresConfig) {
+                btnAgregar.innerHTML = `
+                    <span>Personalizar pedido</span>
+                    <div class="flex items-center gap-1">
+                        <span>Desde ${btnTotalText}</span>
+                        <i data-feather="chevron-right" class="w-5 h-5"></i>
+                    </div>
+                `;
+                btnAgregar.onclick = () => {
+                    cerrarDetalleProducto();
+                    abrirConfigProducto(id);
+                };
+            } else {
+                btnAgregar.innerHTML = `
+                    <span>Agregar al pedido</span>
+                    <span id="detalleBtnTotal">${btnTotalText}</span>
+                `;
+                btnAgregar.onclick = () => {
+                    agregarSimpleAlCarrito(id);
+                    cerrarDetalleProducto();
+                };
+            }
+
+            feather.replace();
+
+            // Abrir Bottom Sheet
+            const modal = document.getElementById('modalDetalleProducto');
+            const panel = document.getElementById('panelDetalleProducto');
+            
+            panel.style.transform = 'translateY(100%)';
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                panel.classList.remove('translate-y-full');
+                panel.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function cerrarDetalleProducto() {
+            const modal = document.getElementById('modalDetalleProducto');
+            const panel = document.getElementById('panelDetalleProducto');
+            
+            panel.classList.add('translate-y-full');
+            panel.style.transform = 'translateY(100%)';
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = '';
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('detalleProdName').textContent = '';
+                document.getElementById('detalleProdPrice').textContent = '';
+                document.getElementById('detalleProdImg').innerHTML = '';
+                document.getElementById('detalleProdDesc').innerHTML = '';
+                const overlay = document.querySelector('#modalDetalleProducto > div.absolute');
+                if (overlay) {
+                    overlay.style.backgroundColor = '';
+                }
+            }, 350);
+        }
+
+        // --- Soporte de Gestos para Bottom Sheet (Swipe down to close) ---
+        (function() {
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+            let panel = null;
+            let scrollableContent = null;
+
+            function initGestures() {
+                panel = document.getElementById('panelDetalleProducto');
+                if (!panel) return;
+                
+                const handle = document.getElementById('handleDetalleProducto');
+                const heroImg = document.getElementById('detalleProdImg');
+                scrollableContent = panel.querySelector('.overflow-y-auto');
+
+                handle.addEventListener('touchstart', onTouchStart, { passive: true });
+                handle.addEventListener('touchmove', onTouchMove, { passive: false });
+                handle.addEventListener('touchend', onTouchEnd);
+
+                heroImg.addEventListener('touchstart', onTouchStart, { passive: true });
+                heroImg.addEventListener('touchmove', onTouchMove, { passive: false });
+                heroImg.addEventListener('touchend', onTouchEnd);
+
+                scrollableContent.addEventListener('touchstart', function(e) {
+                    if (scrollableContent.scrollTop <= 0) {
+                        onTouchStart(e);
+                    }
+                }, { passive: true });
+
+                scrollableContent.addEventListener('touchmove', function(e) {
+                    if (isDragging) {
+                        onTouchMove(e);
+                    } else if (scrollableContent.scrollTop <= 0 && e.touches[0].clientY > startY) {
+                        isDragging = true;
+                        onTouchStart(e);
+                        onTouchMove(e);
+                    }
+                }, { passive: false });
+
+                scrollableContent.addEventListener('touchend', function(e) {
+                    if (isDragging) {
+                        onTouchEnd(e);
+                    }
+                });
+            }
+
+            function onTouchStart(e) {
+                startY = e.touches[0].clientY;
+                currentY = startY;
+                panel.classList.add('no-transition');
+                panel.classList.add('bottom-sheet-dragging');
+            }
+
+            function onTouchMove(e) {
+                currentY = e.touches[0].clientY;
+                const deltaY = currentY - startY;
+
+                if (deltaY > 0) {
+                    e.preventDefault();
+                    isDragging = true;
+                    panel.style.transform = `translateY(${deltaY}px)`;
+                    
+                    const opacity = Math.max(0, 0.6 - (deltaY / window.innerHeight) * 0.6);
+                    const overlay = document.querySelector('#modalDetalleProducto > div.absolute');
+                    if (overlay) {
+                        overlay.style.backgroundColor = `rgba(15, 23, 42, ${opacity})`;
+                    }
+                } else {
+                    panel.style.transform = 'translateY(0px)';
+                }
+            }
+
+            function onTouchEnd(e) {
+                panel.classList.remove('no-transition');
+                panel.classList.remove('bottom-sheet-dragging');
+                
+                const deltaY = currentY - startY;
+                
+                if (isDragging && deltaY > 120) {
+                    cerrarDetalleProducto();
+                } else {
+                    panel.style.transform = 'translateY(0)';
+                    const overlay = document.querySelector('#modalDetalleProducto > div.absolute');
+                    if (overlay) {
+                        overlay.style.backgroundColor = '';
+                    }
+                }
+                isDragging = false;
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                initGestures();
+            });
+            if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                initGestures();
+            }
+        })();
+
         // --- Iniciar ---
         cargarNegocio();
     </script>
@@ -1412,6 +1719,54 @@
             </div>
             <div class="p-6 bg-slate-50 border-t border-slate-100 mt-auto">
                 <p class="text-center text-slate-400 text-xs font-bold uppercase tracking-widest">Desliza para cerrar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalle de Producto (Bottom Sheet) -->
+    <div id="modalDetalleProducto" class="fixed inset-0 z-50 flex items-end justify-center pointer-events-none transition-opacity duration-300 opacity-0 hidden">
+        <!-- Overlay oscuro -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="cerrarDetalleProducto()"></div>
+        
+        <!-- Contenido del Bottom Sheet -->
+        <div id="panelDetalleProducto" class="bg-white w-full max-w-lg rounded-t-3xl shadow-2xl relative z-10 pointer-events-auto transform transition-transform duration-300 translate-y-full flex flex-col max-h-[90vh] bottom-sheet-transition">
+            <!-- Handle / Indicador de arrastre -->
+            <div class="w-12 h-1.5 bg-slate-200 hover:bg-slate-300 rounded-full mx-auto mt-4 mb-2 shrink-0 cursor-grab active:cursor-grabbing" id="handleDetalleProducto"></div>
+            
+            <!-- Botón Cerrar en la esquina -->
+            <button onclick="cerrarDetalleProducto()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition-colors z-20 shadow-sm">
+                <i data-feather="x" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Cuerpo scrollable -->
+            <div class="overflow-y-auto flex-1 flex flex-col hide-scrollbar pb-24">
+                <!-- Imagen Hero -->
+                <div id="detalleProdImg" class="w-full h-64 sm:h-72 relative bg-slate-50 flex-shrink-0 overflow-hidden border-b border-orange-50">
+                    <!-- Se llena por JS -->
+                </div>
+
+                <!-- Info -->
+                <div class="p-6">
+                    <h3 id="detalleProdName" class="font-black text-slate-900 text-2xl leading-tight mb-2">Nombre</h3>
+                    <p id="detalleProdPrice" class="font-black text-xl text-brand-600 mb-4">$0.00</p>
+                    
+                    <hr class="border-orange-100/50 mb-4">
+                    
+                    <div id="detalleProdDescContainer" class="space-y-4">
+                        <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider">Descripción e Ingredientes</h4>
+                        <div id="detalleProdDesc" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                            <!-- Se llena por JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer / Botón Agregar Persistente -->
+            <div class="p-6 border-t border-slate-100 bg-white rounded-b-3xl flex-shrink-0 shadow-[0_-5px_20px_-10px_rgba(0,0,0,0.05)]">
+                <button id="btnAgregarDetalle" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-black py-4 px-6 rounded-2xl flex justify-between items-center transition-all active:scale-95 shadow-lg shadow-brand-500/30 text-lg">
+                    <span>Agregar al pedido</span>
+                    <span id="detalleBtnTotal">$0.00</span>
+                </button>
             </div>
         </div>
     </div>
