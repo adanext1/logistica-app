@@ -1386,7 +1386,7 @@
         let productoDetalleIdGlobal = null;
 
         function formatDetailDescription(desc) {
-            if (!desc) return '<p class="text-slate-400 italic text-sm">Sin descripción disponible.</p>';
+            if (!desc) return '<p class="text-slate-400 italic text-sm text-left">Sin descripción disponible.</p>';
             
             let cleanDesc = desc.trim();
             
@@ -1408,9 +1408,9 @@
                         
                         if (currentHeader) {
                             const capitalizeHeader = currentHeader.charAt(0).toUpperCase() + currentHeader.slice(1).toLowerCase();
-                            html += `<h5 class="font-bold text-slate-800 mt-4 mb-2 text-sm flex items-center gap-1.5">
-                                <span class="w-1.5 h-3 bg-brand-500 rounded-full"></span>
-                                ${capitalizeHeader}
+                            html += `<h5 class="font-bold text-slate-800 mt-4 mb-2 text-sm flex items-center justify-start gap-2 text-left w-full">
+                                <span class="w-1.5 h-3 bg-brand-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-left flex-1">${capitalizeHeader}</span>
                             </h5>`;
                             currentHeader = '';
                         }
@@ -1422,19 +1422,19 @@
                             .filter(item => item.length > 1);
                             
                         if (items.length > 0) {
-                            html += `<ul class="space-y-2 pl-2">`;
+                            html += `<ul class="space-y-2 pl-2 text-left w-full">`;
                             items.forEach(item => {
                                 const formattedItem = item.charAt(0).toUpperCase() + item.slice(1);
                                 html += `
-                                    <li class="flex items-start gap-2 text-slate-600 text-sm">
+                                    <li class="flex items-start justify-start gap-2 text-slate-600 text-sm text-left w-full">
                                         <span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span>
-                                        <span>${formattedItem}</span>
+                                        <span class="text-left flex-1">${formattedItem}</span>
                                     </li>
                                 `;
                             });
                             html += `</ul>`;
                         } else {
-                            html += `<p class="text-slate-600 text-sm pl-2">${content}</p>`;
+                            html += `<p class="text-slate-600 text-sm pl-2 text-left w-full">${content}</p>`;
                         }
                     }
                 }
@@ -1448,17 +1448,17 @@
                 .filter(item => item.length > 2);
                 
             if (items.length > 1) {
-                let html = `<h5 class="font-bold text-slate-800 mb-2 text-sm flex items-center gap-1.5">
-                    <span class="w-1.5 h-3 bg-brand-500 rounded-full"></span>
-                    Ingredientes
+                let html = `<h5 class="font-bold text-slate-800 mb-2 text-sm flex items-center justify-start gap-2 text-left w-full">
+                    <span class="w-1.5 h-3 bg-brand-500 rounded-full flex-shrink-0"></span>
+                    <span class="text-left flex-1">Ingredientes</span>
                 </h5>`;
-                html += `<ul class="space-y-2 pl-2">`;
+                html += `<ul class="space-y-2 pl-2 text-left w-full">`;
                 items.forEach(item => {
                     const formattedItem = item.charAt(0).toUpperCase() + item.slice(1);
                     html += `
-                        <li class="flex items-start gap-2 text-slate-600 text-sm">
+                        <li class="flex items-start justify-start gap-2 text-slate-600 text-sm text-left w-full">
                             <span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span>
-                            <span>${formattedItem}</span>
+                            <span class="text-left flex-1">${formattedItem}</span>
                         </li>
                     `;
                 });
@@ -1466,7 +1466,7 @@
                 return html;
             }
             
-            return `<p class="text-slate-600 text-sm leading-relaxed">${cleanDesc}</p>`;
+            return `<p class="text-slate-600 text-sm leading-relaxed text-left w-full">${cleanDesc}</p>`;
         }
 
         function abrirDetalleProducto(id) {
@@ -1746,15 +1746,15 @@
                 </div>
 
                 <!-- Info -->
-                <div class="p-6">
-                    <h3 id="detalleProdName" class="font-black text-slate-900 text-2xl leading-tight mb-2">Nombre</h3>
-                    <p id="detalleProdPrice" class="font-black text-xl text-brand-600 mb-4">$0.00</p>
+                <div class="p-6 text-left">
+                    <h3 id="detalleProdName" class="font-black text-slate-900 text-2xl leading-tight mb-2 text-left">Nombre</h3>
+                    <p id="detalleProdPrice" class="font-black text-xl text-brand-600 mb-4 text-left">$0.00</p>
                     
                     <hr class="border-orange-100/50 mb-4">
                     
-                    <div id="detalleProdDescContainer" class="space-y-4">
-                        <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider">Descripción e Ingredientes</h4>
-                        <div id="detalleProdDesc" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                    <div id="detalleProdDescContainer" class="space-y-4 text-left">
+                        <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider text-left">Descripción e Ingredientes</h4>
+                        <div id="detalleProdDesc" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap text-left">
                             <!-- Se llena por JS -->
                         </div>
                     </div>
