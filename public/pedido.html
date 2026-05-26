@@ -132,7 +132,7 @@
                         <div id="mapaPedido" class="absolute inset-0 w-full h-full z-0"></div>
                         
                         <!-- Botón GPS flotante -->
-                        <button type="button" id="btnGPS" class="absolute bottom-4 right-4 z-10 bg-white p-2.5 rounded-xl shadow-lg text-brand-600 hover:text-brand-800 active:bg-brand-50 transition-colors focus:outline-none">
+                        <button type="button" id="btnGPS" class="absolute bottom-4 right-4 z-[2000] bg-white p-2.5 rounded-xl shadow-lg text-brand-600 hover:text-brand-800 active:bg-brand-50 transition-colors focus:outline-none cursor-pointer">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h4m10 0h4M12 3v4m0 10v4m-5-5a5 5 0 1110 0 5 5 0 01-10 0z"></path></svg>
                         </button>
 
@@ -178,6 +178,68 @@
             const params = new URLSearchParams(window.location.search);
             slug = params.get('n') || params.get('negocio');
         }
+
+        // Variables globales del mapa y ubicación
+        let mapaPedido = null;
+        let ubicacionInicial = null;
+
+        // Función de geolocalización robusta con fallback automático para PC y celulares con señal débil
+        function obtenerGeolocalizacion(onSuccess, onError) {
+            if (!navigator.geolocation) {
+                onError(new Error("Geolocalización no soportada"));
+                return;
+            }
+
+            const optionsAltaPrecision = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+
+            const optionsBajaPrecision = {
+                enableHighAccuracy: false,
+                timeout: 10000,
+                maximumAge: 60000 // Permitir usar ubicación en caché de hasta 1 minuto
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                onSuccess,
+                (err) => {
+                    // Si el usuario denegó explícitamente el permiso, fallamos directo
+                    if (err.code === err.PERMISSION_DENIED) {
+                        onError(err);
+                        return;
+                    }
+                    
+                    // Si falló por falta de hardware GPS (como en PC), mala señal o timeout, reintentamos con precisión estándar
+                    console.warn("Fallo alta precisión (código " + err.code + "). Intentando precisión estándar...");
+                    navigator.geolocation.getCurrentPosition(
+                        onSuccess,
+                        onError,
+                        optionsBajaPrecision
+                    );
+                },
+                optionsAltaPrecision
+            );
+        }
+
+        // Intentar obtener la ubicación del usuario de inmediato (en paralelo) para ganar tiempo
+        obtenerGeolocalizacion(
+            (pos) => {
+                ubicacionInicial = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                };
+                // Si el mapa ya se inicializó, lo movemos de una vez
+                if (mapaPedido) {
+                    mapaPedido.setView([ubicacionInicial.lat, ubicacionInicial.lng], 17);
+                    actualizarCoordenadas(ubicacionInicial.lat, ubicacionInicial.lng);
+                }
+            },
+            (err) => {
+                console.warn("Geolocalización inicial falló o fue denegada:", err);
+            }
+        );
 
         // Referencias a la interfaz
         const loader = document.getElementById('loader');
@@ -260,7 +322,6 @@
         }
 
         // --- LÓGICA DEL MAPA ---
-        let mapaPedido = null;
 
         function inicializarMapa() {
             if (mapaPedido) return;
@@ -268,9 +329,17 @@
             // Centro por defecto
             const coordsDefault = [24.1426, -110.3127];
             
+            // Si ya tenemos la ubicación inicial detectada en paralelo, la usamos como centro inicial
+            const centroInicial = ubicacionInicial ? [ubicacionInicial.lat, ubicacionInicial.lng] : coordsDefault;
+            const zoomInicial = ubicacionInicial ? 17 : 15;
+
             mapaPedido = L.map('mapaPedido', {
                 zoomControl: false // Interfaz más limpia en móvil
-            }).setView(coordsDefault, 15);
+            }).setView(centroInicial, zoomInicial);
+
+            if (ubicacionInicial) {
+                actualizarCoordenadas(ubicacionInicial.lat, ubicacionInicial.lng);
+            }
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
@@ -293,11 +362,18 @@
 
             // Botón GPS
             const btnGPS = document.getElementById('btnGPS');
-            btnGPS.addEventListener('click', () => {
+            
+            // Evitar que Leaflet intercepte los clics y toques en este botón (Crucial para iOS Safari/iPhones)
+            L.DomEvent.disableClickPropagation(btnGPS);
+            L.DomEvent.disableScrollPropagation(btnGPS);
+
+            btnGPS.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const originalIcon = btnGPS.innerHTML;
                 btnGPS.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-600"></div>';
                 
-                navigator.geolocation.getCurrentPosition(
+                obtenerGeolocalizacion(
                     (pos) => {
                         mapaPedido.setView([pos.coords.latitude, pos.coords.longitude], 17);
                         btnGPS.innerHTML = originalIcon;
@@ -305,14 +381,13 @@
                     (err) => {
                         alert("No pudimos obtener tu ubicación. Revisa los permisos de tu navegador.");
                         btnGPS.innerHTML = originalIcon;
-                    },
-                    { enableHighAccuracy: true, timeout: 5000 }
+                    }
                 );
             });
 
-            // Intentar geolocalizar al usuario
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
+            // Si aún no tenemos la ubicación y está cargándose, o si no se ha pedido, la solicitamos
+            if (!ubicacionInicial) {
+                obtenerGeolocalizacion(
                     (pos) => {
                         const userLat = pos.coords.latitude;
                         const userLng = pos.coords.longitude;
@@ -320,12 +395,10 @@
                         actualizarCoordenadas(userLat, userLng);
                     },
                     (err) => {
-                        console.warn("Geolocalización denegada o fallida.");
+                        console.warn("Geolocalización automática al cargar falló:", err);
                         actualizarCoordenadas(coordsDefault[0], coordsDefault[1]);
                     }
                 );
-            } else {
-                actualizarCoordenadas(coordsDefault[0], coordsDefault[1]);
             }
 
             // Cada vez que se mueve el mapa, actualizamos coordenadas
