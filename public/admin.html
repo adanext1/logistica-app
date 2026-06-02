@@ -61,6 +61,9 @@
             <button onclick="cambiarVista('repartidores')" id="btnNavDesktop-repartidores" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition-colors">
                 <i data-feather="truck" class="w-5 h-5"></i> Repartidores
             </button>
+            <button onclick="cambiarVista('configuracion')" id="btnNavDesktop-configuracion" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition-colors">
+                <i data-feather="sliders" class="w-5 h-5"></i> Tarifas Globales
+            </button>
         </nav>
         <div class="p-4 border-t border-slate-800 space-y-2">
             <a href="/manual-admin.html" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-amber-400 bg-amber-400/10 hover:bg-amber-400 hover:text-slate-900 rounded-xl font-bold transition-all">
@@ -372,6 +375,7 @@
                             </div>
                         </div>
 
+
                         <!-- Botón Submit (Visible en Escritorio al fondo, o en móvil abajo de todo) -->
                         <div class="hidden lg:block mt-4">
                             <button type="submit" id="btnSubmitNegocio" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-4 rounded-xl shadow-xl shadow-brand-500/30 active:scale-95 transition-all flex justify-center items-center gap-2">
@@ -498,6 +502,49 @@
                     <ul id="listaRepartidores" class="divide-y divide-orange-100">
                         <!-- Generado por JS -->
                     </ul>
+                </div>
+            </div>
+
+            <!-- VISTA: CONFIGURACIÓN GLOBAL DE TARIFAS -->
+            <div id="vista-configuracion" class="hidden fade-in px-6 md:px-10 pt-8 pb-32">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 bg-orange-50 p-6 rounded-3xl shadow-sm border border-orange-200">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                            <i data-feather="sliders" class="w-8 h-8 text-orange-500"></i> Tarifas Globales de Envío
+                        </h2>
+                        <p class="text-slate-500 mt-2 font-medium">Configura las tarifas de envío para todos los comercios del sistema.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-orange-100 max-w-2xl animate-fade-in">
+                    <form id="formConfiguracionGlobal" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Costo Base ($ MXN)</label>
+                            <p class="text-xs text-slate-500 mb-2">Tarifa inicial aplicada a todos los envíos que no superen la distancia base.</p>
+                            <input type="number" id="global_costo_envio_base" placeholder="35" min="0" step="1" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900 font-medium">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Distancia Base (Kilómetros)</label>
+                            <p class="text-xs text-slate-500 mb-2">Límite de distancia en kilómetros incluido dentro del costo base.</p>
+                            <input type="number" id="global_distancia_base" placeholder="2" min="0" step="0.1" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900 font-medium">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Costo por Kilómetro Adicional ($ MXN)</label>
+                            <p class="text-xs text-slate-500 mb-2">Precio extra cobrado por cada kilómetro adicional recorrido por encima de la distancia base.</p>
+                            <input type="number" id="global_costo_incremento" placeholder="10" min="0" step="1" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900 font-medium">
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100">
+                            <button type="submit" id="btnSubmitConfigGlobal" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-4 rounded-xl shadow-xl shadow-brand-500/30 active:scale-95 transition-all flex justify-center items-center gap-2">
+                                <span>Guardar Configuración</span> <i data-feather="save" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -645,6 +692,10 @@
         <button onclick="cambiarVista('repartidores')" id="btnNavMobile-repartidores" class="flex flex-col items-center p-2 w-20 text-slate-400 hover:text-slate-900 transition-colors">
             <i data-feather="truck" class="w-6 h-6 mb-1"></i>
             <span class="text-[10px] font-bold">Repartir</span>
+        </button>
+        <button onclick="cambiarVista('configuracion')" id="btnNavMobile-configuracion" class="flex flex-col items-center p-2 w-20 text-slate-400 hover:text-slate-900 transition-colors">
+            <i data-feather="sliders" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">Tarifas</span>
         </button>
     </nav>
 

@@ -18,9 +18,17 @@ export async function cargarDatosDashboard() {
 
         const SLUG_PLATAFORMA = 'plataforma-rcr';
 
-        const rawNegocios = await resNegocios.json();
+        let rawNegocios = [];
+        if (resNegocios.ok) {
+            try {
+                rawNegocios = await resNegocios.json();
+            } catch (e) {
+                console.error("Error al parsear negocios:", e);
+            }
+        }
+        
         // Filtrar el negocio base (nosotros mismos) para no ensuciar métricas
-        const negocios = rawNegocios.filter(n => n.slug !== SLUG_PLATAFORMA);
+        const negocios = Array.isArray(rawNegocios) ? rawNegocios.filter(n => n.slug !== SLUG_PLATAFORMA) : [];
         state.negociosGlobales = negocios;
         
         let clientes = [];

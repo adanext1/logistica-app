@@ -316,9 +316,9 @@
                         Sin letras chiquitas.</p>
                     <div class="bg-black/20 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/10">
                         <p class="text-sm font-bold text-orange-200 uppercase mb-1">Tarifa Base</p>
-                        <p class="text-6xl font-black tracking-tight">$35<span
+                        <p class="text-6xl font-black tracking-tight">$<span id="txtCostoBaseHero">35</span><span
                                 class="text-2xl text-orange-200 font-bold">MXN</span></p>
-                        <p class="text-xs text-orange-100 mt-2">Cubre los primeros 2 kilómetros</p>
+                        <p class="text-xs text-orange-100 mt-2">Cubre los primeros <span id="txtDistanciaBaseHero">2</span> kilómetros</p>
                     </div>
                 </div>
                 <div class="w-full lg:w-1/2 p-8 sm:p-12 text-center flex-1 h-full flex flex-col justify-center">
@@ -326,7 +326,7 @@
                         class="w-14 h-14 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i data-feather="plus" class="w-6 h-6"></i>
                     </div>
-                    <p class="text-4xl font-extrabold text-slate-900 mb-2">$10 <span
+                    <p class="text-4xl font-extrabold text-slate-900 mb-2">$<span id="txtCostoIncrementoHero">10</span> <span
                             class="text-xl text-slate-500">MXN</span></p>
                     <p class="font-bold text-orange-600 uppercase tracking-widest text-sm mb-4">Por kilómetro adicional
                     </p>
@@ -612,8 +612,23 @@
             }
         }
 
+        async function cargarTarifasGlobales() {
+            try {
+                const res = await fetch('/api/configuracion');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('txtCostoBaseHero').innerText = data.costo_envio_base;
+                    document.getElementById('txtDistanciaBaseHero').innerText = data.distancia_base;
+                    document.getElementById('txtCostoIncrementoHero').innerText = data.costo_incremento;
+                }
+            } catch (e) {
+                console.error("Error al cargar tarifas globales en inicio:", e);
+            }
+        }
+
         // Iniciar
         cargarNegocios();
+        cargarTarifasGlobales();
     </script>
 </body>
 

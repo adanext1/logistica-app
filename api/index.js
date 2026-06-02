@@ -1219,6 +1219,55 @@ app.get('/api/ofertas', async (req, res) => {
 });
 
 // =============================================================================
+// RUTAS: CONFIGURACIÓN GLOBAL DE TARIFAS
+// =============================================================================
+
+// Obtener configuración global
+app.get('/api/configuracion', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('negocios')
+            .select('costo_envio_base, distancia_base, costo_incremento')
+            .eq('slug', 'plataforma-rcr')
+            .single();
+
+        if (error || !data) throw error || new Error('No se encontró la configuración global.');
+        res.json({
+            costo_envio_base: data.costo_envio_base !== null ? parseFloat(data.costo_envio_base) : 35,
+            distancia_base: data.distancia_base !== null ? parseFloat(data.distancia_base) : 2,
+            costo_incremento: data.costo_incremento !== null ? parseFloat(data.costo_incremento) : 10
+        });
+    } catch (err) {
+        console.error("Error al obtener la configuración global:", err);
+        res.status(500).json({ error: 'Error al obtener la configuración' });
+    }
+});
+
+// Guardar configuración global (solo admin)
+app.put('/api/configuracion', protegerRutaAdmin, async (req, res) => {
+    try {
+        const { costo_envio_base, distancia_base, costo_incremento } = req.body;
+
+        const { data, error } = await supabase
+            .from('negocios')
+            .update({
+                costo_envio_base: (costo_envio_base !== undefined && costo_envio_base !== '') ? parseFloat(costo_envio_base) : 35,
+                distancia_base: (distancia_base !== undefined && distancia_base !== '') ? parseFloat(distancia_base) : 2,
+                costo_incremento: (costo_incremento !== undefined && costo_incremento !== '') ? parseFloat(costo_incremento) : 10
+            })
+            .eq('slug', 'plataforma-rcr')
+            .select('costo_envio_base, distancia_base, costo_incremento')
+            .single();
+
+        if (error) throw error;
+        res.json({ mensaje: 'Configuración guardada correctamente', configuracion: data });
+    } catch (err) {
+        console.error("Error al guardar la configuración global:", err);
+        res.status(500).json({ error: 'Error al guardar la configuración' });
+    }
+});
+
+// =============================================================================
 // RUTAS: CÁLCULO DE ENVÍO
 // =============================================================================
 
@@ -1230,6 +1279,7 @@ app.post('/api/calcular-envio', async (req, res) => {
             return res.status(400).json({ error: 'Faltan datos para calcular el envío' });
         }
 
+        // Obtener solo la ubicación de origen del negocio
         const { data: negocio, error } = await supabase
             .from('negocios')
             .select('ubicacion_origen')
@@ -1269,9 +1319,21 @@ app.post('/api/calcular-envio', async (req, res) => {
             distanciaKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) * 1.3;
         }
 
-        // Tabulador: $35 base (hasta 2km), +$10 por km adicional
-        let costoEnvio = 35;
-        if (distanciaKm > 2) costoEnvio += Math.ceil(distanciaKm - 2) * 10;
+        // Obtener tarifas globales (de plataforma-rcr)
+        const { data: config } = await supabase
+            .from('negocios')
+            .select('costo_envio_base, distancia_base, costo_incremento')
+            .eq('slug', 'plataforma-rcr')
+            .single();
+
+        const costoBase = (config && config.costo_envio_base !== null) ? parseFloat(config.costo_envio_base) : 35;
+        const distBase = (config && config.distancia_base !== null) ? parseFloat(config.distancia_base) : 2;
+        const costoIncr = (config && config.costo_incremento !== null) ? parseFloat(config.costo_incremento) : 10;
+
+        let costoEnvio = costoBase;
+        if (distanciaKm > distBase) {
+            costoEnvio += Math.ceil(distanciaKm - distBase) * costoIncr;
+        }
 
         res.json({ distancia_km: distanciaKm.toFixed(2), costo_envio: costoEnvio, moneda: 'MXN' });
     } catch (err) {
