@@ -9,7 +9,7 @@ export async function cargarDatosDashboard() {
     try {
         // Ejecutar promesas en paralelo para mayor velocidad
         const [resNegocios, resClientes, resPedidos] = await Promise.all([
-            fetch('/api/negocios'),
+            fetchConAuth('/api/negocios'),
             fetchConAuth('/api/clientes'),
             fetchConAuth('/api/pedidos')
         ]);

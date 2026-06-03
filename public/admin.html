@@ -2,6 +2,16 @@
 <html lang="es">
 
 <head>
+    <script>
+        if (!localStorage.getItem('admin_token')) {
+            window.location.replace('/login.html');
+        } else {
+            document.documentElement.style.visibility = 'hidden';
+            document.addEventListener('DOMContentLoaded', () => {
+                document.documentElement.style.visibility = '';
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Repartidores Camino Real | Panel de Control</title>
@@ -521,21 +531,21 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">Costo Base ($ MXN)</label>
                             <p class="text-xs text-slate-500 mb-2">Tarifa inicial aplicada a todos los envíos que no superen la distancia base.</p>
-                            <input type="number" id="global_costo_envio_base" placeholder="35" min="0" step="1" required
+                            <input type="number" id="global_costo_envio_base" placeholder="35" min="0" step="any" required
                                 class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900 font-medium">
                         </div>
 
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">Distancia Base (Kilómetros)</label>
                             <p class="text-xs text-slate-500 mb-2">Límite de distancia en kilómetros incluido dentro del costo base.</p>
-                            <input type="number" id="global_distancia_base" placeholder="2" min="0" step="0.1" required
+                            <input type="number" id="global_distancia_base" placeholder="2" min="0" step="any" required
                                 class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900 font-medium">
                         </div>
 
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">Costo por Kilómetro Adicional ($ MXN)</label>
                             <p class="text-xs text-slate-500 mb-2">Precio extra cobrado por cada kilómetro adicional recorrido por encima de la distancia base.</p>
-                            <input type="number" id="global_costo_incremento" placeholder="10" min="0" step="1" required
+                            <input type="number" id="global_costo_incremento" placeholder="10" min="0" step="any" required
                                 class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-slate-50 text-slate-900 font-medium">
                         </div>
 

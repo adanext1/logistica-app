@@ -58,7 +58,7 @@
     <script>
         // Si ya hay token, lo mandamos al panel
         if (localStorage.getItem('admin_token')) {
-            window.location.href = '/admin.html';
+            window.location.replace('/admin.html');
         }
 
         const form = document.getElementById('loginForm');
@@ -85,7 +85,7 @@
                 if (res.ok) {
                     // Guardar token y redirigir
                     localStorage.setItem('admin_token', data.token);
-                    window.location.href = '/admin.html';
+                    window.location.replace('/admin.html');
                 } else {
                     errorMsg.innerText = data.error || 'Contraseña incorrecta';
                     errorMsg.classList.remove('hidden');

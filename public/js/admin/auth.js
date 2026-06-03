@@ -1,12 +1,12 @@
 export const tokenAdmin = localStorage.getItem('admin_token');
 
 if (!tokenAdmin) {
-    window.location.href = '/login.html';
+    window.location.replace('/login.html');
 }
 
 export function cerrarSesion() {
     localStorage.removeItem('admin_token');
-    window.location.href = '/login.html';
+    window.location.replace('/login.html');
 }
 
 /**

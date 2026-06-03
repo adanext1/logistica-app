@@ -242,68 +242,85 @@ function renderSabores() {
 
 async function guardarProducto(e, negocioId) {
     e.preventDefault();
+    
+    // Ocultar el teclado virtual para asegurar que las notificaciones Toast no queden tapadas
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+    }
+
     const btn = document.querySelector('button.bg-primary');
     const originalText = btn.innerHTML;
 
-    const nombre = document.getElementById('product_name').value;
-    const precio = document.getElementById('product_price').value;
-    const unidad = document.getElementById('product_unit').value;
-    const categoria_id = document.getElementById('product_category').value;
-    const categoria_variaciones_id = document.getElementById('product_variation_category').value;
-    const descripcion = document.getElementById('product_description').value;
-    const fotoInput = document.getElementById('product_photo');
-    const esta_disponible = document.getElementById('esta_disponible').checked;
-    
-    const dropzoneInput = document.querySelector('input[type="file"]');
-    const fotoFile = (fotoInput ? fotoInput.files[0] : null) || (dropzoneInput ? dropzoneInput.files[0] : null);
-
-    if (!nombre || !precio) {
-        mostrarNotificacion("Por favor completa el nombre y precio base.", "error");
-        return;
-    }
-
-    let imagen_base64 = null;
-    if (fotoFile) {
-        imagen_base64 = await toBase64(fotoFile);
-    }
-
-    const maxSaboresInput = document.getElementById('max_sabores');
-    const max_sabores = maxSaboresInput ? parseInt(maxSaboresInput.value) || 1 : 1;
-
-    // Recoger sabores de categoría (checkboxes) + libres (chips)
-    const checkedCatFlavors = Array.from(document.querySelectorAll('.cat-flavor-checkbox:checked')).map(cb => cb.value);
-    const finalSabores = [...new Set([...sabores, ...checkedCatFlavors])];
-
-    // Estructurar las variaciones en el formato JSON esperado
-    const variacionesJson = {
-        tamanos: tamanos.length > 0 ? tamanos : undefined,
-        sabores: finalSabores.length > 0 ? finalSabores : undefined,
-        max_sabores: finalSabores.length > 0 ? max_sabores : undefined
-    };
-
-    // Si ambos están vacíos, mandamos null
-    const hasVariations = variacionesJson.tamanos || variacionesJson.sabores;
-
-    const payload = {
-        negocio_id: negocioId,
-        nombre,
-        precio,
-        unidad,
-        categoria_id,
-        categoria_variaciones_id: categoria_variaciones_id || null,
-        descripcion,
-        imagen_base64,
-        variaciones: hasVariations ? variacionesJson : null,
-        disponible: esta_disponible
-    };
-
+    // Deshabilitar y cambiar texto de inmediato para dar retroalimentación visual al usuario
     btn.innerHTML = "Guardando...";
     btn.disabled = true;
 
-    const url = editProductId ? `/api/productos/${editProductId}` : '/api/productos';
-    const method = editProductId ? 'PUT' : 'POST';
-
     try {
+        const nombre = document.getElementById('product_name').value;
+        const precio = document.getElementById('product_price').value;
+        const unidad = document.getElementById('product_unit').value;
+        const categoria_id = document.getElementById('product_category').value;
+        const categoria_variaciones_id = document.getElementById('product_variation_category').value;
+        const descripcion = document.getElementById('product_description').value;
+        const fotoInput = document.getElementById('product_photo');
+        const esta_disponible = document.getElementById('esta_disponible').checked;
+        
+        const dropzoneInput = document.querySelector('input[type="file"]');
+        const fotoFile = (fotoInput ? fotoInput.files[0] : null) || (dropzoneInput ? dropzoneInput.files[0] : null);
+
+        if (!nombre || !precio) {
+            mostrarNotificacion("Por favor completa el nombre y precio base.", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        let imagen_base64 = null;
+        if (fotoFile) {
+            try {
+                imagen_base64 = await toBase64(fotoFile);
+            } catch (imageError) {
+                console.error("Error al procesar la imagen:", imageError);
+                mostrarNotificacion("Error al procesar la imagen. Intenta con otra foto o una más pequeña.", "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return;
+            }
+        }
+
+        const maxSaboresInput = document.getElementById('max_sabores');
+        const max_sabores = maxSaboresInput ? parseInt(maxSaboresInput.value) || 1 : 1;
+
+        // Recoger sabores de categoría (checkboxes) + libres (chips)
+        const checkedCatFlavors = Array.from(document.querySelectorAll('.cat-flavor-checkbox:checked')).map(cb => cb.value);
+        const finalSabores = [...new Set([...sabores, ...checkedCatFlavors])];
+
+        // Estructurar las variaciones en el formato JSON esperado
+        const variacionesJson = {
+            tamanos: tamanos.length > 0 ? tamanos : undefined,
+            sabores: finalSabores.length > 0 ? finalSabores : undefined,
+            max_sabores: finalSabores.length > 0 ? max_sabores : undefined
+        };
+
+        // Si ambos están vacíos, mandamos null
+        const hasVariations = variacionesJson.tamanos || variacionesJson.sabores;
+
+        const payload = {
+            negocio_id: negocioId,
+            nombre,
+            precio,
+            unidad,
+            categoria_id,
+            categoria_variaciones_id: categoria_variaciones_id || null,
+            descripcion,
+            imagen_base64,
+            variaciones: hasVariations ? variacionesJson : null,
+            disponible: esta_disponible
+        };
+
+        const url = editProductId ? `/api/productos/${editProductId}` : '/api/productos';
+        const method = editProductId ? 'PUT' : 'POST';
+
         const response = await fetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
@@ -316,11 +333,12 @@ async function guardarProducto(e, negocioId) {
         } else {
             const data = await response.json();
             mostrarNotificacion("Error: " + data.error, "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
     } catch (error) {
-        console.error(error);
-        mostrarNotificacion("Error de conexión", "error");
-    } finally {
+        console.error("Error al guardar producto:", error);
+        mostrarNotificacion("Error de conexión o de procesamiento", "error");
         btn.innerHTML = originalText;
         btn.disabled = false;
     }

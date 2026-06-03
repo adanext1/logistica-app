@@ -3,13 +3,46 @@
  */
 
 (function() {
-    // Verificamos si existe un ID de negocio en el almacenamiento local
+    // Verificamos si existe un ID de negocio y token en el almacenamiento local
     const id = localStorage.getItem('negocio_id');
+    const token = localStorage.getItem('negocio_token');
     
-    // Si no hay ID y no estamos en la página de login, redirigir
-    if (!id && !window.location.pathname.includes('login-negocio.html')) {
+    // Si falta alguno de los dos y no estamos en la página de login, redirigir
+    if ((!id || !token) && !window.location.pathname.includes('login-negocio.html')) {
+        localStorage.removeItem('negocio_id');
+        localStorage.removeItem('negocio_token');
+        localStorage.removeItem('negocio_slug');
+        localStorage.removeItem('negocio_nombre');
         window.location.href = '/login-negocio.html';
+        return;
     }
+
+    // Interceptor global de fetch para inyectar el token automáticamente
+    const originalFetch = window.fetch;
+    window.fetch = async function(url, options = {}) {
+        options.headers = options.headers || {};
+        
+        const tokenNegocio = localStorage.getItem('negocio_token');
+        if (tokenNegocio && (typeof url === 'string' && (url.startsWith('/') || url.includes(window.location.host)))) {
+            if (!options.headers['Authorization']) {
+                options.headers['Authorization'] = `Bearer ${tokenNegocio}`;
+            }
+        }
+        
+        const response = await originalFetch(url, options);
+        
+        // Si el servidor nos dice que la sesión expiró (401), limpiar y redirigir
+        if (response.status === 401 && !window.location.pathname.includes('login-negocio.html')) {
+            localStorage.removeItem('negocio_id');
+            localStorage.removeItem('negocio_token');
+            localStorage.removeItem('negocio_slug');
+            localStorage.removeItem('negocio_nombre');
+            alert("Tu sesión ha expirado. Por favor inicia sesión de nuevo.");
+            window.location.href = '/login-negocio.html';
+        }
+        
+        return response;
+    };
 })();
 
 /**
@@ -19,6 +52,7 @@ function cerrarSesion() {
     if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
         // Limpiamos todos los datos relacionados al negocio
         localStorage.removeItem('negocio_id');
+        localStorage.removeItem('negocio_token');
         localStorage.removeItem('negocio_slug');
         localStorage.removeItem('negocio_nombre');
         
