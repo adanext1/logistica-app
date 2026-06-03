@@ -142,6 +142,20 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                             </svg>
                         </div>
+
+                        <!-- Capa de bloqueo táctil del mapa -->
+                        <div id="mapLockOverlay" class="absolute inset-0 bg-slate-900/30 backdrop-blur-[1px] z-[2100] flex flex-col items-center justify-center text-white opacity-0 pointer-events-none transition-all duration-300">
+                            <div class="bg-slate-900/90 p-4 rounded-2xl flex flex-col items-center gap-2.5 border border-white/10 shadow-xl text-center max-w-[85%]">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                    <span class="text-xs font-bold">Ubicación Fijada</span>
+                                </div>
+                                <p class="text-[10px] text-slate-300 leading-tight">Mapa bloqueado para facilitar el scroll. Toca dos veces o presiona el botón para cambiar.</p>
+                                <button type="button" id="btnUnlockMap" class="mt-1 px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-extrabold rounded-lg shadow-md active:scale-95 transition-all">
+                                    Cambiar Ubicación
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     
                     <p class="text-xs text-slate-500 text-center font-medium">Desliza el mapa para ubicar el pin rojo en tu domicilio exacto</p>
@@ -416,6 +430,38 @@
                     botonCalcular.disabled = false;
                 }
             });
+
+            // Configurar interactividad del overlay de bloqueo del mapa
+            const overlay = document.getElementById('mapLockOverlay');
+            if (overlay) {
+                // Doble clic para desbloquear
+                overlay.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    desbloquearMapa();
+                });
+                
+                // Doble toque para celulares
+                let ultimoToque = 0;
+                overlay.addEventListener('touchend', (e) => {
+                    const ahora = new Date().getTime();
+                    const diferencia = ahora - ultimoToque;
+                    if (diferencia < 300 && diferencia > 0) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        desbloquearMapa();
+                    }
+                    ultimoToque = ahora;
+                });
+            }
+
+            const btnUnlockMap = document.getElementById('btnUnlockMap');
+            if (btnUnlockMap) {
+                btnUnlockMap.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    desbloquearMapa();
+                });
+            }
             
             // Necesario para que Leaflet dibuje bien si el contenedor estaba oculto (display: none)
             setTimeout(() => mapaPedido.invalidateSize(), 100);
@@ -424,6 +470,36 @@
         function actualizarCoordenadas(lat, lng) {
             document.getElementById('latDestino').value = lat.toFixed(6);
             document.getElementById('lngDestino').value = lng.toFixed(6);
+        }
+
+        function bloquearMapa() {
+            if (!mapaPedido) return;
+            mapaPedido.dragging.disable();
+            mapaPedido.touchZoom.disable();
+            mapaPedido.doubleClickZoom.disable();
+            mapaPedido.scrollWheelZoom.disable();
+            if (mapaPedido.tap) mapaPedido.tap.disable();
+
+            const overlay = document.getElementById('mapLockOverlay');
+            if (overlay) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        function desbloquearMapa() {
+            if (!mapaPedido) return;
+            mapaPedido.dragging.enable();
+            mapaPedido.touchZoom.enable();
+            mapaPedido.doubleClickZoom.enable();
+            mapaPedido.scrollWheelZoom.enable();
+            if (mapaPedido.tap) mapaPedido.tap.enable();
+
+            const overlay = document.getElementById('mapLockOverlay');
+            if (overlay) {
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
         }
 
         // --- LÓGICA DE CALCULAR ENVÍO Y WHATSAPP ---
@@ -497,6 +573,9 @@
                 
                 // Ocultar botón calcular
                 btnCalcular.classList.add('hidden');
+
+                // Bloquear mapa para evitar desvíos accidentales al hacer scroll
+                bloquearMapa();
 
             } catch (error) {
                 alert("Hubo un error: " + error.message);
