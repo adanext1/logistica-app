@@ -59,6 +59,12 @@ async function cargarPerfil(id) {
         document.getElementById('store_description_long').value = data.description_long || '';
         document.getElementById('store_address').value = data.address_text || '';
 
+        // Métodos de pago
+        const metodos = data.metodos_pago || ['efectivo'];
+        document.querySelectorAll('input[name="metodos_pago"]').forEach(cb => {
+            cb.checked = metodos.includes(cb.value);
+        });
+
         // Procesar ubicación GPS
         if (data.lat && data.lng) {
             const lat = parseFloat(data.lat);
@@ -103,6 +109,8 @@ async function guardarPerfil(e, id) {
     const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
 
+    const checkedMetodos = Array.from(document.querySelectorAll('input[name="metodos_pago"]:checked')).map(cb => cb.value);
+
     const payload = {
         nombre_comercial: document.getElementById('store_name').value,
         whatsapp: document.getElementById('store_whatsapp').value,
@@ -110,7 +118,8 @@ async function guardarPerfil(e, id) {
         description_long: document.getElementById('store_description_long').value,
         address_text: document.getElementById('store_address').value,
         lat: parseFloat(document.getElementById('store_lat').value),
-        lng: parseFloat(document.getElementById('store_lng').value)
+        lng: parseFloat(document.getElementById('store_lng').value),
+        metodos_pago: checkedMetodos
     };
 
     const logoFile = document.getElementById('input_logo').files[0];

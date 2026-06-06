@@ -267,6 +267,33 @@
                         <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2" for="store_address">Dirección Física (Texto)</label>
                         <input class="w-full bg-surface-container-low border-outline-variant rounded-lg px-4 py-3 font-body-md" id="store_address" type="text" placeholder="Ej: Av. Principal #123, Col. Centro" />
                     </div>
+
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface-variant mb-3">Métodos de Pago Aceptados</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 cursor-pointer hover:bg-surface-container transition-colors">
+                                <input type="checkbox" name="metodos_pago" value="efectivo" class="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant bg-surface" />
+                                <div class="flex items-center gap-2 text-on-surface">
+                                    <span class="material-symbols-outlined text-primary">payments</span>
+                                    <span class="font-body-md">Efectivo</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 cursor-pointer hover:bg-surface-container transition-colors">
+                                <input type="checkbox" name="metodos_pago" value="transferencia" class="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant bg-surface" />
+                                <div class="flex items-center gap-2 text-on-surface">
+                                    <span class="material-symbols-outlined text-primary">account_balance</span>
+                                    <span class="font-body-md">Transferencia</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 cursor-pointer hover:bg-surface-container transition-colors">
+                                <input type="checkbox" name="metodos_pago" value="tarjeta" class="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant bg-surface" />
+                                <div class="flex items-center gap-2 text-on-surface">
+                                    <span class="material-symbols-outlined text-primary">credit_card</span>
+                                    <span class="font-body-md">Tarjeta</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </section>
 

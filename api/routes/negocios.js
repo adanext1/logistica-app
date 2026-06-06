@@ -350,7 +350,8 @@ router.put('/negocio/:id', protegerRutaNegocio, async (req, res) => {
             lat,
             lng,
             logo_base64,
-            splash_base64
+            splash_base64,
+            metodos_pago
         } = req.body;
 
         let updateData = {
@@ -358,7 +359,8 @@ router.put('/negocio/:id', protegerRutaNegocio, async (req, res) => {
             whatsapp,
             description,
             description_long,
-            address_text
+            address_text,
+            metodos_pago
         };
 
         if (lat && lng) {

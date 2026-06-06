@@ -119,6 +119,11 @@
                             <i data-feather="clock" class="w-3 h-3"></i> Ver Horarios
                         </button>
                     </div>
+
+                    <!-- Métodos de Pago Aceptados -->
+                    <div id="metodosPagoContainer" class="flex flex-wrap gap-1.5 text-xs font-bold mt-3 items-center">
+                        <!-- Se llena con JS -->
+                    </div>
                 </div>
             </div>
 
@@ -422,6 +427,48 @@
                             </span>
                         </div>
                     `).join('');
+                }
+
+                // Renderizar Métodos de Pago
+                const pagoContainer = document.getElementById('metodosPagoContainer');
+                if (pagoContainer) {
+                    const metodos = negocio.metodos_pago || ['efectivo'];
+                    if (metodos.length === 0) {
+                        pagoContainer.classList.add('hidden');
+                    } else {
+                        pagoContainer.classList.remove('hidden');
+                        
+                        const badgeConfigs = {
+                            efectivo: {
+                                label: 'Efectivo',
+                                bg: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                icon: 'dollar-sign'
+                            },
+                            transferencia: {
+                                label: 'Transferencia',
+                                bg: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+                                icon: 'repeat'
+                            },
+                            tarjeta: {
+                                label: 'Tarjeta',
+                                bg: 'bg-sky-50 text-sky-700 border border-sky-200',
+                                icon: 'credit-card'
+                            }
+                        };
+                        
+                        let html = `<span class="text-slate-400 mr-1.5 text-[11px] uppercase tracking-wider">Acepta:</span>`;
+                        metodos.forEach(m => {
+                            const conf = badgeConfigs[m.toLowerCase().trim()];
+                            if (conf) {
+                                html += `
+                                    <span class="${conf.bg} px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i data-feather="${conf.icon}" class="w-3.5 h-3.5"></i> ${conf.label}
+                                    </span>
+                                `;
+                            }
+                        });
+                        pagoContainer.innerHTML = html;
+                    }
                 }
 
                 // Cargar productos y categorías

@@ -137,6 +137,9 @@ export function abrirFormularioNegocio(slug = null) {
     preview.src = '';
     preview.classList.add('hidden');
     placeholder.classList.remove('hidden');
+
+    const checkboxes = document.querySelectorAll('input[name="admin_metodos_pago"]');
+    checkboxes.forEach(cb => cb.checked = false);
     
     if (slug) {
         // MODO EDICIÓN
@@ -150,6 +153,11 @@ export function abrirFormularioNegocio(slug = null) {
             document.getElementById('lat').value = n.lat || '';
             document.getElementById('lng').value = n.lng || '';
             document.getElementById('categoria').value = n.categoria || '';
+
+            const metodos = n.metodos_pago || ['efectivo'];
+            checkboxes.forEach(cb => {
+                cb.checked = metodos.includes(cb.value);
+            });
             
             document.getElementById('tituloFormularioNegocio').innerText = 'Editar Negocio';
             document.getElementById('btnSubmitNegocio').innerHTML = '<span>Guardar Cambios</span> <i data-feather="save" class="w-5 h-5"></i>';
@@ -165,6 +173,9 @@ export function abrirFormularioNegocio(slug = null) {
     } else {
         // MODO CREACIÓN
         document.getElementById('formNegocio').reset();
+        checkboxes.forEach(cb => {
+            if (cb.value === 'efectivo') cb.checked = true;
+        });
         document.getElementById('usuario').value = '';
         document.getElementById('pin').value = '';
         document.getElementById('lat').value = '';
@@ -353,6 +364,8 @@ export function setupNegocios() {
                 return;
             }
 
+            const checkedMetodos = Array.from(document.querySelectorAll('input[name="admin_metodos_pago"]:checked')).map(cb => cb.value);
+
             const url = state.negocioEditandoSlug ? `/api/negocios/${state.negocioEditandoSlug}` : '/api/negocios';
             const method = state.negocioEditandoSlug ? 'PUT' : 'POST';
 
@@ -363,7 +376,7 @@ export function setupNegocios() {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${tokenAdmin}`
                     },
-                    body: JSON.stringify({ nombre, whatsapp, plan, usuario, pin, lat, lng, categoria, logo_base64: state.logoBase64 })
+                    body: JSON.stringify({ nombre, whatsapp, plan, usuario, pin, lat, lng, categoria, logo_base64: state.logoBase64, metodos_pago: checkedMetodos })
                 });
 
                 if (response.status === 401) {

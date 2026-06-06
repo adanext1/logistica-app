@@ -12,7 +12,7 @@ const { parsearCoordenadas, subirImagenBase64, subirMultiplesImagenes } = requir
 // Crear negocio
 router.post('/negocios', protegerRutaAdmin, async (req, res) => {
     try {
-        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin, categoria } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin, categoria, metodos_pago } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -28,7 +28,7 @@ router.post('/negocios', protegerRutaAdmin, async (req, res) => {
 
         const { data, error } = await supabase
             .from('negocios')
-            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan, usuario, pin, categoria }])
+            .insert([{ nombre_comercial: nombre, whatsapp, slug, ubicacion_origen, logo_url, plan, usuario, pin, categoria, metodos_pago: metodos_pago || ['efectivo'] }])
             .select();
 
         if (error) {
@@ -53,7 +53,7 @@ router.post('/negocios', protegerRutaAdmin, async (req, res) => {
 router.put('/negocios/:slug', protegerRutaAdmin, async (req, res) => {
     try {
         const { slug } = req.params;
-        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin, categoria } = req.body;
+        const { nombre, whatsapp, plan, lat, lng, logo_base64, usuario, pin, categoria, metodos_pago } = req.body;
 
         if (!nombre || !whatsapp || !lat || !lng) {
             return res.status(400).json({ error: 'Faltan datos' });
@@ -66,7 +66,8 @@ router.put('/negocios/:slug', protegerRutaAdmin, async (req, res) => {
             ubicacion_origen: `POINT(${lng} ${lat})`,
             usuario,
             pin,
-            categoria
+            categoria,
+            metodos_pago: metodos_pago || ['efectivo']
         };
 
         const nuevaUrl = await subirImagenBase64(logo_base64, slug, 'logos-comercios');

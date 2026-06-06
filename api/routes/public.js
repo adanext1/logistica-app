@@ -67,7 +67,7 @@ router.get('/negocio/:slug', async (req, res, next) => {
     try {
         const { data: negocio, error } = await supabase
             .from('negocios')
-            .select('id, nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan, splash_url, description, description_long, address_text')
+            .select('id, nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan, splash_url, description, description_long, address_text, metodos_pago')
             .eq('slug', slug)
             .single();
 
@@ -108,7 +108,7 @@ router.get('/negocios', async (req, res) => {
 
         const { data: negocios, error } = await supabase
             .from('negocios')
-            .select('id, nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin, splash_url, description, categoria');
+            .select('id, nombre_comercial, slug, ubicacion_origen, logo_url, plan, whatsapp, usuario, pin, splash_url, description, categoria, metodos_pago');
 
         if (error) throw error;
 
@@ -125,7 +125,8 @@ router.get('/negocios', async (req, res) => {
                 whatsapp: n.whatsapp,
                 splash_url: n.splash_url,
                 description: n.description,
-                categoria: n.categoria
+                categoria: n.categoria,
+                metodos_pago: n.metodos_pago
             };
 
             // Solo exponer credenciales de acceso si es el administrador logueado
