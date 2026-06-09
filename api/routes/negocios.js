@@ -519,6 +519,37 @@ router.put('/categorias/:id', protegerRutaNegocio, async (req, res) => {
 // PRODUCTOS SOCIO
 // =============================================================================
 
+// Obtener un solo producto
+router.get('/productos/:id', protegerRutaNegocio, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const { data, error } = await supabase
+            .from('productos')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            console.error("Supabase error GET /api/productos/:id:", error);
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        if (!data) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        if (req.negocioUser.role === 'negocio' && data.negocio_id !== req.negocioUser.negocioId) {
+            return res.status(403).json({ error: 'Acceso denegado. Este producto no pertenece a tu negocio.' });
+        }
+
+        res.json(data);
+    } catch (err) {
+        console.error("Error al cargar producto:", err);
+        res.status(500).json({ error: 'Error al cargar producto' });
+    }
+});
+
 // Crear producto
 router.post('/productos', protegerRutaNegocio, async (req, res) => {
     try {
