@@ -331,8 +331,16 @@ async function guardarProducto(e, negocioId) {
             mostrarNotificacion("Producto guardado con éxito", "success");
             setTimeout(() => window.location.href = 'catalogo.html', 1500);
         } else {
-            const data = await response.json();
-            mostrarNotificacion("Error: " + data.error, "error");
+            let errorMsg = 'Error al guardar';
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                errorMsg = data.error || errorMsg;
+            } else {
+                const text = await response.text();
+                errorMsg = text || errorMsg;
+            }
+            mostrarNotificacion("Error: " + errorMsg, "error");
             btn.innerHTML = originalText;
             btn.disabled = false;
         }

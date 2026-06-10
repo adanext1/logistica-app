@@ -34,7 +34,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function handleImageUpload(e) {
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1080;
+            const MAX_HEIGHT = 1920;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Comprimir a JPEG con 80% de calidad
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.onerror = error => reject(error);
+    };
+    reader.onerror = error => reject(error);
+});
+
+async function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -52,29 +90,23 @@ function handleImageUpload(e) {
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        currentImageBase64 = event.target.result;
+    try {
+        currentImageBase64 = await toBase64(file);
         
-        const isVideo = file.type.startsWith('video/');
         const imgPreview = document.getElementById('imagePreview');
         const vidPreview = document.getElementById('videoPreview');
         
-        if (isVideo) {
-            vidPreview.src = currentImageBase64;
-            vidPreview.classList.remove('hidden');
-            imgPreview.classList.add('hidden');
-        } else {
-            imgPreview.style.backgroundImage = `url('${currentImageBase64}')`;
-            imgPreview.classList.remove('hidden');
-            vidPreview.classList.add('hidden');
-            vidPreview.src = ''; // Clear video
-        }
+        imgPreview.style.backgroundImage = `url('${currentImageBase64}')`;
+        imgPreview.classList.remove('hidden');
+        vidPreview.classList.add('hidden');
+        vidPreview.src = ''; // Clear video
         
         // Ocultar fallback
         document.getElementById('fallbackPreview').style.opacity = '0';
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error("Error al procesar la imagen:", err);
+        alert("Error al procesar la imagen. Intenta con otra foto.");
+    }
 }
 
 async function cargarDatosPromo(id) {
@@ -194,8 +226,16 @@ async function guardarPromo(e) {
         if (res.ok) {
             window.location.href = 'promonovedades.html';
         } else {
-            const errorData = await res.json();
-            throw new Error(errorData.error || 'Error al guardar');
+            let errorMsg = 'Error al guardar';
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await res.json();
+                errorMsg = errorData.error || errorMsg;
+            } else {
+                const text = await res.text();
+                errorMsg = text || errorMsg;
+            }
+            throw new Error(errorMsg);
         }
 
     } catch (error) {
