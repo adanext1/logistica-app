@@ -1690,7 +1690,7 @@
                 const deltaY = currentY - startY;
 
                 if (deltaY > 0) {
-                    e.preventDefault();
+                    if (e.cancelable) e.preventDefault();
                     isDragging = true;
                     panel.style.transform = `translateY(${deltaY}px)`;
                     
