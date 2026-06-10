@@ -1472,10 +1472,7 @@
                         
                         if (currentHeader) {
                             const capitalizeHeader = currentHeader.charAt(0).toUpperCase() + currentHeader.slice(1).toLowerCase();
-                            html += `<h5 class="font-bold text-slate-800 mt-4 mb-2 text-sm flex items-center justify-start gap-2 text-left w-full">
-                                <span class="w-1.5 h-3 bg-brand-500 rounded-full flex-shrink-0"></span>
-                                <span class="text-left flex-1">${capitalizeHeader}</span>
-                            </h5>`;
+                            html += `<h5 class="font-bold text-slate-800 mt-4 mb-2 text-sm flex items-center justify-start gap-2 text-left w-full"><span class="w-1.5 h-3 bg-brand-500 rounded-full flex-shrink-0"></span><span class="text-left flex-1">${capitalizeHeader}</span></h5>`;
                             currentHeader = '';
                         }
                         
@@ -1489,12 +1486,7 @@
                             html += `<ul class="space-y-2 pl-2 text-left w-full">`;
                             items.forEach(item => {
                                 const formattedItem = item.charAt(0).toUpperCase() + item.slice(1);
-                                html += `
-                                    <li class="flex items-start justify-start gap-2 text-slate-600 text-sm text-left w-full">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span>
-                                        <span class="text-left flex-1">${formattedItem}</span>
-                                    </li>
-                                `;
+                                html += `<li class="flex items-start justify-start gap-2 text-slate-600 text-sm text-left w-full"><span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span><span class="text-left flex-1">${formattedItem}</span></li>`;
                             });
                             html += `</ul>`;
                         } else {
@@ -1512,25 +1504,17 @@
                 .filter(item => item.length > 2);
                 
             if (items.length > 1) {
-                let html = `<h5 class="font-bold text-slate-800 mb-2 text-sm flex items-center justify-start gap-2 text-left w-full">
-                    <span class="w-1.5 h-3 bg-brand-500 rounded-full flex-shrink-0"></span>
-                    <span class="text-left flex-1">Ingredientes</span>
-                </h5>`;
+                let html = `<h5 class="font-bold text-slate-800 mb-2 text-sm flex items-center justify-start gap-2 text-left w-full"><span class="w-1.5 h-3 bg-brand-500 rounded-full flex-shrink-0"></span><span class="text-left flex-1">Ingredientes</span></h5>`;
                 html += `<ul class="space-y-2 pl-2 text-left w-full">`;
                 items.forEach(item => {
                     const formattedItem = item.charAt(0).toUpperCase() + item.slice(1);
-                    html += `
-                        <li class="flex items-start justify-start gap-2 text-slate-600 text-sm text-left w-full">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span>
-                            <span class="text-left flex-1">${formattedItem}</span>
-                        </li>
-                    `;
+                    html += `<li class="flex items-start justify-start gap-2 text-slate-600 text-sm text-left w-full"><span class="w-1.5 h-1.5 rounded-full bg-brand-400 mt-2 flex-shrink-0"></span><span class="text-left flex-1">${formattedItem}</span></li>`;
                 });
                 html += `</ul>`;
                 return html;
             }
             
-            return `<p class="text-slate-600 text-sm leading-relaxed text-left w-full">${cleanDesc}</p>`;
+            return `<p class="text-slate-600 text-sm leading-relaxed text-left w-full">${cleanDesc.replace(/\n/g, '<br>')}</p>`;
         }
 
         function abrirDetalleProducto(id) {
@@ -1823,7 +1807,7 @@
                     
                     <div id="detalleProdDescContainer" class="space-y-4 text-left">
                         <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider text-left">Descripción e Ingredientes</h4>
-                        <div id="detalleProdDesc" class="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap text-left">
+                        <div id="detalleProdDesc" class="text-sm text-slate-600 leading-relaxed text-left">
                             <!-- Se llena por JS -->
                         </div>
                     </div>
