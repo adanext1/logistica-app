@@ -67,7 +67,7 @@ router.get('/negocio/:slug', async (req, res, next) => {
     try {
         const { data: negocio, error } = await supabase
             .from('negocios')
-            .select('id, nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan, splash_url, description, description_long, address_text, metodos_pago')
+            .select('id, nombre_comercial, whatsapp, ubicacion_origen, logo_url, plan, splash_url, description, description_long, address_text, metodos_pago, categoria')
             .eq('slug', slug)
             .single();
 
