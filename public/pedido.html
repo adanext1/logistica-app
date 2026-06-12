@@ -23,6 +23,30 @@
     <!-- Leaflet GeoSearch (Buscador) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
     <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+    
+    <style>
+        @keyframes floatUpAndOut {
+            0% {
+                transform: translate(0, 0) scale(0.6) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+                transform: translate(var(--x1), var(--y1)) scale(1.3) rotate(var(--r1));
+            }
+            100% {
+                transform: translate(var(--x2), var(--y2)) scale(0.7) rotate(var(--r2));
+                opacity: 0;
+            }
+        }
+        .emoji-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            animation: floatUpAndOut 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            font-size: 1.5rem;
+        }
+    </style>
 </head>
 
 <body class="bg-slate-50 min-h-screen flex items-center justify-center font-sans text-slate-800">
@@ -171,9 +195,73 @@
                 </button>
 
                 <!-- Resultados del cálculo -->
-                <div id="resultadoEnvio" class="hidden mt-6 bg-green-50 border border-green-200 rounded-2xl p-5 text-center shadow-sm">
+                <div id="resultadoEnvio" class="hidden mt-6 bg-green-50 border border-green-200 rounded-2xl p-5 shadow-sm text-center font-sans">
                     <p class="text-sm text-green-800 font-medium mb-1">Distancia al negocio: <span id="txtDistancia" class="font-bold"></span> km</p>
                     <p class="text-2xl text-green-900 font-extrabold mb-4">Envío: $<span id="txtCosto"></span> <span class="text-sm font-medium">MXN</span></p>
+                    
+                    <!-- Opción de Propina -->
+                    <div class="mt-2 mb-5 border-t border-green-200/50 pt-4 text-left">
+                        <label class="block text-xs font-black text-green-800 uppercase tracking-wider mb-2">🎁 Propina para el repartidor (Opcional)</label>
+                        <div class="grid grid-cols-3 gap-2 mb-3" id="tipOptionsGrid">
+                            <button type="button" class="tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm" data-val="0">
+                                <span>Ninguna</span>
+                            </button>
+                            <button type="button" class="tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm" data-val="0.05">
+                                <span>5%</span>
+                                <span class="text-[9px] text-slate-400 font-medium" id="tip-005-val">$0.00</span>
+                            </button>
+                            <button type="button" class="tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm" data-val="0.10">
+                                <span>10%</span>
+                                <span class="text-[9px] text-slate-400 font-medium" id="tip-010-val">$0.00</span>
+                            </button>
+                            <button type="button" class="tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm" data-val="0.15">
+                                <span>15%</span>
+                                <span class="text-[9px] text-slate-400 font-medium" id="tip-015-val">$0.00</span>
+                            </button>
+                            <button type="button" class="tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm" data-val="0.20">
+                                <span>20%</span>
+                                <span class="text-[9px] text-slate-400 font-medium" id="tip-020-val">$0.00</span>
+                            </button>
+                            <button type="button" class="tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm" data-val="custom">
+                                <span>Otro valor</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Input para propina personalizada -->
+                        <div id="customTipContainer" class="hidden mt-2 flex items-center gap-2">
+                            <span class="text-sm font-bold text-green-800">$</span>
+                            <input type="number" id="customTipInput" placeholder="¿Cuánto gustas dejar?" min="0" step="any" class="w-full px-3 py-2 rounded-xl border border-green-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition bg-white text-sm">
+                            <span class="text-xs font-bold text-slate-500">MXN</span>
+                        </div>
+
+                        <!-- Mensaje de agradecimiento -->
+                        <div id="tipGratitudeMsg" class="hidden mt-3 p-2.5 bg-green-100/50 border border-green-200/30 rounded-xl flex items-center gap-2 text-green-800 text-xs font-bold transition-all duration-300">
+                            <span>🛵💨</span>
+                            <span class="flex-1">¡Muchísimas gracias! Tu propina apoya directamente al repartidor.</span>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del Total -->
+                    <div class="bg-white border border-green-100 rounded-xl p-4 text-left space-y-2 mb-5 shadow-sm">
+                        <div class="flex justify-between text-xs text-slate-500 font-medium">
+                            <span>Subtotal pedido:</span>
+                            <span id="resumenSubtotal">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 font-medium">
+                            <span>Costo de envío:</span>
+                            <span id="resumenEnvio">$0.00</span>
+                        </div>
+                        <div id="rowPropina" class="flex justify-between text-xs text-slate-500 font-medium hidden">
+                            <span>Propina repartidor:</span>
+                            <span id="resumenPropina">$0.00</span>
+                        </div>
+                        <hr class="border-green-100/50">
+                        <div class="flex justify-between text-sm font-extrabold text-slate-900">
+                            <span>Total a pagar:</span>
+                            <span id="resumenTotal">$0.00</span>
+                        </div>
+                    </div>
+
                     <button type="button" id="btnConfirmarPedido" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 text-lg">
                         Confirmar y Pedir por WhatsApp
                     </button>
@@ -262,6 +350,120 @@
         const tituloNegocio = document.getElementById('nombre-negocio');
 
         let whatsappNegocioGlobal = ""; // Para guardar el número del negocio
+        let propinaSeleccionada = 0;
+
+        function actualizarResumenTotales() {
+            const subtotal = parseFloat(carritoTotal) || 0;
+            const costoEnvio = datosCalculados ? parseFloat(datosCalculados.costo_envio) : 0;
+            const propina = parseFloat(propinaSeleccionada) || 0;
+            const totalFinal = subtotal + costoEnvio + propina;
+
+            document.getElementById('resumenSubtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('resumenEnvio').innerText = `$${costoEnvio.toFixed(2)}`;
+            
+            const rowPropina = document.getElementById('rowPropina');
+            const resumenPropina = document.getElementById('resumenPropina');
+            const tipGratitudeMsg = document.getElementById('tipGratitudeMsg');
+            
+            if (propina > 0) {
+                rowPropina.classList.remove('hidden');
+                resumenPropina.innerText = `$${propina.toFixed(2)}`;
+                if (tipGratitudeMsg) {
+                    tipGratitudeMsg.classList.remove('hidden');
+                }
+            } else {
+                rowPropina.classList.add('hidden');
+                if (tipGratitudeMsg) {
+                    tipGratitudeMsg.classList.add('hidden');
+                }
+            }
+            
+            document.getElementById('resumenTotal').innerText = `$${totalFinal.toFixed(2)} MXN`;
+        }
+
+        function dispararEmojisAgradecimiento(btn) {
+            const rect = btn.getBoundingClientRect();
+            const startX = rect.left + rect.width / 2;
+            const startY = rect.top + rect.height / 2;
+
+            const emojis = ['💚', '🛵', '🎉', '🙌', '😊', '🎁', '⭐', '❤️', '👏', '✨'];
+            
+            for (let i = 0; i < 10; i++) {
+                const el = document.createElement('div');
+                el.className = 'emoji-particle';
+                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                el.style.left = `${startX}px`;
+                el.style.top = `${startY}px`;
+
+                const angle = Math.random() * Math.PI * 2;
+                const distance1 = 30 + Math.random() * 40;
+                const distance2 = 80 + Math.random() * 100;
+                
+                const x1 = Math.cos(angle) * distance1;
+                const y1 = Math.sin(angle) * distance1 - 30;
+                const x2 = Math.cos(angle) * distance2;
+                const y2 = Math.sin(angle) * distance2 - 120;
+                
+                const r1 = `${Math.random() * 90 - 45}deg`;
+                const r2 = `${Math.random() * 360 - 180}deg`;
+
+                el.style.setProperty('--x1', `${x1}px`);
+                el.style.setProperty('--y1', `${y1}px`);
+                el.style.setProperty('--x2', `${x2}px`);
+                el.style.setProperty('--y2', `${y2}px`);
+                el.style.setProperty('--r1', r1);
+                el.style.setProperty('--r2', r2);
+
+                document.body.appendChild(el);
+
+                setTimeout(() => el.remove(), 800);
+            }
+        }
+
+        function seleccionarBotonPropina(btn) {
+            // Deseleccionar todos
+            document.querySelectorAll('.tip-btn').forEach(b => {
+                b.className = 'tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm';
+                const s = b.querySelector('span:last-child');
+                if (s && s.id && s.id.startsWith('tip-')) {
+                    s.className = 'text-[9px] text-slate-400 font-medium';
+                }
+            });
+
+            // Seleccionar el actual
+            btn.className = 'tip-btn py-2 px-1 bg-green-600 border border-green-600 text-white font-bold rounded-xl text-xs hover:bg-green-700 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm';
+            const subSpan = btn.querySelector('span:last-child');
+            if (subSpan && subSpan.id && subSpan.id.startsWith('tip-')) {
+                subSpan.className = 'text-[9px] text-green-100 font-medium';
+            }
+
+            const val = btn.getAttribute('data-val');
+            const customTipContainer = document.getElementById('customTipContainer');
+            const sub = parseFloat(carritoTotal) || 0;
+
+            if (val === 'custom') {
+                customTipContainer.classList.remove('hidden');
+                const customInput = document.getElementById('customTipInput');
+                customInput.focus();
+                const customVal = parseFloat(customInput.value) || 0;
+                propinaSeleccionada = customVal < 0 ? 0 : customVal;
+            } else {
+                customTipContainer.classList.add('hidden');
+                const percent = parseFloat(val);
+                if (percent > 0) {
+                    propinaSeleccionada = sub * percent;
+                } else {
+                    propinaSeleccionada = 0;
+                }
+            }
+
+            actualizarResumenTotales();
+
+            if (propinaSeleccionada > 0) {
+                dispararEmojisAgradecimiento(btn);
+            }
+        }
         
         // Cargar datos guardados previamente para ahorrarle tiempo al cliente
         document.getElementById('nombreCliente').value = localStorage.getItem('laas_nombre') || '';
@@ -570,6 +772,21 @@
                     direccionDetalles: direccionInput,
                     coloniaCliente: coloniaInput
                 };
+
+                // Inicializar opciones de propina basadas en subtotal
+                const sub = parseFloat(carritoTotal) || 0;
+                document.getElementById('tip-005-val').innerText = `$${(sub * 0.05).toFixed(2)}`;
+                document.getElementById('tip-010-val').innerText = `$${(sub * 0.10).toFixed(2)}`;
+                document.getElementById('tip-015-val').innerText = `$${(sub * 0.15).toFixed(2)}`;
+                document.getElementById('tip-020-val').innerText = `$${(sub * 0.20).toFixed(2)}`;
+
+                // Por defecto seleccionar 'Ninguna'
+                const btnNinguna = document.querySelector('.tip-btn[data-val="0"]');
+                if (btnNinguna) {
+                    seleccionarBotonPropina(btnNinguna);
+                } else {
+                    actualizarResumenTotales();
+                }
                 
                 // Ocultar botón calcular
                 btnCalcular.classList.add('hidden');
@@ -640,7 +857,15 @@
                 textoProductos = "Quiero hacer un pedido a domicilio.";
             }
 
-            const totalFinal = (parseFloat(carritoTotal) + parseFloat(datosCalculados.costo_envio)).toFixed(2);
+            const sub = parseFloat(carritoTotal) || 0;
+            const costoEnvio = parseFloat(datosCalculados.costo_envio) || 0;
+            const propina = parseFloat(propinaSeleccionada) || 0;
+            const totalFinal = (sub + costoEnvio + propina).toFixed(2);
+
+            let propinaTexto = "";
+            if (propina > 0) {
+                propinaTexto = `🎁 *Propina repartidor:* $${propina.toFixed(2)} MXN\n`;
+            }
 
             const mensaje = `🛒 *Nuevo Pedido — ${tituloNegocio.innerText}*\n\n` +
                             `*Cliente:* ${datosCalculados.nombreCliente}\n` +
@@ -651,7 +876,13 @@
                             `🛣️ *Distancia:* ${datosCalculados.distancia_km} km\n\n` +
                             `*Pedido:*\n${textoProductos}\n` +
                             `🚚 *Costo de envío:* $${datosCalculados.costo_envio} MXN\n` +
+                            propinaTexto +
                             `💳 *Total a Pagar:* $${totalFinal} MXN`;
+
+            let direccionDetallesConPropina = `${datosCalculados.direccionDetalles} | Col: ${datosCalculados.coloniaCliente}`;
+            if (propina > 0) {
+                direccionDetallesConPropina += ` | 🎁 Propina: $${propina.toFixed(2)}`;
+            }
 
             try {
                 // 3. Guardar en Base de Datos
@@ -662,7 +893,7 @@
                         negocio_slug: slug, 
                         nombre_cliente: datosCalculados.nombreCliente, 
                         telefono: datosCalculados.whatsappCliente, 
-                        direccion_detalles: `${datosCalculados.direccionDetalles} | Col: ${datosCalculados.coloniaCliente}`, 
+                        direccion_detalles: direccionDetallesConPropina, 
                         costo_envio: datosCalculados.costo_envio, 
                         latDestino: latD, 
                         lngDestino: lngD,
@@ -706,6 +937,27 @@
                     });
                 }
             } catch (e) { console.error("Error al registrar evento:", e); }
+        }
+
+        // Configurar listeners de propina
+        document.querySelectorAll('.tip-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                seleccionarBotonPropina(btn);
+            });
+        });
+
+        const customTipInput = document.getElementById('customTipInput');
+        if (customTipInput) {
+            customTipInput.addEventListener('input', () => {
+                let val = parseFloat(customTipInput.value) || 0;
+                if (val < 0) {
+                    val = 0;
+                    customTipInput.value = 0;
+                }
+                propinaSeleccionada = val;
+                actualizarResumenTotales();
+            });
         }
 
         // Arrancar la magia al cargar la página

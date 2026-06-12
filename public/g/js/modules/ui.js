@@ -1105,7 +1105,7 @@ export function abrirDetalleProducto(id) {
     const isClothing = checkIfClothing();
     const descTitle = document.querySelector('#detalleProdDescContainer h4');
     if (descTitle) {
-        descTitle.textContent = isClothing ? 'Descripción y Detalles' : 'Descripción e Ingredientes';
+        descTitle.textContent = 'Descripción';
     }
     const labelNotas = document.querySelector('label[for="detalleProdNotas"]');
     if (labelNotas) {
