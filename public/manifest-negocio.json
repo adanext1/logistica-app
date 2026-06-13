@@ -1,0 +1,25 @@
+{
+  "name": "Panel Socios - Repartidores Pandas",
+  "short_name": "Socio Pandas",
+  "description": "Panel de administración de negocio para socios de Repartidores Pandas.",
+  "start_url": "/nd/dashboard.html",
+  "scope": "/nd/",
+  "display": "standalone",
+  "background_color": "#fff8f6",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/img/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

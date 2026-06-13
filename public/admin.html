@@ -16,6 +16,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Repartidores Pandas | Panel de Control</title>
     <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest-admin.json">
+    <script src="/js/register-sw.js" defer></script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -112,9 +114,17 @@
                         <!-- VISTA: RESUMEN -->
             <div id="vista-resumen" class="fade-in pb-10">
                 <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard</h2>
-                        <p class="text-slate-500 font-medium">Resumen general de operaciones</p>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div>
+                            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard</h2>
+                            <p class="text-slate-500 font-medium">Resumen general de operaciones</p>
+                        </div>
+                        <!-- Botón de instalación permanente PWA -->
+                        <button id="pwa-inline-btn-admin" onclick="triggerPwaInstall()"
+                            class="hidden items-center gap-2 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-brand-600/30 active:scale-95">
+                            <i data-feather="download" class="w-3.5 h-3.5"></i>
+                            Instalar App
+                        </button>
                     </div>
                     <div class="bg-white px-4 py-2 rounded-2xl border border-orange-100 shadow-sm flex items-center gap-2">
                         <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>

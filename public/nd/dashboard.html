@@ -7,6 +7,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Dashboard - Repartidores Pandas</title>
     <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest-negocio.json">
+    <script src="/js/register-sw.js" defer></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
@@ -288,6 +290,16 @@
                     </div>
                     <span class="font-label-sm text-label-sm text-on-surface text-center">Ver Catálogo</span>
                 </a>
+                <!-- Botón de instalación permanente PWA (se oculta si la app ya está instalada) -->
+                <button id="pwa-inline-btn-negocio" onclick="triggerPwaInstall()"
+                    class="hidden bg-gradient-to-br from-primary to-secondary-container rounded-xl p-6 shadow-sm border border-primary/20 flex-col items-center justify-center gap-4 hover:shadow-lg hover:shadow-primary/10 transition-all active:scale-95 group text-left">
+                    <div
+                        class="w-16 h-16 rounded-full bg-white/20 group-hover:bg-white/30 flex items-center justify-center text-white transition-colors">
+                        <span class="material-symbols-outlined text-[36px]"
+                            style="font-variation-settings: 'FILL' 1;">download</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-white text-center font-bold">Instalar App</span>
+                </button>
             </div>
         </section>
     </main>
