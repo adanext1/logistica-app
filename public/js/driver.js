@@ -1,5 +1,5 @@
 /**
- * REPARTIDORES CAMINO REAL - Driver App Logic
+ * REPARTIDORES PANDAS - Driver App Logic
  */
 
 const tokenDriver = localStorage.getItem('driver_token');
@@ -146,7 +146,7 @@ function abrirModalPedido(id) {
     const tel = p.telefono.replace(/\D/g, '');
     document.getElementById('btnLlamar').href = `tel:${tel}`;
     
-    const msgWs = encodeURIComponent(`Hola ${p.nombre_cliente}, soy el repartidor de Camino Real. ¡Ya estoy en camino a tu domicilio con tu pedido de ${p.negocio_slug}!`);
+    const msgWs = encodeURIComponent(`Hola ${p.nombre_cliente}, soy el repartidor de Repartidores Pandas. ¡Ya estoy en camino a tu domicilio con tu pedido de ${p.negocio_slug}!`);
     document.getElementById('btnWhatsApp').href = `https://wa.me/52${tel}?text=${msgWs}`;
 
     // Configurar Maps

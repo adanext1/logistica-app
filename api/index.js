@@ -45,37 +45,74 @@ app.get('/:slug', async (req, res) => {
     try {
         const { data: negocio } = await supabase
             .from('negocios')
-            .select('plan')
+            .select('id, nombre_comercial, description, logo_url, splash_url, plan')
             .eq('slug', slug)
             .single();
 
+        let filePath;
+
         // Si se pide explícitamente la vista de pedido (?v=pedido) → servir pedido.html
         if (vistaPedido) {
-            return res.sendFile(path.join(__dirname, '../public/pedido.html'));
-        }
-
-        // Si es premium, buscar HTML personalizado
-        if (negocio && negocio.plan === 'premium') {
+            filePath = path.join(__dirname, '../public/pedido.html');
+        } else if (negocio && negocio.plan === 'premium') {
+            // Si es premium, buscar HTML personalizado
             const premiumPath = path.join(__dirname, `../public/p/${slug}.html`);
             if (fs.existsSync(premiumPath)) {
-                return res.sendFile(premiumPath);
+                filePath = premiumPath;
+            } else {
+                filePath = path.join(__dirname, '../public/g/tienda.html');
             }
-            // Fallback a genérico si no existe el archivo premium
-            return res.sendFile(path.join(__dirname, '../public/g/tienda.html'));
+        } else if (negocio && negocio.plan === 'generico') {
+            filePath = path.join(__dirname, '../public/g/tienda.html');
+        } else {
+            // Básico o no encontrado → pedido.html
+            filePath = path.join(__dirname, '../public/pedido.html');
         }
 
-        // Si es genérico, servir template
-        if (negocio && negocio.plan === 'generico') {
-            return res.sendFile(path.join(__dirname, '../public/g/tienda.html'));
+        if (fs.existsSync(filePath)) {
+            let html = fs.readFileSync(filePath, 'utf8');
+            if (negocio) {
+                html = inyectarMetatags(html, negocio, slug);
+            }
+            return res.send(html);
+        } else {
+            return res.status(404).send('No encontrado');
         }
-
-        // Básico o no encontrado → pedido.html
-        res.sendFile(path.join(__dirname, '../public/pedido.html'));
     } catch (err) {
         // Error de BD → fallback a pedido.html
-        res.sendFile(path.join(__dirname, '../public/pedido.html'));
+        const filePath = path.join(__dirname, '../public/pedido.html');
+        if (fs.existsSync(filePath)) {
+            return res.sendFile(filePath);
+        }
+        res.status(500).send('Error interno');
     }
 });
+
+function inyectarMetatags(html, negocio, slug) {
+    if (!negocio) return html;
+    
+    const titulo = `Pedir en ${negocio.nombre_comercial} | Repartidores Pandas`;
+    const desc = negocio.description || `Pide comida y productos a domicilio en ${negocio.nombre_comercial} a través de Repartidores Pandas por WhatsApp.`;
+    const img = negocio.splash_url || negocio.logo_url || 'https://repartidorespandas.com/img/logo.png';
+    const url = `https://repartidorespandas.com/${slug}`;
+    const logoFavicon = negocio.logo_url || 'https://repartidorespandas.com/img/logo.svg';
+
+    return html
+        .replace(/<title>.*?<\/title>/gi, `<title>${titulo}</title>`)
+        .replace(/<meta\s+name="description"\s+content=".*?"\s*\/?>/gi, `<meta name="description" content="${desc}">`)
+        
+        .replace(/<meta\s+property="og:url"\s+content=".*?"\s*\/?>/gi, `<meta property="og:url" content="${url}">`)
+        .replace(/<meta\s+property="og:title"\s+content=".*?"\s*\/?>/gi, `<meta property="og:title" content="${titulo}">`)
+        .replace(/<meta\s+property="og:description"\s+content=".*?"\s*\/?>/gi, `<meta property="og:description" content="${desc}">`)
+        .replace(/<meta\s+property="og:image"\s+content=".*?"\s*\/?>/gi, `<meta property="og:image" content="${img}">`)
+        
+        .replace(/<meta\s+property="twitter:url"\s+content=".*?"\s*\/?>/gi, `<meta property="twitter:url" content="${url}">`)
+        .replace(/<meta\s+property="twitter:title"\s+content=".*?"\s*\/?>/gi, `<meta property="twitter:title" content="${titulo}">`)
+        .replace(/<meta\s+property="twitter:description"\s+content=".*?"\s*\/?>/gi, `<meta property="twitter:description" content="${desc}">`)
+        .replace(/<meta\s+property="twitter:image"\s+content=".*?"\s*\/?>/gi, `<meta property="twitter:image" content="${img}">`)
+        
+        .replace(/<link\s+[^>]*?rel="icon"[^>]*?>|<link\s+[^>]*?rel="shortcut\s+icon"[^>]*?>/gi, `<link rel="icon" href="${logoFavicon}" type="image/png">`);
+}
 
 // Listener local para desarrollo
 if (process.env.NODE_ENV !== 'production') {

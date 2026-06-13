@@ -31,7 +31,7 @@ export async function cargarNegocio() {
         registrarEvento(negocio.id, 'view');
 
         // Título
-        document.title = `${negocio.nombre_comercial} | Repartidores Camino Real`;
+        document.title = `${negocio.nombre_comercial} | Repartidores Pandas`;
         document.getElementById('nombreNegocio').textContent = negocio.nombre_comercial;
 
         // Logo

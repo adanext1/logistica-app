@@ -4,7 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comercios Aliados | Repartidores Camino Real</title>
+    <title>Comercios Aliados | Repartidores Pandas</title>
+    <meta name="description" content="Explora los comercios aliados en La Paz, B.C.S. Pide comida, repostería, carnes y más a través de Repartidores Pandas.">
+    <link rel="canonical" href="https://repartidorespandas.com/directorio.html" />
+    <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://repartidorespandas.com/directorio.html">
+    <meta property="og:title" content="Comercios Aliados | Repartidores Pandas">
+    <meta property="og:description" content="Explora los comercios aliados en La Paz, B.C.S. Pide comida, repostería, carnes y más a través de Repartidores Pandas.">
+    <meta property="og:image" content="https://repartidorespandas.com/img/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://repartidorespandas.com/directorio.html">
+    <meta property="twitter:title" content="Comercios Aliados | Repartidores Pandas">
+    <meta property="twitter:description" content="Explora los comercios aliados en La Paz, B.C.S. Pide comida, repostería, carnes y más a través de Repartidores Pandas.">
+    <meta property="twitter:image" content="https://repartidorespandas.com/img/logo.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,13 +111,11 @@
         id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
             <a href="/" class="flex items-center gap-2">
-                <div
-                    class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-black border border-orange-200">
-                    CR
-                </div>
+                <img src="/img/logo.svg" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-contain"
+                    onerror="this.style.display='none'">
                 <div
                     class="text-[11px] sm:text-xl font-extrabold tracking-tight text-orange-600 uppercase leading-none">
-                    REPARTIDORES <span class="text-slate-900 block sm:inline text-[9px] sm:text-xl">CAMINO REAL</span>
+                    REPARTIDORES <span class="text-slate-900 block sm:inline text-[9px] sm:text-xl">PANDAS</span>
                 </div>
             </a>
 
@@ -110,170 +125,279 @@
     <!-- Main Content -->
     <main class="flex-1 pt-24 pb-20 bg-[#ffe8cc]">
 
-        <!-- HEADER & BUSCADOR -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-4 mb-8">
-            <div
-                class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-orange-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div>
-                    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 mb-1">¿Qué se te antoja hoy?</h1>
-                    <p class="text-slate-500 text-sm sm:text-base">Pide de los mejores locales en La Paz, B.C.S.</p>
-                </div>
-                <div class="w-full md:w-auto relative">
-                    <input type="text" id="searchInput" placeholder="Buscar negocios o platillos..."
-                        class="w-full md:w-80 pl-11 pr-4 py-3 sm:py-4 rounded-xl border border-orange-200 shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-50/50 text-sm font-medium transition-all">
-                    <i data-feather="search" class="w-5 h-5 text-orange-400 absolute left-4 top-3.5 sm:top-4"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- FILTROS DE CATEGORÍA -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 mb-8 overflow-x-auto hide-scrollbar">
-            <div class="flex gap-3 pb-2" id="filtroCategorias">
-                <button onclick="filtrarPorCategoria('todos', this)"
-                    class="cat-pill active bg-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-md transition-all">🛍️
-                    Todos</button>
-                <button onclick="filtrarPorCategoria('restaurante', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🍔
-                    Comida</button>
-                <button onclick="filtrarPorCategoria('carniceria', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🥩
-                    Carnes</button>
-                <button onclick="filtrarPorCategoria('abarrotes', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🛒
-                    Abarrotes</button>
-                <button onclick="filtrarPorCategoria('farmacia', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">💊
-                    Farmacia</button>
-                <button onclick="filtrarPorCategoria('boutique', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">👗
-                    Boutique</button>
-                <button onclick="filtrarPorCategoria('reposteria', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🧁
-                    Repostería</button>
-                <button onclick="filtrarPorCategoria('tecnologia', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">💻
-                    Tecnología</button>
-                <button onclick="filtrarPorCategoria('servicios', this)"
-                    class="cat-pill bg-white text-slate-600 px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🛠️
-                    Servicios</button>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 1: HISTORIAS / PROMOS DINÁMICAS -->
-        <div id="seccionPromos" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xs font-extrabold tracking-widest text-orange-600 uppercase flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Promos en vivo
-                </h2>
-                <span class="text-[10px] font-bold text-slate-400">Desliza para ver más</span>
-            </div>
-
-            <div id="gridPromos" class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 pt-1 px-1">
-                <!-- Skeletons Promos -->
-                <div class="story-card animate-pulse bg-orange-100"></div>
-                <div class="story-card animate-pulse bg-orange-100"></div>
-                <div class="story-card animate-pulse bg-orange-100"></div>
-                <div class="story-card animate-pulse bg-orange-100"></div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 2: BENTO BOX (NEGOCIOS VIP) -->
-        <div id="seccionBentos" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
-            <div class="mb-6">
-                <div
-                    class="inline-block px-3 py-1 bg-white text-orange-600 font-extrabold rounded-full mb-2 text-[10px] tracking-widest uppercase shadow-sm">
-                    Recomendados</div>
-                <h2 class="text-3xl font-extrabold text-slate-900 leading-none">Top en La Paz</h2>
-            </div>
-
-            <div id="gridTop" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <!-- Skeletons Top -->
-                <div
-                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
-                </div>
-                <div
-                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
-                </div>
-                <div
-                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
-                </div>
-                <div
-                    class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]">
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 3: EL BANNER DE CATEGORÍAS -->
-        <div id="seccionCategorias" class="max-w-7xl mx-auto px-4 sm:px-6 mb-16 transition-all duration-300">
-            <a href="/categorias.html"
-                class="block w-full bg-gradient-to-r from-orange-500 to-red-500 rounded-[2rem] p-8 sm:p-10 text-white relative overflow-hidden group shadow-lg shadow-orange-500/20">
-                <div
-                    class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000">
-                </div>
-                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                        <h3 class="text-2xl sm:text-3xl font-black mb-2">Explorar Categorías</h3>
-                        <p class="text-orange-100 font-medium">Pizzas, Hamburguesas, Farmacias, Abarrotes y más.</p>
-                    </div>
-                    <div
-                        class="bg-white text-orange-600 font-extrabold py-3 px-8 rounded-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all flex items-center gap-2 whitespace-nowrap">
-                        <i data-feather="grid" class="w-5 h-5"></i> Ver Catálogo
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- BOTÓN EXPLORAR EN MAPA -->
-        <div id="seccionMapa" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 transition-all duration-300">
-            <a href="/mapa.html"
-                class="block w-full bg-slate-900 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all">
-                <div
-                    class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity">
-                </div>
-                <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
-                            <i data-feather="map" class="w-7 h-7 text-white"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl sm:text-2xl font-black">Explorar Negocios Cercanos</h3>
-                            <p class="text-slate-400 text-sm font-medium">Busca en el mapa interactivo de La Paz, B.C.S.
-                            </p>
+        <!-- Layout Responsivo de Dos Columnas -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                
+                <!-- SIDEBAR: Visible solo en Desktop (lg y más) -->
+                <aside class="hidden lg:flex lg:flex-col lg:w-80 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto hide-scrollbar pb-6 gap-6">
+                    <!-- Buscador & Título -->
+                    <div class="bg-white rounded-[2rem] p-6 border border-orange-100 shadow-sm">
+                        <h2 class="text-xl font-extrabold text-slate-900 mb-1 leading-tight">¿Qué se te antoja hoy?</h2>
+                        <p class="text-slate-500 text-xs">Pide de los mejores locales en La Paz, B.C.S.</p>
+                        
+                        <div class="relative mt-4">
+                            <input type="text" id="desktopSearchInput" placeholder="Buscar negocios..."
+                                class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-orange-200 shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-50/50 text-sm font-medium transition-all">
+                            <i data-feather="search" class="w-4 h-4 text-orange-400 absolute left-3.5 top-4"></i>
                         </div>
                     </div>
-                    <div
-                        class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 whitespace-nowrap transition-colors">
-                        Abrir Mapa <i data-feather="arrow-right" class="w-4 h-4"></i>
+
+                    <!-- Métodos de Pago -->
+                    <div class="bg-white rounded-[2rem] p-6 border border-orange-100 shadow-sm">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                            <i data-feather="credit-card" class="w-3.5 h-3.5 text-orange-500"></i> Métodos de Pago
+                        </h3>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" value="efectivo" class="payment-filter-checkbox w-4 h-4 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
+                                <span class="text-sm font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">💵 Efectivo</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" value="tarjeta" class="payment-filter-checkbox w-4 h-4 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
+                                <span class="text-sm font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">💳 Tarjeta</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" value="transferencia" class="payment-filter-checkbox w-4 h-4 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
+                                <span class="text-sm font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">🏦 Transferencia</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
 
-        <!-- SECCIÓN 4: TODOS LOS COMERCIOS (Mini Bentos) -->
-        <div id="seccionGrid" class="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
-            <div class="flex items-center justify-between mb-6">
-                <h2 id="tituloGrid" class="text-2xl font-extrabold text-slate-900">Todos los Comercios</h2>
-                <span id="contadorResultados"
-                    class="text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-lg shadow-sm border border-orange-100">Cargando...</span>
-            </div>
+                    <!-- Categorías (Vertical) -->
+                    <div class="bg-white rounded-[2rem] p-6 border border-orange-100 shadow-sm">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                            <i data-feather="grid" class="w-3.5 h-3.5 text-orange-500"></i> Categorías
+                        </h3>
+                        <div class="flex flex-col gap-1.5" id="desktopCategorias">
+                            <button onclick="filtrarPorCategoria('todos')" data-category="todos"
+                                class="cat-pill active bg-orange-500 text-white w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2">
+                                <span>🛍️</span> Todos
+                            </button>
+                            <button onclick="filtrarPorCategoria('restaurante')" data-category="restaurante"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>🍔</span> Comida
+                            </button>
+                            <button onclick="filtrarPorCategoria('carniceria')" data-category="carniceria"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>🥩</span> Carnes
+                            </button>
+                            <button onclick="filtrarPorCategoria('abarrotes')" data-category="abarrotes"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>🛒</span> Abarrotes
+                            </button>
+                            <button onclick="filtrarPorCategoria('farmacia')" data-category="farmacia"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>💊</span> Farmacia
+                            </button>
+                            <button onclick="filtrarPorCategoria('boutique')" data-category="boutique"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>👗</span> Boutique
+                            </button>
+                            <button onclick="filtrarPorCategoria('reposteria')" data-category="reposteria"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>🧁</span> Repostería
+                            </button>
+                            <button onclick="filtrarPorCategoria('tecnologia')" data-category="tecnologia"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>💻</span> Tecnología
+                            </button>
+                            <button onclick="filtrarPorCategoria('servicios')" data-category="servicios"
+                                class="cat-pill bg-white text-slate-600 hover:bg-orange-50 w-full text-left px-4 py-2.5 rounded-xl font-bold text-xs border border-orange-100 transition-all flex items-center gap-2">
+                                <span>🛠️</span> Servicios
+                            </button>
+                        </div>
+                    </div>
 
-            <div id="gridNegocios"
-                class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px]">
-                <!-- Skeletons bento -->
-                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 row-span-2">
+                    <!-- Enlaces rápidos (Map y Categorías) -->
+                    <div class="flex flex-col gap-3">
+                        <a href="/mapa.html" class="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl p-4 shadow-sm group transition-all">
+                            <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i data-feather="map" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-left overflow-hidden">
+                                <p class="text-xs font-bold truncate">Ver Mapa</p>
+                                <p class="text-[10px] text-slate-400 truncate">Negocios cercanos</p>
+                            </div>
+                            <i data-feather="chevron-right" class="w-4 h-4 ml-auto text-slate-400 group-hover:translate-x-1 transition-transform flex-shrink-0"></i>
+                        </a>
+                        <a href="/categorias.html" class="flex items-center gap-3 bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-95 text-white rounded-2xl p-4 shadow-sm group transition-all">
+                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform flex-shrink-0">
+                                <i data-feather="tag" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-left overflow-hidden">
+                                <p class="text-xs font-bold truncate">Ver Catálogo</p>
+                                <p class="text-[10px] text-orange-100 truncate">Explorar por categoría</p>
+                            </div>
+                            <i data-feather="chevron-right" class="w-4 h-4 ml-auto text-orange-100 group-hover:translate-x-1 transition-transform flex-shrink-0"></i>
+                        </a>
+                    </div>
+                </aside>
+
+                <!-- COLUMNA PRINCIPAL (Ancho completo en móvil, flex-1 en desktop) -->
+                <div class="w-full flex-1 min-w-0">
+                    
+                    <!-- MÓVIL: Buscador y Categorías (oculto en desktop) -->
+                    <div class="lg:hidden flex flex-col gap-4 mb-6">
+                        <!-- HEADER & BUSCADOR -->
+                        <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-orange-100 shadow-sm flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                            <div class="flex-1 min-w-0">
+                                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">¿Qué se te antoja hoy?</h1>
+                                <p class="text-slate-500 text-xs mt-0.5">Pide de los mejores locales en La Paz, B.C.S.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex-1 sm:w-60">
+                                    <input type="text" id="mobileSearchInput" placeholder="Buscar negocios..."
+                                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-orange-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-50/50 text-xs font-medium transition-all">
+                                    <i data-feather="search" class="w-3.5 h-3.5 text-orange-400 absolute left-3 top-3.5"></i>
+                                </div>
+                                <button onclick="toggleMobileFiltersModal(true)" class="p-2.5 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-xl border border-orange-200 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-sm relative shrink-0">
+                                    <i data-feather="sliders" class="w-4 h-4"></i>
+                                    <span>Filtros</span>
+                                    <span id="mobileFilterBadge" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-600 rounded-full"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- FILTROS DE CATEGORÍA MÓVIL -->
+                        <div class="overflow-x-auto hide-scrollbar">
+                            <div class="flex gap-2.5 pb-1" id="mobileCategories">
+                                <button onclick="filtrarPorCategoria('todos')" data-category="todos"
+                                    class="cat-pill active bg-orange-500 text-white px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-md transition-all">🛍️ Todos</button>
+                                <button onclick="filtrarPorCategoria('restaurante')" data-category="restaurante"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🍔 Comida</button>
+                                <button onclick="filtrarPorCategoria('carniceria')" data-category="carniceria"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🥩 Carnes</button>
+                                <button onclick="filtrarPorCategoria('abarrotes')" data-category="abarrotes"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🛒 Abarrotes</button>
+                                <button onclick="filtrarPorCategoria('farmacia')" data-category="farmacia"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">💊 Farmacia</button>
+                                <button onclick="filtrarPorCategoria('boutique')" data-category="boutique"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">👗 Boutique</button>
+                                <button onclick="filtrarPorCategoria('reposteria')" data-category="reposteria"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🧁 Repostería</button>
+                                <button onclick="filtrarPorCategoria('tecnologia')" data-category="tecnologia"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">💻 Tecnología</button>
+                                <button onclick="filtrarPorCategoria('servicios')" data-category="servicios"
+                                    class="cat-pill bg-white text-slate-600 px-4 py-2.5 rounded-full font-bold text-xs whitespace-nowrap shadow-sm border border-orange-100 hover:bg-orange-50 transition-all">🛠️ Servicios</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUGERENCIA AL AZAR (Decidir por mí) -->
+                    <div id="seccionSugerencia" class="bg-gradient-to-br from-orange-500 to-red-500 rounded-[2rem] p-6 text-white shadow-lg relative overflow-hidden group mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                        <div class="relative z-10 text-center sm:text-left">
+                            <h3 class="text-lg sm:text-xl font-black mb-1 flex items-center justify-center sm:justify-start gap-2">
+                                <span>🎲</span> ¿No sabes qué comer hoy?
+                            </h3>
+                            <p class="text-orange-100 text-xs sm:text-sm font-medium">Déjanos sorprenderte con una recomendación deliciosa al azar.</p>
+                        </div>
+                        <button onclick="sugerirNegocioAlAzar()" class="relative z-10 bg-white text-orange-600 font-black py-3 px-6 rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all text-xs sm:text-sm flex items-center justify-center gap-2 whitespace-nowrap w-full sm:w-auto">
+                            🍔 ¡Decidir por mí!
+                        </button>
+                    </div>
+
+                    <!-- SECCIÓN 1: HISTORIAS / PROMOS DINÁMICAS -->
+                    <div id="seccionPromos" class="mb-12 transition-all duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xs font-extrabold tracking-widest text-orange-600 uppercase flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Promos en vivo
+                            </h2>
+                            <span class="text-[10px] font-bold text-slate-400">Desliza para ver más</span>
+                        </div>
+
+                        <div id="gridPromos" class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 pt-1 px-1">
+                            <!-- Skeletons Promos -->
+                            <div class="story-card animate-pulse bg-orange-100"></div>
+                            <div class="story-card animate-pulse bg-orange-100"></div>
+                            <div class="story-card animate-pulse bg-orange-100"></div>
+                            <div class="story-card animate-pulse bg-orange-100"></div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 2: BENTO BOX (NEGOCIOS VIP) -->
+                    <div id="seccionBentos" class="mb-12 transition-all duration-300">
+                        <div class="mb-6">
+                            <div class="inline-block px-3 py-1 bg-white text-orange-600 font-extrabold rounded-full mb-2 text-[10px] tracking-widest uppercase shadow-sm">
+                                Recomendados
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-none">Top en La Paz</h2>
+                        </div>
+
+                        <div id="gridTop" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                            <!-- Skeletons Top -->
+                            <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                            <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                            <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                            <div class="animate-pulse bg-white/50 rounded-[2rem] border border-orange-100 aspect-video sm:aspect-square lg:aspect-[4/5]"></div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 3: EL BANNER DE CATEGORÍAS (Solo visible en móvil) -->
+                    <div id="seccionCategorias" class="lg:hidden mb-12 transition-all duration-300">
+                        <a href="/categorias.html"
+                            class="block w-full bg-gradient-to-r from-orange-500 to-red-500 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden group shadow-lg shadow-orange-500/20">
+                            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000"></div>
+                            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                                <div>
+                                    <h3 class="text-xl sm:text-2xl font-black mb-2">Explorar Categorías</h3>
+                                    <p class="text-orange-100 text-xs sm:text-sm font-medium">Pizzas, Hamburguesas, Farmacias, Abarrotes y más.</p>
+                                </div>
+                                <div class="bg-white text-orange-600 font-extrabold py-3 px-6 rounded-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all flex items-center gap-2 whitespace-nowrap text-sm">
+                                    <i data-feather="grid" class="w-4 h-4"></i> Ver Catálogo
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- BOTÓN EXPLORAR EN MAPA (Solo visible en móvil) -->
+                    <div id="seccionMapa" class="lg:hidden mb-12 transition-all duration-300">
+                        <a href="/mapa.html"
+                            class="block w-full bg-slate-900 rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all">
+                            <div class="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
+                                        <i data-feather="map" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg sm:text-xl font-black">Explorar Negocios Cercanos</h3>
+                                        <p class="text-slate-400 text-xs font-medium">Busca en el mapa interactivo de La Paz, B.C.S.</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 whitespace-nowrap transition-colors text-xs">
+                                    Abrir Mapa <i data-feather="arrow-right" class="w-3.5 h-3.5"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- SECCIÓN 4: TODOS LOS COMERCIOS -->
+                    <div id="seccionGrid" class="pb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 id="tituloGrid" class="text-xl sm:text-2xl font-extrabold text-slate-900">Todos los Comercios</h2>
+                            <span id="contadorResultados" class="text-xs sm:text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-lg shadow-sm border border-orange-100">Cargando...</span>
+                        </div>
+
+                        <div id="gridNegocios"
+                            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[200px]">
+                            <!-- Skeletons bento -->
+                            <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 row-span-2"></div>
+                            <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
+                            <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
+                            <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
+                            <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 hidden sm:block"></div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
-                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
-                <div class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100"></div>
-                <div
-                    class="animate-pulse bg-orange-50 rounded-[2rem] border border-orange-100 col-span-2 hidden sm:block">
-                </div>
+
             </div>
         </div>
 
         <!-- TikTok / Reels Overlay -->
-        <div id="tiktokOverlay" class="fixed inset-0 bg-black z-[100] hidden transform translate-y-full transition-transform duration-500 ease-in-out">
+        <div class="fixed inset-0 bg-black z-[100] hidden transform translate-y-full transition-transform duration-500 ease-in-out" id="tiktokOverlay">
             <!-- Botón Cerrar -->
             <button onclick="cerrarViewer()" class="absolute top-6 right-6 z-50 text-white p-3 bg-black/40 backdrop-blur-md rounded-full shadow-lg border border-white/20 active:scale-95 transition-transform">
                 <i data-feather="x" class="w-6 h-6"></i>
@@ -282,6 +406,112 @@
             <!-- Contenedor de Reels (Scroll Vertical) -->
             <div id="tiktokReelsContainer" class="w-full h-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar">
                 <!-- Se llena dinámicamente con las promos -->
+            </div>
+        </div>
+
+        <!-- Cajón de Filtros para Móvil (Bottom Sheet) -->
+        <div id="mobileFiltersModal" class="fixed inset-0 z-[110] hidden">
+            <!-- Fondo traslúcido -->
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300" onclick="toggleMobileFiltersModal(false)"></div>
+            <!-- Cajón deslizable -->
+            <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 max-h-[85vh] overflow-y-auto shadow-2xl transition-transform duration-300 transform translate-y-full border-t border-orange-100 flex flex-col gap-6" id="mobileFiltersDrawer">
+                <div class="flex justify-between items-center pb-2 border-b border-orange-100">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-slate-900">Filtros de Búsqueda</h3>
+                        <p class="text-slate-400 text-xs font-semibold">Personaliza los comercios a mostrar</p>
+                    </div>
+                    <button onclick="toggleMobileFiltersModal(false)" class="p-2 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-full transition-colors">
+                        <i data-feather="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Métodos de Pago -->
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                        <i data-feather="credit-card" class="w-3.5 h-3.5 text-orange-500"></i> Métodos de Pago
+                    </h4>
+                    <div class="flex flex-col gap-2.5">
+                        <label class="flex items-center justify-between p-3.5 bg-orange-50/30 hover:bg-orange-50/80 border border-orange-100 rounded-2xl cursor-pointer transition-colors group">
+                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-950 transition-colors">💵 Efectivo</span>
+                            <input type="checkbox" value="efectivo" class="mobile-payment-checkbox w-5 h-5 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
+                        </label>
+                        <label class="flex items-center justify-between p-3.5 bg-orange-50/30 hover:bg-orange-50/80 border border-orange-100 rounded-2xl cursor-pointer transition-colors group">
+                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-950 transition-colors">💳 Tarjeta</span>
+                            <input type="checkbox" value="tarjeta" class="mobile-payment-checkbox w-5 h-5 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
+                        </label>
+                        <label class="flex items-center justify-between p-3.5 bg-orange-50/30 hover:bg-orange-50/80 border border-orange-100 rounded-2xl cursor-pointer transition-colors group">
+                            <span class="text-sm font-bold text-slate-700 group-hover:text-slate-950 transition-colors">🏦 Transferencia</span>
+                            <input type="checkbox" value="transferencia" class="mobile-payment-checkbox w-5 h-5 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="flex gap-3 mt-2">
+                    <button onclick="limpiarFiltrosMovil()" class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm">
+                        Limpiar
+                    </button>
+                    <button onclick="aplicarFiltrosMovil()" class="flex-1 py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md shadow-orange-500/20 transition-colors text-sm">
+                        Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Sugerencia al Azar -->
+        <div id="suggestionModal" class="fixed inset-0 z-[120] hidden">
+            <!-- Fondo traslúcido -->
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300" onclick="toggleSuggestionModal(false)"></div>
+            <!-- Contenedor del Modal -->
+            <div class="absolute inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto bg-white rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-300 transform scale-95 opacity-0 border border-orange-100 flex flex-col" id="suggestionCard">
+                
+                <!-- Portada / Imagen de fondo -->
+                <div class="relative h-48 sm:h-52 bg-orange-100 overflow-hidden">
+                    <img id="suggestedSplash" src="" class="w-full h-full object-cover" alt="Portada negocio">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent"></div>
+                    
+                    <!-- Botón Cerrar -->
+                    <button onclick="toggleSuggestionModal(false)" class="absolute top-4 right-4 text-white p-2.5 bg-black/40 backdrop-blur-md rounded-full shadow-lg hover:bg-black/60 transition-colors active:scale-95">
+                        <i data-feather="x" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <div class="absolute bottom-4 left-6 right-6 flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white rounded-2xl p-1 shadow-lg border border-slate-100 flex-shrink-0">
+                            <img id="suggestedLogo" src="" class="w-full h-full rounded-xl object-cover" alt="Logo negocio">
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="bg-orange-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">🎲 Recomendar al azar</span>
+                                <span id="suggestedStatusBadge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider shadow-sm">Abierto</span>
+                            </div>
+                            <h3 id="suggestedName" class="text-white text-lg font-black leading-tight truncate mt-0.5">Nombre Negocio</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contenido del cuerpo -->
+                <div class="p-6 flex flex-col gap-4">
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Sobre el negocio</h4>
+                        <p id="suggestedDesc" class="text-slate-600 text-sm font-semibold leading-relaxed">Descripción del negocio...</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Formas de pago aceptadas</h4>
+                        <div id="suggestedPayments" class="flex flex-wrap gap-1.5">
+                            <!-- Métodos de pago se insertan dinámicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-2.5 mt-2">
+                        <a id="suggestedLink" href="" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-4 px-6 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 text-sm transition-transform active:scale-95">
+                            <i data-feather="shopping-bag" class="w-4 h-4"></i> Visitar Tienda y Pedir
+                        </a>
+                        <button onclick="sugerirNegocioAlAzar()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors">
+                            <i data-feather="refresh-cw" class="w-3.5 h-3.5"></i> Girar otra vez / Ver otro
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -311,6 +541,49 @@
             return posEnCiclo === 0 ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1';
         }
 
+        // Calcula si un negocio está Abierto o Cerrado en base a sus horarios configurados
+        function calcularEstadoApertura(horarios) {
+            // Si no hay horarios configurados, asumimos ABIERTO por defecto
+            if (!horarios || horarios.length === 0) {
+                return { abierto: true, mensaje: 'Abierto', classColor: 'bg-green-500/95 text-white' };
+            }
+
+            const ahora = new Date();
+            const diaActual = ahora.getDay(); // 0-6 (0=Domingo, 1=Lunes...)
+            const diaDb = diaActual === 0 ? 7 : diaActual; // 1=Lunes, ..., 7=Domingo
+            
+            // Buscar el horario del día actual
+            const horarioHoy = horarios.find(h => h.day_of_week === diaDb);
+            
+            if (!horarioHoy || horarioHoy.esta_cerrado) {
+                return { abierto: false, mensaje: 'Cerrado', classColor: 'bg-red-500/95 text-white' };
+            }
+
+            // Comprobar la hora actual en minutos
+            const horaActualStr = ahora.toTimeString().slice(0, 5); // "HH:MM"
+            const [hActual, mActual] = horaActualStr.split(':').map(Number);
+            const minutosActuales = hActual * 60 + mActual;
+
+            const [hApertura, mApertura] = horarioHoy.open_time.slice(0, 5).split(':').map(Number);
+            const minutosApertura = hApertura * 60 + mApertura;
+
+            const [hCierre, mCierre] = horarioHoy.close_time.slice(0, 5).split(':').map(Number);
+            let minutosCierre = hCierre * 60 + mCierre;
+
+            // Si el horario de cierre es menor al de apertura, cruza la medianoche (ej. 22:00 a 02:00)
+            if (minutosCierre < minutosApertura) {
+                minutosCierre += 24 * 60;
+            }
+
+            const estaAbierto = minutosActuales >= minutosApertura && minutosActuales < minutosCierre;
+            
+            if (estaAbierto) {
+                return { abierto: true, mensaje: `Abierto (Cierra ${horarioHoy.close_time.slice(0,5)})`, classColor: 'bg-green-500/95 text-white' };
+            } else {
+                return { abierto: false, mensaje: `Cerrado (Abre ${horarioHoy.open_time.slice(0,5)})`, classColor: 'bg-red-500/95 text-white' };
+            }
+        }
+
         function renderizarNegocios(negociosOrig) {
             const grid = document.getElementById('gridNegocios');
             if (!grid) return;
@@ -327,7 +600,7 @@
                             <i data-feather="search" class="w-10 h-10 text-orange-300"></i>
                         </div>
                         <p class="text-slate-800 font-bold text-lg mb-1">No encontramos resultados</p>
-                        <p class="text-slate-500 text-sm max-w-sm mx-auto">Intenta buscar con otro nombre.</p>
+                        <p class="text-slate-500 text-sm max-w-sm mx-auto">Intenta buscar con otro nombre o filtros.</p>
                     </div>`;
                 feather.replace();
                 return;
@@ -350,24 +623,42 @@
                     ? `<img src="${n.logo_url}" class="w-10 h-10 ${isLarge ? 'sm:w-14 sm:h-14' : ''} rounded-xl object-cover border-2 border-white shadow-md bg-white">`
                     : `<div class="w-10 h-10 ${isLarge ? 'sm:w-14 sm:h-14' : ''} rounded-xl bg-orange-100 text-orange-600 font-black ${isLarge ? 'text-xl' : 'text-lg'} flex items-center justify-center border-2 border-white shadow-md">${n.nombre_comercial.charAt(0)}</div>`;
 
+                const metodos = n.metodos_pago || ['efectivo'];
+                const metodosHtml = metodos.map(m => {
+                    if (m === 'efectivo') return '<span class="bg-emerald-500/85 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md shadow-sm">💵 Efec</span>';
+                    if (m === 'tarjeta') return '<span class="bg-blue-500/85 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md shadow-sm">💳 Tarj</span>';
+                    if (m === 'transferencia') return '<span class="bg-purple-500/85 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md shadow-sm">🏦 Transf</span>';
+                    return '';
+                }).join(' ');
+
+                const estado = calcularEstadoApertura(n.horarios);
+                const statusBadge = `
+                    <span class="${estado.classColor} backdrop-blur-sm text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm">
+                        <i data-feather="${estado.abierto ? 'check-circle' : 'clock'}" class="w-2.5 h-2.5"></i> ${estado.mensaje}
+                    </span>
+                `;
+
                 card.innerHTML = `
                     <img src="${foto}" alt="${n.nombre_comercial}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
 
-                    <div class="absolute top-3 left-3">
-                        <span class="bg-green-500/90 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1">
-                            <i data-feather="check-circle" class="w-2.5 h-2.5"></i> Activo
-                        </span>
+                    <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+                        ${statusBadge}
                     </div>
 
-                    <div class="absolute bottom-0 left-0 right-0 p-4 ${isLarge ? 'sm:p-6' : ''}">
-                        <div class="flex items-end gap-3">
+                    <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 ${isLarge ? 'sm:p-6' : ''}">
+                        <div class="flex items-end gap-2.5">
                             ${logoHtml}
                             <div class="flex-1 min-w-0">
-                                <h3 class="${isLarge ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base'} font-extrabold text-white leading-tight truncate">${n.nombre_comercial}</h3>
-                                <p class="text-[10px] sm:text-xs text-orange-200 flex items-center gap-1 mt-0.5">
-                                    <i data-feather="map-pin" class="w-2.5 h-2.5"></i> La Paz
-                                </p>
+                                <h3 class="${isLarge ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base'} font-black text-white leading-tight truncate drop-shadow-md">${n.nombre_comercial}</h3>
+                                <div class="flex flex-wrap gap-1 items-center mt-1">
+                                    <p class="text-[9px] sm:text-[10px] text-orange-200 font-semibold flex items-center gap-0.5 drop-shadow">
+                                        <i data-feather="map-pin" class="w-2 h-2"></i> La Paz
+                                    </p>
+                                    <div class="flex gap-1 items-center ml-1">
+                                        ${metodosHtml}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         ${isLarge ? `
@@ -595,10 +886,20 @@
                     card.className = `relative rounded-[2rem] overflow-hidden group shadow-md border-2 border-white transition-all duration-500 hover:shadow-xl aspect-video sm:aspect-square lg:aspect-[4/5]`;
 
                     const fotoFondo = n.splash_url || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800';
+                    const estado = calcularEstadoApertura(n.horarios);
+                    const statusBadge = `
+                        <span class="${estado.classColor} backdrop-blur-sm text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm">
+                            <i data-feather="${estado.abierto ? 'check-circle' : 'clock'}" class="w-2.5 h-2.5"></i> ${estado.mensaje}
+                        </span>
+                    `;
 
                     card.innerHTML = `
                         <img src="${fotoFondo}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-90"></div>
+                        
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+                            ${statusBadge}
+                        </div>
                         
                         <div class="absolute inset-0 p-5 flex flex-col justify-end">
                             <div class="flex items-center gap-3 mb-3">
@@ -664,7 +965,7 @@
         }
 
         // Secciones a ocultar durante búsqueda
-        const seccionesDecorativas = ['seccionPromos', 'seccionBentos', 'seccionCategorias', 'seccionMapa'];
+        const seccionesDecorativas = ['seccionPromos', 'seccionBentos', 'seccionCategorias', 'seccionMapa', 'seccionSugerencia'];
 
         function toggleSecciones(mostrar) {
             seccionesDecorativas.forEach(id => {
@@ -681,17 +982,21 @@
         // Buscador y Filtros
         let categoriaActual = 'todos';
         let terminoBusqueda = '';
+        let metodosPagoSeleccionados = [];
 
-        function filtrarPorCategoria(cat, btn) {
+        function filtrarPorCategoria(cat) {
             categoriaActual = cat;
 
-            // UI Update
-            document.querySelectorAll('.cat-pill').forEach(b => {
-                b.classList.remove('bg-orange-500', 'text-white', 'shadow-md');
-                b.classList.add('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-orange-100');
+            // Sincronizar clases activas en botones de categoría móvil y desktop
+            document.querySelectorAll('[data-category]').forEach(btn => {
+                if (btn.getAttribute('data-category') === cat) {
+                    btn.classList.remove('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-orange-100', 'hover:bg-orange-50');
+                    btn.classList.add('bg-orange-500', 'text-white', 'shadow-md', 'active');
+                } else {
+                    btn.classList.add('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-orange-100', 'hover:bg-orange-50');
+                    btn.classList.remove('bg-orange-500', 'text-white', 'shadow-md', 'active');
+                }
             });
-            btn.classList.remove('bg-white', 'text-slate-600', 'shadow-sm', 'border', 'border-orange-100');
-            btn.classList.add('bg-orange-500', 'text-white', 'shadow-md');
 
             aplicarFiltros();
         }
@@ -709,23 +1014,209 @@
                 filtrados = filtrados.filter(n => n.nombre_comercial.toLowerCase().includes(terminoBusqueda));
             }
 
+            // Filtrar por métodos de pago
+            if (metodosPagoSeleccionados.length > 0) {
+                filtrados = filtrados.filter(n => {
+                    const metodos = n.metodos_pago || ['efectivo'];
+                    return metodos.some(m => metodosPagoSeleccionados.includes(m));
+                });
+            }
+
             // Mostrar/Ocultar secciones decorativas si hay filtros activos
-            const hayFiltros = categoriaActual !== 'todos' || terminoBusqueda !== '';
+            const hayFiltros = categoriaActual !== 'todos' || terminoBusqueda !== '' || metodosPagoSeleccionados.length > 0;
             toggleSecciones(!hayFiltros);
 
             renderizarNegocios(filtrados);
         }
 
-        // Buscador en tiempo real
-        document.getElementById('searchInput').addEventListener('input', (e) => {
+        // Sincronizar buscadores en tiempo real
+        function syncSearch(e) {
             terminoBusqueda = e.target.value.toLowerCase().trim();
+            
+            const mobileInput = document.getElementById('mobileSearchInput');
+            const desktopInput = document.getElementById('desktopSearchInput');
+            if (mobileInput) mobileInput.value = e.target.value;
+            if (desktopInput) desktopInput.value = e.target.value;
+            
             aplicarFiltros();
-        });
+        }
+
+        // --- Configurar Listeners de Filtros ---
+        function setupFiltrosListeners() {
+            const mobileSearch = document.getElementById('mobileSearchInput');
+            const desktopSearch = document.getElementById('desktopSearchInput');
+            
+            if (mobileSearch) mobileSearch.addEventListener('input', syncSearch);
+            if (desktopSearch) desktopSearch.addEventListener('input', syncSearch);
+
+            // Checkboxes Desktop
+            document.querySelectorAll('.payment-filter-checkbox').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    // Sincronizar al checkbox móvil correspondiente
+                    const val = cb.value;
+                    const mobileCb = document.querySelector(`.mobile-payment-checkbox[value="${val}"]`);
+                    if (mobileCb) mobileCb.checked = cb.checked;
+                    
+                    actualizarMetodosPagoSeleccionados();
+                    aplicarFiltros();
+                });
+            });
+        }
+
+        function actualizarMetodosPagoSeleccionados() {
+            metodosPagoSeleccionados = [];
+            document.querySelectorAll('.payment-filter-checkbox').forEach(cb => {
+                if (cb.checked) metodosPagoSeleccionados.push(cb.value);
+            });
+            
+            // Actualizar badge del botón Filtros en móvil
+            const badge = document.getElementById('mobileFilterBadge');
+            if (badge) {
+                if (metodosPagoSeleccionados.length > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        // --- Controladores de Modal Filtros Móvil ---
+        function toggleMobileFiltersModal(show) {
+            const modal = document.getElementById('mobileFiltersModal');
+            const drawer = document.getElementById('mobileFiltersDrawer');
+            if (!modal || !drawer) return;
+
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    drawer.classList.remove('translate-y-full');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                drawer.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = '';
+            }
+        }
+
+        function aplicarFiltrosMovil() {
+            // Sincronizar checkboxes de móvil a desktop
+            document.querySelectorAll('.mobile-payment-checkbox').forEach(mcb => {
+                const val = mcb.value;
+                const desktopCb = document.querySelector(`.payment-filter-checkbox[value="${val}"]`);
+                if (desktopCb) desktopCb.checked = mcb.checked;
+            });
+            actualizarMetodosPagoSeleccionados();
+            aplicarFiltros();
+            toggleMobileFiltersModal(false);
+        }
+
+        function limpiarFiltrosMovil() {
+            document.querySelectorAll('.mobile-payment-checkbox').forEach(mcb => {
+                mcb.checked = false;
+            });
+            aplicarFiltrosMovil();
+        }
+
+        // --- Controladores de Modal de Sugerencia al Azar ---
+        function toggleSuggestionModal(show) {
+            const modal = document.getElementById('suggestionModal');
+            const card = document.getElementById('suggestionCard');
+            if (!modal || !card) return;
+
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    card.classList.remove('scale-95', 'opacity-0');
+                    card.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                card.classList.remove('scale-100', 'opacity-100');
+                card.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = '';
+            }
+        }
+
+        function sugerirNegocioAlAzar() {
+            // Filtrar negocios de comida (restaurante o reposteria)
+            const negociosComida = todosLosNegocios.filter(n => 
+                n.slug !== 'plataforma-rcr' && 
+                ['restaurante', 'reposteria'].includes(n.categoria)
+            );
+
+            if (negociosComida.length === 0) {
+                alert("No hay negocios de comida disponibles en este momento.");
+                return;
+            }
+
+            // Seleccionar uno al azar
+            const n = negociosComida[Math.floor(Math.random() * negociosComida.length)];
+
+            // Actualizar elementos del modal
+            const splashImg = document.getElementById('suggestedSplash');
+            const logoImg = document.getElementById('suggestedLogo');
+            const nameEl = document.getElementById('suggestedName');
+            const descEl = document.getElementById('suggestedDesc');
+            const paymentsEl = document.getElementById('suggestedPayments');
+            const linkEl = document.getElementById('suggestedLink');
+            const statusBadgeEl = document.getElementById('suggestedStatusBadge');
+
+            // Asignar splash
+            const foto = n.splash_url || fotosPlaceholders[Math.floor(Math.random() * fotosPlaceholders.length)];
+            splashImg.src = foto;
+            splashImg.alt = n.nombre_comercial;
+
+            // Asignar logo
+            if (n.logo_url) {
+                logoImg.src = n.logo_url;
+                logoImg.classList.remove('hidden');
+            } else {
+                logoImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(n.nombre_comercial)}&background=ffedd5&color=ea580c`;
+            }
+
+            nameEl.textContent = n.nombre_comercial;
+            descEl.textContent = n.description || '¡Una deliciosa opción para ti! Calidad garantizada.';
+            linkEl.href = `/${n.slug}`;
+
+            // Actualizar estado de apertura
+            const estado = calcularEstadoApertura(n.horarios);
+            if (statusBadgeEl) {
+                statusBadgeEl.textContent = estado.mensaje;
+                statusBadgeEl.className = `text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider shadow-sm ${estado.classColor}`;
+            }
+
+            // Renderizar métodos de pago
+            const metodos = n.metodos_pago || ['efectivo'];
+            paymentsEl.innerHTML = metodos.map(m => {
+                if (m === 'efectivo') return '<span class="bg-emerald-50/50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-lg">💵 Efectivo</span>';
+                if (m === 'tarjeta') return '<span class="bg-blue-50/50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-lg">💳 Tarjeta</span>';
+                if (m === 'transferencia') return '<span class="bg-purple-50/50 text-purple-800 border border-purple-200 text-[10px] font-bold px-2 py-0.5 rounded-lg">🏦 Transferencia</span>';
+                return '';
+            }).join(' ');
+
+            // Asegurar que Feather reemplace los iconos en el modal
+            setTimeout(() => {
+                feather.replace();
+            }, 50);
+
+            // Mostrar el modal
+            toggleSuggestionModal(true);
+
+            // Registrar metrica de sugerencia al azar
+            registrarEvento(n.id, 'random_suggestion_generated');
+        }
 
         const PLATAFORMA_ID = '02174c9f-7fc7-4ad1-9c1c-5a2d7500a5b9';
 
         // --- Iniciar ---
         async function iniciar() {
+            setupFiltrosListeners();
             await cargarNegocios();
             await cargarOfertas();
             registrarEvento(PLATAFORMA_ID, 'view_directory');
@@ -734,9 +1225,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const catParam = urlParams.get('cat');
             if (catParam) {
-                const btn = Array.from(document.querySelectorAll('.cat-pill'))
-                    .find(b => b.getAttribute('onclick').includes(`'${catParam}'`));
-                if (btn) filtrarPorCategoria(catParam, btn);
+                filtrarPorCategoria(catParam);
             }
         }
         iniciar();
