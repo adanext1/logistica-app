@@ -821,51 +821,16 @@
         // Al hacer clic en "Confirmar y Pedir por WhatsApp"
         btnConfirmarPedido.addEventListener('click', async () => {
             if (!datosCalculados || !whatsappNegocioGlobal) return;
-            
-            const btnOriginalTexto = btnConfirmarPedido.innerText;
-            btnConfirmarPedido.innerText = "Registrando pedido...";
-            btnConfirmarPedido.disabled = true;
 
             const latD = document.getElementById('latDestino').value;
             const lngD = document.getElementById('lngDestino').value;
 
-            // Comprimir imágenes para enviarlas al backend sin saturar la red
-            const comprimirImagen = (file) => {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
-                            let width = img.width; let height = img.height;
-                            if (width > height) {
-                                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                            } else {
-                                if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-                            }
-                            canvas.width = width; canvas.height = height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-                            resolve(canvas.toDataURL('image/jpeg', 0.6));
-                        };
-                        img.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                });
-            };
-
-            const fotosInput = document.getElementById('fotosDomicilio');
-            let fotosBase64 = [];
-            if (fotosInput && fotosInput.files.length > 0) {
-                btnConfirmarPedido.innerText = "Subiendo fotos y registrando...";
-                for(let i=0; i<fotosInput.files.length; i++){
-                    const base64 = await comprimirImagen(fotosInput.files[i]);
-                    fotosBase64.push(base64);
-                }
-            }
-
-            // 2. Armar el mensaje pre-llenado (Lo hacemos ANTES de guardar para enviarlo a la DB)
+            // ─────────────────────────────────────────────────────────────────
+            // PASO 1 (SÍNCRONO): Construir el mensaje y abrir WhatsApp ANTES
+            // de cualquier await. Los navegadores móviles (iOS Safari, Chrome)
+            // bloquean window.open() si se llama después de una operación async,
+            // porque pierden el contexto del gesto del usuario.
+            // ─────────────────────────────────────────────────────────────────
             let textoProductos = "";
             if (carritoGuardado.length > 0) {
                 textoProductos = carritoGuardado.map(p => `• ${p.nombre} x${p.cantidad} — $${p.subtotal.toFixed(2)}`).join('\n');
@@ -896,13 +861,63 @@
                             propinaTexto +
                             `💳 *Total a Pagar:* $${totalFinal} MXN`;
 
+            // Abrir WhatsApp AHORA (aún dentro del gesto del usuario, sin awaits previos)
+            const urlWhatsApp = `https://wa.me/52${whatsappNegocioGlobal.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+
+            // Limpiar el carrito
+            localStorage.removeItem(`laas_carrito_${slug}`);
+            localStorage.removeItem(`laas_carrito_total_${slug}`);
+
+            // ─────────────────────────────────────────────────────────────────
+            // PASO 2 (ASYNC): Ahora sí podemos hacer operaciones lentas
+            // ─────────────────────────────────────────────────────────────────
+            btnConfirmarPedido.innerText = "Registrando pedido...";
+            btnConfirmarPedido.disabled = true;
+
+            // Comprimir imágenes para enviarlas al backend sin saturar la red
+            const comprimirImagen = (file) => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
+                            let width = img.width; let height = img.height;
+                            if (width > height) {
+                                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                            } else {
+                                if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                            }
+                            canvas.width = width; canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            resolve(canvas.toDataURL('image/jpeg', 0.6));
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            };
+
+            const fotosInput = document.getElementById('fotosDomicilio');
+            let fotosBase64 = [];
+            if (fotosInput && fotosInput.files.length > 0) {
+                btnConfirmarPedido.innerText = "Subiendo fotos...";
+                for(let i=0; i<fotosInput.files.length; i++){
+                    const base64 = await comprimirImagen(fotosInput.files[i]);
+                    fotosBase64.push(base64);
+                }
+            }
+
             let direccionDetallesConPropina = `${datosCalculados.direccionDetalles} | Col: ${datosCalculados.coloniaCliente}`;
             if (propina > 0) {
                 direccionDetallesConPropina += ` | 🎁 Propina: $${propina.toFixed(2)}`;
             }
 
             try {
-                // 3. Guardar en Base de Datos
+                // Guardar en Base de Datos
                 const orderRes = await fetch('/api/pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -915,7 +930,7 @@
                         latDestino: latD, 
                         lngDestino: lngD,
                         fotos: fotosBase64,
-                        whatsapp_message: mensaje // <--- Nuevo campo guardado
+                        whatsapp_message: mensaje
                     })
                 });
 
@@ -924,18 +939,10 @@
                     await registrarEventoGlobal(slug, 'order_complete');
                 }
             } catch (error) {
-                console.error("El pedido no se guardó en la DB, pero redirigimos a WA de todos modos.");
+                console.error("El pedido no se guardó en la DB.");
             }
-            
-            // 4. Abrir WhatsApp
-            const urlWhatsApp = `https://wa.me/52${whatsappNegocioGlobal.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}`;
-            window.open(urlWhatsApp, '_blank');
 
-            // 4. Limpiar el carrito después de enviarlo exitosamente
-            localStorage.removeItem(`laas_carrito_${slug}`);
-            localStorage.removeItem(`laas_carrito_total_${slug}`);
-
-            btnConfirmarPedido.innerText = "¡Pedido enviado a WhatsApp!";
+            btnConfirmarPedido.innerText = "¡Pedido enviado a WhatsApp! ✅";
         });
 
         async function registrarEventoGlobal(businessSlug, tipo) {
