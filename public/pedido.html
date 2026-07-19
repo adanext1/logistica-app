@@ -349,8 +349,8 @@
                     lat: pos.coords.latitude,
                     lng: pos.coords.longitude
                 };
-                // Si el mapa ya se inicializó, lo movemos de una vez
-                if (mapaPedido) {
+                // Si el mapa ya se inicializó, y NO tenemos una ubicación guardada manualmente, lo movemos de una vez
+                if (mapaPedido && !localStorage.getItem(`laas_lat_${slug}`)) {
                     mapaPedido.setView([ubicacionInicial.lat, ubicacionInicial.lng], 17);
                     actualizarCoordenadas(ubicacionInicial.lat, ubicacionInicial.lng);
                 }
@@ -438,7 +438,7 @@
             }
         }
 
-        function seleccionarBotonPropina(btn) {
+        function seleccionarBotonPropina(btn, conAnimacion = true) {
             // Deseleccionar todos
             document.querySelectorAll('.tip-btn').forEach(b => {
                 b.className = 'tip-btn py-2 px-1 bg-white border border-green-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-green-100 transition active:scale-95 text-center flex flex-col items-center justify-center gap-0.5 shadow-sm';
@@ -462,9 +462,13 @@
             if (val === 'custom') {
                 customTipContainer.classList.remove('hidden');
                 const customInput = document.getElementById('customTipInput');
-                customInput.focus();
+                if (conAnimacion) {
+                    customInput.focus();
+                }
                 const customVal = parseFloat(customInput.value) || 0;
                 propinaSeleccionada = customVal < 0 ? 0 : customVal;
+                localStorage.setItem(`laas_propina_tipo_${slug}`, 'custom');
+                localStorage.setItem(`laas_propina_valor_${slug}`, propinaSeleccionada.toString());
             } else {
                 customTipContainer.classList.add('hidden');
                 const percent = parseFloat(val);
@@ -473,11 +477,13 @@
                 } else {
                     propinaSeleccionada = 0;
                 }
+                localStorage.setItem(`laas_propina_tipo_${slug}`, val);
+                localStorage.removeItem(`laas_propina_valor_${slug}`);
             }
 
             actualizarResumenTotales();
 
-            if (propinaSeleccionada > 0) {
+            if (propinaSeleccionada > 0 && conAnimacion) {
                 dispararEmojisAgradecimiento(btn);
             }
         }
@@ -489,6 +495,24 @@
         document.getElementById('numeroCasa').value = localStorage.getItem('laas_numero') || '';
         document.getElementById('coloniaCliente').value = localStorage.getItem('laas_colonia') || '';
         document.getElementById('referenciasDomicilio').value = localStorage.getItem('laas_referencias') || '';
+
+        // Guardar datos del formulario en tiempo real a medida que el usuario escribe
+        const inputsPersistentes = [
+            { id: 'nombreCliente', key: 'laas_nombre' },
+            { id: 'whatsappCliente', key: 'laas_whatsapp' },
+            { id: 'callePrincipal', key: 'laas_calle' },
+            { id: 'numeroCasa', key: 'laas_numero' },
+            { id: 'coloniaCliente', key: 'laas_colonia' },
+            { id: 'referenciasDomicilio', key: 'laas_referencias' }
+        ];
+        inputsPersistentes.forEach(item => {
+            const inputEl = document.getElementById(item.id);
+            if (inputEl) {
+                inputEl.addEventListener('input', () => {
+                    localStorage.setItem(item.key, inputEl.value);
+                });
+            }
+        });
 
         // --- CARGAR RESUMEN DEL CARRITO ---
         let carritoGuardado = [];
@@ -519,6 +543,57 @@
             });
         }
 
+        function restaurarCalculoEnvioYPropina() {
+            try {
+                const datosCalculadosGuardados = localStorage.getItem(`laas_datos_calculados_${slug}`);
+                if (!datosCalculadosGuardados) return;
+
+                datosCalculados = JSON.parse(datosCalculadosGuardados);
+                
+                // Mostrar resultados en la UI
+                txtDistancia.innerText = datosCalculados.distancia_km;
+                txtCosto.innerText = datosCalculados.costo_envio;
+                resultadoEnvio.classList.remove('hidden');
+                
+                // Ocultar botón calcular
+                btnCalcular.classList.add('hidden');
+
+                // Bloquear mapa para evitar desvíos accidentales al hacer scroll
+                bloquearMapa();
+
+                // Inicializar valores de las opciones de propina basadas en el subtotal
+                const sub = parseFloat(carritoTotal) || 0;
+                document.getElementById('tip-005-val').innerText = `$${(sub * 0.05).toFixed(2)}`;
+                document.getElementById('tip-010-val').innerText = `$${(sub * 0.10).toFixed(2)}`;
+                document.getElementById('tip-015-val').innerText = `$${(sub * 0.15).toFixed(2)}`;
+                document.getElementById('tip-020-val').innerText = `$${(sub * 0.20).toFixed(2)}`;
+
+                // Restaurar propina seleccionada
+                const propinaTipo = localStorage.getItem(`laas_propina_tipo_${slug}`) || '0';
+                if (propinaTipo === 'custom') {
+                    const customVal = parseFloat(localStorage.getItem(`laas_propina_valor_${slug}`)) || 0;
+                    document.getElementById('customTipInput').value = customVal || '';
+                    
+                    // Seleccionar botón "Otro valor"
+                    const btnCustom = document.querySelector('.tip-btn[data-val="custom"]');
+                    if (btnCustom) {
+                        seleccionarBotonPropina(btnCustom, false);
+                        propinaSeleccionada = customVal;
+                        document.getElementById('customTipContainer').classList.remove('hidden');
+                    }
+                } else {
+                    const btnTip = document.querySelector(`.tip-btn[data-val="${propinaTipo}"]`);
+                    if (btnTip) {
+                        seleccionarBotonPropina(btnTip, false);
+                    }
+                }
+
+                actualizarResumenTotales();
+            } catch (e) {
+                console.error("Error al restaurar cálculo de envío o propina:", e);
+            }
+        }
+
         // 2. Función para buscar el negocio en nuestra API
         async function cargarDatosNegocio() {
             if (!slug) {
@@ -547,6 +622,9 @@
                 // Inicializar mapa ahora que ya se ve el contenedor
                 inicializarMapa();
 
+                // Restaurar cálculo de envío y propina si ya existían
+                restaurarCalculoEnvioYPropina();
+
             } catch (error) {
                 // Si el negocio no existe (ej. escribieron mal el link)
                 loader.classList.add('hidden');
@@ -562,15 +640,30 @@
             // Centro por defecto
             const coordsDefault = [24.1426, -110.3127];
             
-            // Si ya tenemos la ubicación inicial detectada en paralelo, la usamos como centro inicial
-            const centroInicial = ubicacionInicial ? [ubicacionInicial.lat, ubicacionInicial.lng] : coordsDefault;
-            const zoomInicial = ubicacionInicial ? 17 : 15;
+            // Intentar recuperar coordenadas guardadas
+            const latGuardada = localStorage.getItem(`laas_lat_${slug}`);
+            const lngGuardada = localStorage.getItem(`laas_lng_${slug}`);
+            
+            let centroInicial = coordsDefault;
+            let zoomInicial = 15;
+            let usarCoordenadasGuardadas = false;
+
+            if (latGuardada && lngGuardada) {
+                centroInicial = [parseFloat(latGuardada), parseFloat(lngGuardada)];
+                zoomInicial = 17;
+                usarCoordenadasGuardadas = true;
+            } else if (ubicacionInicial) {
+                centroInicial = [ubicacionInicial.lat, ubicacionInicial.lng];
+                zoomInicial = 17;
+            }
 
             mapaPedido = L.map('mapaPedido', {
                 zoomControl: false // Interfaz más limpia en móvil
             }).setView(centroInicial, zoomInicial);
 
-            if (ubicacionInicial) {
+            if (usarCoordenadasGuardadas) {
+                actualizarCoordenadas(parseFloat(latGuardada), parseFloat(lngGuardada));
+            } else if (ubicacionInicial) {
                 actualizarCoordenadas(ubicacionInicial.lat, ubicacionInicial.lng);
             }
 
@@ -619,7 +712,7 @@
             });
 
             // Si aún no tenemos la ubicación y está cargándose, o si no se ha pedido, la solicitamos
-            if (!ubicacionInicial) {
+            if (!ubicacionInicial && !localStorage.getItem(`laas_lat_${slug}`)) {
                 obtenerGeolocalizacion(
                     (pos) => {
                         const userLat = pos.coords.latitude;
@@ -632,6 +725,11 @@
                         actualizarCoordenadas(coordsDefault[0], coordsDefault[1]);
                     }
                 );
+            } else if (!ubicacionInicial && localStorage.getItem(`laas_lat_${slug}`)) {
+                // Si no hay ubicacionInicial pero sí hay guardada, nos aseguramos de reflejarla
+                const latG = parseFloat(localStorage.getItem(`laas_lat_${slug}`));
+                const lngG = parseFloat(localStorage.getItem(`laas_lng_${slug}`));
+                actualizarCoordenadas(latG, lngG);
             }
 
             // Cada vez que se mueve el mapa, actualizamos coordenadas
@@ -647,6 +745,11 @@
                     botonCalcular.classList.remove('hidden');
                     botonCalcular.innerHTML = '<span>Recalcular Envío</span>';
                     botonCalcular.disabled = false;
+                    
+                    // Limpiar el cálculo y la propina persistidos si la ubicación cambió
+                    localStorage.removeItem(`laas_datos_calculados_${slug}`);
+                    localStorage.removeItem(`laas_propina_tipo_${slug}`);
+                    localStorage.removeItem(`laas_propina_valor_${slug}`);
                 }
             });
 
@@ -689,6 +792,8 @@
         function actualizarCoordenadas(lat, lng) {
             document.getElementById('latDestino').value = lat.toFixed(6);
             document.getElementById('lngDestino').value = lng.toFixed(6);
+            localStorage.setItem(`laas_lat_${slug}`, lat.toFixed(6));
+            localStorage.setItem(`laas_lng_${slug}`, lng.toFixed(6));
         }
 
         function bloquearMapa() {
@@ -790,6 +895,8 @@
                     coloniaCliente: coloniaInput
                 };
 
+                localStorage.setItem(`laas_datos_calculados_${slug}`, JSON.stringify(datosCalculados));
+
                 // Inicializar opciones de propina basadas en subtotal
                 const sub = parseFloat(carritoTotal) || 0;
                 document.getElementById('tip-005-val').innerText = `$${(sub * 0.05).toFixed(2)}`;
@@ -865,10 +972,6 @@
             const urlWhatsApp = `https://wa.me/52${whatsappNegocioGlobal.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWhatsApp, '_blank');
 
-            // Limpiar el carrito
-            localStorage.removeItem(`laas_carrito_${slug}`);
-            localStorage.removeItem(`laas_carrito_total_${slug}`);
-
             // ─────────────────────────────────────────────────────────────────
             // PASO 2 (ASYNC): Ahora sí podemos hacer operaciones lentas
             // ─────────────────────────────────────────────────────────────────
@@ -934,9 +1037,18 @@
                     })
                 });
 
-                // Registrar Evento de Conversión para Analíticas
+                // Registrar Evento de Conversión para Analíticas y Limpiar localStorage al tener éxito
                 if (orderRes.ok) {
                     await registrarEventoGlobal(slug, 'order_complete');
+                    
+                    // Limpiar el carrito y estado temporal del pedido
+                    localStorage.removeItem(`laas_carrito_${slug}`);
+                    localStorage.removeItem(`laas_carrito_total_${slug}`);
+                    localStorage.removeItem(`laas_lat_${slug}`);
+                    localStorage.removeItem(`laas_lng_${slug}`);
+                    localStorage.removeItem(`laas_datos_calculados_${slug}`);
+                    localStorage.removeItem(`laas_propina_tipo_${slug}`);
+                    localStorage.removeItem(`laas_propina_valor_${slug}`);
                 }
             } catch (error) {
                 console.error("El pedido no se guardó en la DB.");
@@ -980,6 +1092,8 @@
                     customTipInput.value = 0;
                 }
                 propinaSeleccionada = val;
+                localStorage.setItem(`laas_propina_tipo_${slug}`, 'custom');
+                localStorage.setItem(`laas_propina_valor_${slug}`, propinaSeleccionada.toString());
                 actualizarResumenTotales();
             });
         }
