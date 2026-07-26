@@ -302,44 +302,72 @@
         let mapaPedido = null;
         let ubicacionInicial = null;
 
-        // Función de geolocalización robusta con fallback automático para PC y celulares con señal débil
+        // Control de concurrencia para evitar conflictos en iOS Safari (WebKit CoreLocation)
+        let peticionGeoEnProgreso = null;
+
         function obtenerGeolocalizacion(onSuccess, onError) {
             if (!navigator.geolocation) {
-                onError(new Error("Geolocalización no soportada"));
+                onError({ code: 0, message: "Geolocalización no soportada" });
                 return;
             }
 
-            const optionsAltaPrecision = {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-            };
+            // Si ya hay una petición en curso (ej. al cargar el mapa y la página al mismo tiempo), reutilizamos la misma promesa
+            if (peticionGeoEnProgreso) {
+                peticionGeoEnProgreso.then(onSuccess).catch(onError);
+                return;
+            }
 
-            const optionsBajaPrecision = {
-                enableHighAccuracy: false,
-                timeout: 10000,
-                maximumAge: 60000 // Permitir usar ubicación en caché de hasta 1 minuto
-            };
+            peticionGeoEnProgreso = new Promise((resolve, reject) => {
+                let finalizado = false;
+                let watchId = null;
 
-            navigator.geolocation.getCurrentPosition(
-                onSuccess,
-                (err) => {
-                    // Si el usuario denegó explícitamente el permiso, fallamos directo
-                    if (err.code === err.PERMISSION_DENIED) {
-                        onError(err);
-                        return;
+                const terminarConExito = (pos) => {
+                    if (finalizado) return;
+                    finalizado = true;
+                    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+                    if (timeoutId) clearTimeout(timeoutId);
+                    peticionGeoEnProgreso = null;
+                    resolve(pos);
+                };
+
+                const terminarConError = (err) => {
+                    if (finalizado) return;
+                    finalizado = true;
+                    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+                    if (timeoutId) clearTimeout(timeoutId);
+                    peticionGeoEnProgreso = null;
+                    reject(err);
+                };
+
+                // Safety timeout de 15 segundos para iOS Safari
+                const timeoutId = setTimeout(() => {
+                    if (!finalizado) {
+                        // Fallback de emergencia a precisión estándar si el GPS satelital no fijó rápido
+                        navigator.geolocation.getCurrentPosition(
+                            terminarConExito,
+                            terminarConError,
+                            { enableHighAccuracy: false, timeout: 5000, maximumAge: Infinity }
+                        );
                     }
-                    
-                    // Si falló por falta de hardware GPS (como en PC), mala señal o timeout, reintentamos con precisión estándar
-                    console.warn("Fallo alta precisión (código " + err.code + "). Intentando precisión estándar...");
-                    navigator.geolocation.getCurrentPosition(
-                        onSuccess,
-                        onError,
-                        optionsBajaPrecision
+                }, 15000);
+
+                // En iOS Safari, watchPosition + clearWatch obtiene la primera posición (Wi-Fi/GPS) sin el bug de getCurrentPosition
+                try {
+                    watchId = navigator.geolocation.watchPosition(
+                        terminarConExito,
+                        (err) => {
+                            if (err.code === err.PERMISSION_DENIED) {
+                                terminarConError(err);
+                            }
+                        },
+                        { enableHighAccuracy: true, timeout: 14000, maximumAge: 30000 }
                     );
-                },
-                optionsAltaPrecision
-            );
+                } catch (e) {
+                    terminarConError(e);
+                }
+            });
+
+            peticionGeoEnProgreso.then(onSuccess).catch(onError);
         }
 
         // Intentar obtener la ubicación del usuario de inmediato (en paralelo) para ganar tiempo
@@ -701,12 +729,27 @@
                 
                 obtenerGeolocalizacion(
                     (pos) => {
-                        mapaPedido.setView([pos.coords.latitude, pos.coords.longitude], 17);
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        mapaPedido.setView([lat, lng], 17);
+                        actualizarCoordenadas(lat, lng);
                         btnGPS.innerHTML = originalIcon;
                     },
                     (err) => {
-                        alert("No pudimos obtener tu ubicación. Revisa los permisos de tu navegador.");
                         btnGPS.innerHTML = originalIcon;
+                        let mensaje = "No pudimos obtener tu ubicación.";
+                        
+                        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                            mensaje = "⚠️ En iPhone (Safari), la geolocalización requiere una conexión segura (HTTPS). Asegúrate de entrar con https://";
+                        } else if (err.code === 1 || err.code === err.PERMISSION_DENIED) {
+                            mensaje = "📍 Permiso de ubicación denegado.\n\nEn tu iPhone ve a:\nAjustes > Privacidad y seguridad > Localización > Sitios web de Safari y selecciona 'Al usar la app'.";
+                        } else if (err.code === 3 || err.code === err.TIMEOUT) {
+                            mensaje = "⏱️ Se agotó el tiempo para obtener tu ubicación. Intenta presionar el botón de nuevo.";
+                        } else if (err.code === 2 || err.code === err.POSITION_UNAVAILABLE) {
+                            mensaje = "📡 No se pudo obtener la señal GPS de tu dispositivo. Asegúrate de tener activada la Localización en tu iPhone.";
+                        }
+                        
+                        alert(mensaje);
                     }
                 );
             });

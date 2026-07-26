@@ -144,7 +144,14 @@
         // --- Mi Ubicación ---
         document.getElementById('btnUbicacion').addEventListener('click', () => {
             if (!navigator.geolocation) return alert('Tu navegador no soporta GPS');
+            
+            const btn = document.getElementById('btnUbicacion');
+            const iconOriginal = btn.innerHTML;
+            btn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>';
+
             navigator.geolocation.getCurrentPosition(pos => {
+                btn.innerHTML = iconOriginal;
+                if (window.feather) feather.replace();
                 const { latitude, longitude } = pos.coords;
                 map.setView([latitude, longitude], 15, { animate: true });
 
@@ -155,7 +162,25 @@
                     iconSize: [20, 20], iconAnchor: [10, 10]
                 });
                 L.marker([latitude, longitude], { icon: userIcon }).addTo(map).bindPopup('<b class="text-sm">Tú estás aquí</b>');
-            }, () => alert('No pudimos obtener tu ubicación.'));
+            }, (err) => {
+                btn.innerHTML = iconOriginal;
+                if (window.feather) feather.replace();
+                let msg = 'No pudimos obtener tu ubicación.';
+                if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                    msg = '⚠️ En iPhone (Safari), la geolocalización requiere una conexión segura (HTTPS). Entra usando https://';
+                } else if (err.code === 1 || err.code === err.PERMISSION_DENIED) {
+                    msg = '📍 Permiso de ubicación denegado.\n\nEn tu iPhone ve a:\nAjustes > Privacidad y seguridad > Localización > Sitios web de Safari y elige "Al usar la app".';
+                } else if (err.code === 3 || err.code === err.TIMEOUT) {
+                    msg = '⏱️ Se agotó el tiempo para obtener tu ubicación. Por favor intenta presionar el botón de nuevo.';
+                } else if (err.code === 2 || err.code === err.POSITION_UNAVAILABLE) {
+                    msg = '📡 No se pudo obtener la señal GPS de tu dispositivo.';
+                }
+                alert(msg);
+            }, {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 30000
+            });
         });
 
         // --- Panel Toggle ---
